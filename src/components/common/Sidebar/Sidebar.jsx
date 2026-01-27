@@ -1,0 +1,138 @@
+import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth, useTheme } from '../../../App'
+import './Sidebar.css'
+
+const Sidebar = ({ role }) => {
+    const location = useLocation()
+    const navigate = useNavigate()
+    const { user, logout } = useAuth()
+    const { theme, toggleTheme } = useTheme()
+    const [isCollapsed, setIsCollapsed] = useState(false)
+
+    const studentLinks = [
+        {
+            path: '/student/dashboard',
+            icon: (
+                <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                    <path d="M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z" />
+                </svg>
+            ),
+            label: 'Dashboard'
+        },
+        {
+            path: '/student/ai-assistant',
+            icon: <img src="/assets/icons/guru-ai.png" alt="GuruAI" width="24" height="24" />,
+            label: 'GuruAI'
+        },
+        {
+            path: '/student/tutors',
+            icon: (
+                <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                    <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H10V22H14V20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 18H4V6H20V18Z" />
+                    <path d="M12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15Z" />
+                    <path d="M12 17C9.33 17 7 18.34 7 20V19H17V20C17 18.34 14.67 17 12 17Z" />
+                </svg>
+            ),
+            label: 'Find Tutors'
+        },
+        {
+            path: '/student/doubts',
+            icon: <img src="/assets/icons/my-doubts.png" alt="My Doubts" width="24" height="24" />,
+            label: 'My Doubts'
+        },
+        { path: '/student/subscription', icon: '💎', label: 'Subscription' },
+        { path: '/student/help', icon: '❓', label: 'Help & FAQ' },
+    ]
+
+    const tutorLinks = [
+        {
+            path: '/tutor/dashboard',
+            icon: (
+                <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                    <path d="M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z" />
+                </svg>
+            ),
+            label: 'Dashboard'
+        },
+        { path: '/tutor/sessions', icon: '📅', label: 'Sessions' },
+        { path: '/tutor/earnings', icon: <img src="/assets/icons/total-earnings.png" alt="Earnings" width="24" height="24" />, label: 'Earnings' },
+        { path: '/tutor/help', icon: '❓', label: 'Help & FAQ' },
+    ]
+
+    const links = role === 'tutor' ? tutorLinks : studentLinks
+
+    // Removed handleLogout as it's no longer used here
+
+    const settingsPath = role === 'tutor' ? '/tutor/settings' : '/student/settings'
+
+    return (
+        <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+            {/* Collapse Toggle */}
+            <button
+                className="sidebar-toggle"
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    {isCollapsed ? (
+                        <path d="M9 18l6-6-6-6" />
+                    ) : (
+                        <path d="M15 18l-6-6 6-6" />
+                    )}
+                </svg>
+            </button>
+
+            {/* User Info */}
+            <div className="sidebar-user">
+                <div className="user-avatar-large">
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                {!isCollapsed && (
+                    <div className="user-info">
+                        <span className="user-name">{user?.name || 'User'}</span>
+                        <span className="user-role">
+                            <img
+                                src={role === 'tutor' ? "/assets/icons/tutor-role.png" : "/assets/icons/role.png"}
+                                alt="Role"
+                                width="14"
+                                height="14"
+                                style={{ marginRight: '4px', verticalAlign: 'middle', display: 'inline-block' }}
+                            />
+                            {role === 'tutor' ? 'Tutor' : 'Student'}
+                        </span>
+                    </div>
+                )}
+            </div>
+
+            {/* Navigation */}
+            <nav className="sidebar-nav">
+                {links.map((link) => (
+                    <button
+                        key={link.path}
+                        className={`nav-item ${location.pathname === link.path ? 'active' : ''}`}
+                        onClick={() => navigate(link.path)}
+                        title={isCollapsed ? link.label : undefined}
+                    >
+                        <span className="nav-icon">{link.icon}</span>
+                        {!isCollapsed && <span className="nav-label">{link.label}</span>}
+                    </button>
+                ))}
+            </nav>
+
+            {/* Bottom Actions */}
+            <div className="sidebar-bottom">
+                <button
+                    className={`nav-item ${location.pathname === settingsPath ? 'active' : ''}`}
+                    onClick={() => navigate(settingsPath)}
+                    title={isCollapsed ? 'Settings' : undefined}
+                >
+                    <span className="nav-icon"><img src="/assets/icons/settings.png" alt="Settings" width="24" height="24" /></span>
+                    {!isCollapsed && <span className="nav-label">Settings</span>}
+                </button>
+            </div>
+        </aside>
+    )
+}
+
+export default Sidebar

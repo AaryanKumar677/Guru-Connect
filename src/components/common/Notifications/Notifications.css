@@ -1,0 +1,198 @@
+/* ========================================
+   NOTIFICATIONS COMPONENT STYLES
+   ======================================== */
+
+.notifications-wrapper {
+    position: relative;
+}
+
+.notifications-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    transition: all var(--duration-fast) var(--ease-default);
+}
+
+.notifications-trigger:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.notification-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--error);
+    color: white;
+    font-size: 11px;
+    font-weight: var(--font-bold);
+    border-radius: var(--radius-full);
+    padding: 0 4px;
+}
+
+/* Dropdown */
+.notifications-dropdown {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    width: 360px;
+    max-height: 480px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    z-index: var(--z-dropdown);
+    animation: fadeInDown var(--duration-fast) var(--ease-default);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .notifications-dropdown {
+        width: calc(100vw - var(--space-8));
+        right: calc(-1 * var(--space-4));
+    }
+}
+
+/* Header */
+.notifications-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border);
+}
+
+.notifications-header h3 {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+}
+
+.mark-all-btn {
+    font-size: var(--text-xs);
+    color: var(--primary-500);
+    font-weight: var(--font-medium);
+}
+
+.mark-all-btn:hover {
+    text-decoration: underline;
+}
+
+/* List */
+.notifications-list {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-default);
+}
+
+.notification-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.notification-item.unread {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.notification-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.notification-title {
+    font-weight: var(--font-medium);
+    font-size: var(--text-sm);
+}
+
+.notification-message {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-time {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+.unread-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary-500);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: var(--space-1);
+}
+
+/* Empty State */
+.notifications-empty {
+    padding: var(--space-10);
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.notifications-empty span {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: var(--space-2);
+    opacity: 0.5;
+}
+
+/* Footer */
+.notifications-footer {
+    padding: var(--space-3);
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+.clear-btn {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.clear-btn:hover {
+    color: var(--error);
+}

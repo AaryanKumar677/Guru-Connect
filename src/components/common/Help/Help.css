@@ -1,0 +1,206 @@
+/* ========================================
+   HELP & FAQ PAGE STYLES
+   ======================================== */
+
+.help-page {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Search */
+.help-search {
+    position: relative;
+    margin-bottom: var(--space-8);
+}
+
+.help-search .search-icon {
+    position: absolute;
+    left: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.25rem;
+}
+
+.help-search input {
+    width: 100%;
+    padding: var(--space-4) var(--space-4) var(--space-4) var(--space-12);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    font-size: var(--text-base);
+    color: var(--text-primary);
+}
+
+.help-search input:focus {
+    outline: none;
+    border-color: var(--primary-500);
+}
+
+/* Content */
+.help-content {
+    display: grid;
+    gap: var(--space-6);
+    margin-bottom: var(--space-10);
+}
+
+@media (min-width: 768px) {
+    .help-content {
+        grid-template-columns: 200px 1fr;
+    }
+}
+
+/* Categories */
+.help-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+@media (min-width: 768px) {
+    .help-categories {
+        flex-direction: column;
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+}
+
+.category-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    transition: all var(--duration-fast) var(--ease-default);
+    width: 100%;
+    text-align: left;
+}
+
+.category-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.category-btn.active {
+    background: var(--primary-gradient);
+    color: white;
+    border-color: transparent;
+}
+
+/* FAQ List */
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--duration-fast) var(--ease-default);
+}
+
+.faq-item.open {
+    border-color: var(--primary-500);
+}
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5);
+    font-weight: var(--font-medium);
+    text-align: left;
+    color: var(--text-primary);
+}
+
+.faq-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: 50%;
+    font-size: var(--text-lg);
+    flex-shrink: 0;
+}
+
+.faq-item.open .faq-icon {
+    background: var(--primary-500);
+    color: white;
+}
+
+.faq-answer {
+    padding: 0 var(--space-5) var(--space-4);
+    animation: fadeIn var(--duration-fast) var(--ease-default);
+}
+
+.faq-answer p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+/* No Results */
+.no-results {
+    text-align: center;
+    padding: var(--space-10);
+    color: var(--text-secondary);
+}
+
+.no-results span {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: var(--space-4);
+}
+
+/* Contact Support */
+.contact-support {
+    text-align: center;
+    padding: var(--space-8);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+}
+
+.contact-support h3 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    margin-bottom: var(--space-2);
+}
+
+.contact-support>p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-6);
+}
+
+.contact-options {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.contact-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: var(--radius-lg);
+    font-weight: var(--font-medium);
+    transition: all var(--duration-fast) var(--ease-default);
+}
+
+.contact-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}

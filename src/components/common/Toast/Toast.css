@@ -1,0 +1,115 @@
+/* ========================================
+   TOAST STYLES
+   ======================================== */
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    animation: toastSlideIn var(--duration-normal) var(--ease-default);
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.toast-exit {
+    animation: toastSlideOut var(--duration-fast) var(--ease-default) forwards;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.toast-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.toast-dismiss {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-fast) var(--ease-default);
+}
+
+.toast-dismiss:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+}
+
+/* Type Variants */
+.toast-success {
+    border-color: var(--success);
+    background: linear-gradient(135deg, rgba(38, 222, 129, 0.1) 0%, var(--surface) 100%);
+}
+
+.toast-success .toast-icon {
+    color: var(--success);
+}
+
+.toast-error {
+    border-color: var(--error);
+    background: linear-gradient(135deg, rgba(252, 92, 101, 0.1) 0%, var(--surface) 100%);
+}
+
+.toast-error .toast-icon {
+    color: var(--error);
+}
+
+.toast-warning {
+    border-color: var(--warning);
+    background: linear-gradient(135deg, rgba(255, 159, 67, 0.1) 0%, var(--surface) 100%);
+}
+
+.toast-warning .toast-icon {
+    color: var(--warning);
+}
+
+.toast-info {
+    border-color: var(--info);
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, var(--surface) 100%);
+}
+
+.toast-info .toast-icon {
+    color: var(--info);
+}

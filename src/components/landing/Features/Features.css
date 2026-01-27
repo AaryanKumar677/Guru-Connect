@@ -1,0 +1,231 @@
+/* ========================================
+   FEATURES SECTION STYLES
+   ======================================== */
+
+/* Default (Dark Mode capable) Background */
+.features {
+    position: relative;
+    background: var(--bg-secondary);
+    /* Default variable for dark mode */
+    overflow: hidden;
+    padding: var(--space-8) 0;
+}
+
+/* Light Mode Overrides */
+[data-theme="light"] .features {
+    background: #E2F7ED;
+    /* Custom darker mint for light mode only */
+}
+
+.features-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.features-gradient {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(102, 126, 234, 0.05) 0%, transparent 70%);
+}
+
+/* Section Header */
+.section-header {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto var(--space-6);
+}
+
+.section-label {
+    display: inline-block;
+    padding: var(--space-1) var(--space-4);
+    background: rgba(102, 126, 234, 0.1);
+    color: var(--primary-500);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    border-radius: var(--radius-full);
+    margin-bottom: var(--space-4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.section-title {
+    font-size: var(--text-4xl);
+    margin-bottom: var(--space-3);
+}
+
+.section-subtitle {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Features Content */
+.features-content {
+    display: grid;
+    gap: var(--space-8);
+    max-width: 1150px;
+    margin: 0 auto;
+    position: relative;
+}
+
+@media (min-width: 1024px) {
+    .features-content {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-20);
+    }
+
+    /* Vertical Divider */
+    .features-content::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 1px;
+        background: linear-gradient(to bottom, transparent, rgba(102, 126, 234, 0.2) 20%, rgba(102, 126, 234, 0.2) 80%, transparent);
+        /* Default for Dark Mode */
+        transform: translateX(-50%);
+    }
+
+    /* Light Mode Darker Vertical Divider */
+    [data-theme="light"] .features-content::after {
+        background: linear-gradient(to bottom, transparent, rgba(102, 126, 234, 0.45) 20%, rgba(102, 126, 234, 0.45) 80%, transparent);
+    }
+}
+
+/* Features Column */
+.features-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.column-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-xl);
+}
+
+.column-icon {
+    font-size: 1.5rem;
+}
+
+.column-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+}
+
+/* Features Grid */
+.features-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+/* Feature Card (Interactive List Item) */
+.feature-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    transition: all var(--duration-fast) var(--ease-out);
+    position: relative;
+}
+
+/* Connected Horizontal Dividers */
+.feature-card::after {
+    content: '';
+    position: absolute;
+    bottom: -0.75rem;
+    height: 1px;
+    background: rgba(102, 126, 234, 0.2);
+    /* Default easier visibility for Dark Mode */
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Light Mode Darker Horizontal Dividers */
+[data-theme="light"] .feature-card::after {
+    background: rgba(102, 126, 234, 0.6);
+}
+
+/* Left Column (Students) - Line goes Right */
+.features-column:first-child .feature-card::after {
+    right: -2.5rem;
+    /* Reach center exactly (half of space-20) */
+    width: calc(100% + 2.5rem);
+}
+
+/* Right Column (Tutors) - Line goes Left */
+.features-column:last-child .feature-card::after {
+    left: -2.5rem;
+    /* Reach center exactly */
+    width: calc(100% + 2.5rem);
+}
+
+/* Remove divider for last item */
+.features-grid .feature-card:last-child::after {
+    display: none;
+}
+
+.feature-card:hover {
+    transform: scale(1.02);
+    /* Zoom-in effect */
+    border-color: var(--primary-500);
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
+    /* Pop over lines */
+}
+
+.feature-icon {
+    width: 36px;
+    /* Reduced size */
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    font-size: 1rem;
+    /* Reduced icon size */
+    flex-shrink: 0;
+    transition: all var(--duration-normal) var(--ease-default);
+}
+
+.feature-card:hover .feature-icon {
+    background: var(--primary-gradient);
+    transform: scale(1.1);
+}
+
+.feature-content {
+    flex: 1;
+}
+
+.feature-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    margin-bottom: var(--space-1);
+}
+
+.feature-description {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+[data-theme="light"] .feature-description {
+    color: #000000 !important;
+    /* Force Black for readability */
+    opacity: 0.8;
+}
