@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuth, useTheme } from '../../../App'
+import { useAuth, useTheme, useSidebar } from '../../../App'
 import './Sidebar.css'
 
 const Sidebar = ({ role }) => {
@@ -8,7 +7,7 @@ const Sidebar = ({ role }) => {
     const navigate = useNavigate()
     const { user, logout } = useAuth()
     const { theme, toggleTheme } = useTheme()
-    const [isCollapsed, setIsCollapsed] = useState(false)
+    const { sidebarCollapsed: isCollapsed, toggleSidebar } = useSidebar()
 
     const studentLinks = [
         {
@@ -71,7 +70,7 @@ const Sidebar = ({ role }) => {
             {/* Collapse Toggle */}
             <button
                 className="sidebar-toggle"
-                onClick={() => setIsCollapsed(!isCollapsed)}
+                onClick={toggleSidebar}
                 aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -90,7 +89,7 @@ const Sidebar = ({ role }) => {
                 </div>
                 {!isCollapsed && (
                     <div className="user-info">
-                        <span className="user-name">{user?.name || 'User'}</span>
+                        <span className="user-name">{user?.name || user?.fullName || 'User'}</span>
                         <span className="user-role">
                             <img
                                 src={role === 'tutor' ? "/assets/icons/tutor-role.png" : "/assets/icons/role.png"}

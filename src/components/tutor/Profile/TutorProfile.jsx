@@ -7,7 +7,7 @@ const TutorProfile = () => {
     const { showToast } = useToast()
 
     const [profileData, setProfileData] = useState({
-        name: user?.name || '',
+        name: user?.name || user?.fullName || '',
         email: user?.email || '',
         bio: user?.bio || 'Passionate educator with years of experience helping students achieve their academic goals.',
         subjects: user?.subjects || ['Mathematics', 'Physics'],
@@ -149,7 +149,7 @@ const TutorProfile = () => {
                 <div className="profile-content">
                     <div className="profile-header-card">
                         <div className="profile-avatar-large">
-                            {profileData.name?.charAt(0).toUpperCase() || 'T'}
+                            {(profileData.name || user?.name || user?.fullName)?.charAt(0).toUpperCase() || 'T'}
                         </div>
                         <div className="profile-header-info">
                             <h2>{profileData.name}</h2>

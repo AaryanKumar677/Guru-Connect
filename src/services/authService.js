@@ -26,6 +26,7 @@ export const authService = {
 
         const newUser = {
             ...userData,
+            name: userData.fullName || userData.name,
             id: Date.now().toString(),
             createdAt: new Date().toISOString()
         };

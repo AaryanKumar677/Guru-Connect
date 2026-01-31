@@ -60,6 +60,11 @@ export const AuthContext = createContext()
 
 export const useAuth = () => useContext(AuthContext)
 
+// Sidebar Context
+export const SidebarContext = createContext()
+
+export const useSidebar = () => useContext(SidebarContext)
+
 function App() {
   // Theme state
   const [theme, setTheme] = useState(() => {
@@ -79,6 +84,13 @@ function App() {
     const saved = localStorage.getItem('guru-connect-user')
     return saved ? JSON.parse(saved) : null
   })
+
+  // Sidebar collapsed state (global)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(prev => !prev)
+  }
 
   // First visit detection
   const [hasVisited, setHasVisited] = useState(() => {
@@ -173,122 +185,124 @@ function App() {
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       <ToastContext.Provider value={{ showToast, dismissToast }}>
-        <AuthContext.Provider value={{ user, login, signup, logout, openAuthModal, updateUser }}>
-          <div className={`app ${isDashboardRoute ? 'app-dashboard' : ''}`}>
-            <Header />
+        <SidebarContext.Provider value={{ sidebarCollapsed, toggleSidebar }}>
+          <AuthContext.Provider value={{ user, login, signup, logout, openAuthModal, updateUser }}>
+            <div className={`app ${isDashboardRoute ? 'app-dashboard' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+              <Header />
 
-            {/* Sidebar for dashboard routes */}
-            {user && (
-              <Routes>
-                <Route path="/student/*" element={<Sidebar role="student" />} />
-                <Route path="/tutor/*" element={<Sidebar role="tutor" />} />
-                <Route path="*" element={null} />
-              </Routes>
-            )}
-
-            <main className={`main-content ${isDashboardRoute ? 'with-sidebar' : ''}`}>
-              <Suspense fallback={<LoadingSpinner />}>
+              {/* Sidebar for dashboard routes */}
+              {user && (
                 <Routes>
-                  {/* Landing Page */}
-                  <Route path="/" element={
-                    user ? (
-                      <Navigate to={user.role === 'tutor' ? '/tutor/dashboard' : '/student/dashboard'} replace />
-                    ) : (
-                      <>
-                        <Hero />
-                        <Features />
-                        <AIFeatures />
-                        <Comparison />
-                        <Facilities />
-
-                      </>
-                    )
-                  } />
-
-                  {/* Student Routes */}
-                  <Route path="/student/dashboard" element={
-                    user?.role === 'student' ? <StudentDashboard /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/student/ai-assistant" element={
-                    user?.role === 'student' ? <AIAssistant /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/student/tutors" element={
-                    user?.role === 'student' ? <TutorMarketplace /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/student/doubts" element={
-                    user?.role === 'student' ? <MyDoubts /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/student/subscription" element={
-                    user?.role === 'student' ? <Subscription /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/student/profile" element={
-                    user?.role === 'student' ? <StudentProfile /> : <Navigate to="/" replace />
-                  } />
-
-                  {/* Tutor Routes */}
-                  <Route path="/tutor/dashboard" element={
-                    user?.role === 'tutor' ? <TutorDashboard /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/tutor/profile" element={
-                    user?.role === 'tutor' ? <TutorProfile /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/tutor/sessions" element={
-                    user?.role === 'tutor' ? <Sessions /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/tutor/earnings" element={
-                    user?.role === 'tutor' ? <Earnings /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/tutor/settings" element={
-                    user?.role === 'tutor' ? <Settings /> : <Navigate to="/" replace />
-                  } />
-
-                  {/* Student Settings */}
-                  <Route path="/student/settings" element={
-                    user?.role === 'student' ? <Settings /> : <Navigate to="/" replace />
-                  } />
-
-                  {/* Help Pages */}
-                  <Route path="/student/help" element={
-                    user?.role === 'student' ? <Help /> : <Navigate to="/" replace />
-                  } />
-                  <Route path="/tutor/help" element={
-                    user?.role === 'tutor' ? <Help /> : <Navigate to="/" replace />
-                  } />
-
-                  {/* 404 Page */}
-                  <Route path="*" element={<NotFound />} />
+                  <Route path="/student/*" element={<Sidebar role="student" />} />
+                  <Route path="/tutor/*" element={<Sidebar role="tutor" />} />
+                  <Route path="*" element={null} />
                 </Routes>
-              </Suspense>
-            </main>
+              )}
 
-            {!isDashboardRoute && <Footer />}
+              <main className={`main-content ${isDashboardRoute ? 'with-sidebar' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}>
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                    {/* Landing Page */}
+                    <Route path="/" element={
+                      user ? (
+                        <Navigate to={user.role === 'tutor' ? '/tutor/dashboard' : '/student/dashboard'} replace />
+                      ) : (
+                        <>
+                          <Hero />
+                          <Features />
+                          <AIFeatures />
+                          <Comparison />
+                          <Facilities />
 
-            {/* Auth Modal */}
-            <Suspense fallback={null}>
-              <AuthModal
-                isOpen={showAuthModal}
-                onClose={closeAuthModal}
-                mode={authMode}
-                setMode={setAuthMode}
-              />
-            </Suspense>
+                        </>
+                      )
+                    } />
 
-            {/* Toasts */}
-            <div className="toast-container">
-              {toasts.map(toast => (
-                <Toast
-                  key={toast.id}
-                  message={toast.message}
-                  type={toast.type}
-                  onDismiss={() => dismissToast(toast.id)}
+                    {/* Student Routes */}
+                    <Route path="/student/dashboard" element={
+                      user?.role === 'student' ? <StudentDashboard /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/student/ai-assistant" element={
+                      user?.role === 'student' ? <AIAssistant /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/student/tutors" element={
+                      user?.role === 'student' ? <TutorMarketplace /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/student/doubts" element={
+                      user?.role === 'student' ? <MyDoubts /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/student/subscription" element={
+                      user?.role === 'student' ? <Subscription /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/student/profile" element={
+                      user?.role === 'student' ? <StudentProfile /> : <Navigate to="/" replace />
+                    } />
+
+                    {/* Tutor Routes */}
+                    <Route path="/tutor/dashboard" element={
+                      user?.role === 'tutor' ? <TutorDashboard /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/tutor/profile" element={
+                      user?.role === 'tutor' ? <TutorProfile /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/tutor/sessions" element={
+                      user?.role === 'tutor' ? <Sessions /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/tutor/earnings" element={
+                      user?.role === 'tutor' ? <Earnings /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/tutor/settings" element={
+                      user?.role === 'tutor' ? <Settings /> : <Navigate to="/" replace />
+                    } />
+
+                    {/* Student Settings */}
+                    <Route path="/student/settings" element={
+                      user?.role === 'student' ? <Settings /> : <Navigate to="/" replace />
+                    } />
+
+                    {/* Help Pages */}
+                    <Route path="/student/help" element={
+                      user?.role === 'student' ? <Help /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/tutor/help" element={
+                      user?.role === 'tutor' ? <Help /> : <Navigate to="/" replace />
+                    } />
+
+                    {/* 404 Page */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </main>
+
+              {!isDashboardRoute && <Footer />}
+
+              {/* Auth Modal */}
+              <Suspense fallback={null}>
+                <AuthModal
+                  isOpen={showAuthModal}
+                  onClose={closeAuthModal}
+                  mode={authMode}
+                  setMode={setAuthMode}
                 />
-              ))}
-            </div>
-          </div>
+              </Suspense>
 
-        </AuthContext.Provider>
+              {/* Toasts */}
+              <div className="toast-container">
+                {toasts.map(toast => (
+                  <Toast
+                    key={toast.id}
+                    message={toast.message}
+                    type={toast.type}
+                    onDismiss={() => dismissToast(toast.id)}
+                  />
+                ))}
+              </div>
+            </div>
+
+          </AuthContext.Provider>
+        </SidebarContext.Provider>
       </ToastContext.Provider>
-    </ThemeContext.Provider >
+    </ThemeContext.Provider>
   )
 }
 

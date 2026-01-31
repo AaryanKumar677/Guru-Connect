@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { authService } from '../../../services/authService'
+import { getCollegeMeta, getYearOptions, getSemesterOptions, emitTelemetry } from '../../../services/collegeService'
 import { useAuth, useToast } from '../../../App'
+import CollegeAutocomplete from '../CollegeAutocomplete/CollegeAutocomplete'
 import './AuthModal.css'
 
 const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
@@ -29,8 +31,15 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
         educationType: 'school', // 'school' or 'college'
         schoolName: '',
         className: '',
+        // College fields (new)
+        college_id: null,
         collegeName: '',
-        yearSemester: '',
+        collegeManualName: '',
+        needs_review: false,
+        degree: '',
+        branch: '',
+        year: '',
+        semester: '',
 
         // Step 2 - Tutor specific
         subjects: [],
@@ -115,6 +124,163 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
         })
     }
 
+    // ============================================
+    // COLLEGE AUTOCOMPLETE STATE & HANDLERS
+    // ============================================
+    const [selectedCollege, setSelectedCollege] = useState(null)
+    const [collegeMeta, setCollegeMeta] = useState(null)
+    const [degreeOptions, setDegreeOptions] = useState([])
+    const [branchOptions, setBranchOptions] = useState([])
+    const [yearOptions, setYearOptions] = useState([])
+    const [semesterOptions, setSemesterOptions] = useState([])
+    const [collegeMetaLoading, setCollegeMetaLoading] = useState(false)
+    const [cascadeNotice, setCascadeNotice] = useState('')
+
+    // Handle college selection from autocomplete
+    const handleCollegeSelect = useCallback(async (college, displayName) => {
+        if (!college) {
+            // User is typing after previously selecting
+            setSelectedCollege(null)
+            setFormData(prev => ({
+                ...prev,
+                college_id: null,
+                collegeName: '',
+                needs_review: false
+            }))
+            return
+        }
+
+        setSelectedCollege(college)
+        setFormData(prev => ({
+            ...prev,
+            college_id: college.id,
+            collegeName: displayName,
+            collegeManualName: '',
+            needs_review: false,
+            // Reset downstream fields
+            degree: '',
+            branch: '',
+            year: '',
+            semester: ''
+        }))
+
+        // Show cascade notice if previous selections existed
+        if (formData.degree || formData.branch) {
+            setCascadeNotice('College changed — please re-select degree & branch.')
+            setTimeout(() => setCascadeNotice(''), 5000)
+        }
+
+        // Fetch college metadata
+        setCollegeMetaLoading(true)
+        try {
+            const meta = await getCollegeMeta(college.id)
+            setCollegeMeta(meta)
+            setDegreeOptions(meta.degrees || [])
+            setBranchOptions([])
+            setYearOptions([])
+            setSemesterOptions([])
+        } catch (err) {
+            console.error('Failed to fetch college meta:', err)
+            // Use default options on error
+            const defaultMeta = await getCollegeMeta('_default')
+            setCollegeMeta(defaultMeta)
+            setDegreeOptions(defaultMeta.degrees || [])
+        } finally {
+            setCollegeMetaLoading(false)
+        }
+    }, [formData.degree, formData.branch])
+
+    // Handle manual college entry
+    const handleManualCollegeEntry = useCallback((name) => {
+        setSelectedCollege(null)
+        setFormData(prev => ({
+            ...prev,
+            college_id: null,
+            collegeName: name,
+            collegeManualName: name,
+            needs_review: true,
+            degree: '',
+            branch: '',
+            year: '',
+            semester: ''
+        }))
+
+        // Load default options for manual entry
+        getCollegeMeta('_default').then(meta => {
+            setCollegeMeta(meta)
+            setDegreeOptions(meta.degrees || [])
+            setBranchOptions([])
+            setYearOptions([])
+            setSemesterOptions([])
+        })
+    }, [])
+
+    // Handle degree change
+    const handleDegreeChange = useCallback((e) => {
+        const degreeId = e.target.value
+        const degree = degreeOptions.find(d => d.id === degreeId)
+
+        // Show cascade notice if branch was previously set
+        if (formData.branch) {
+            setCascadeNotice('Degree changed — please re-select branch.')
+            setTimeout(() => setCascadeNotice(''), 5000)
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            degree: degreeId,
+            branch: '',
+            year: '',
+            semester: ''
+        }))
+
+        if (collegeMeta && degreeId) {
+            setBranchOptions(collegeMeta.branches[degreeId] || [])
+            setYearOptions(degree ? getYearOptions(degree.duration) : [])
+            setSemesterOptions([])
+
+            emitTelemetry('degree_selected', { degreeId })
+        } else {
+            setBranchOptions([])
+            setYearOptions([])
+            setSemesterOptions([])
+        }
+    }, [degreeOptions, collegeMeta, formData.branch])
+
+    // Handle branch change
+    const handleBranchChange = useCallback((e) => {
+        const branchId = e.target.value
+        setFormData(prev => ({
+            ...prev,
+            branch: branchId
+        }))
+    }, [])
+
+    // Handle year change
+    const handleYearChange = useCallback((e) => {
+        const year = e.target.value
+        setFormData(prev => ({
+            ...prev,
+            year,
+            semester: ''
+        }))
+
+        if (year) {
+            setSemesterOptions(getSemesterOptions(parseInt(year)))
+        } else {
+            setSemesterOptions([])
+        }
+    }, [])
+
+    // Handle semester change
+    const handleSemesterChange = useCallback((e) => {
+        setFormData(prev => ({
+            ...prev,
+            semester: e.target.value
+        }))
+    }, [])
+
+
     const validateStep = (stepNum) => {
         const newErrors = {}
 
@@ -151,11 +317,21 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                         newErrors.className = 'Class is required'
                     }
                 } else {
-                    if (!formData.collegeName.trim()) {
-                        newErrors.collegeName = 'College name is required'
+                    // College validation
+                    if (!formData.college_id && !formData.collegeManualName.trim()) {
+                        newErrors.collegeName = 'Please select or enter a college'
                     }
-                    if (!formData.yearSemester.trim()) {
-                        newErrors.yearSemester = 'Year/Semester is required'
+                    if (!formData.degree) {
+                        newErrors.degree = 'Degree is required'
+                    }
+                    if (!formData.branch) {
+                        newErrors.branch = 'Branch is required'
+                    }
+                    if (!formData.year) {
+                        newErrors.year = 'Year is required'
+                    }
+                    if (!formData.semester) {
+                        newErrors.semester = 'Semester is required'
                     }
                 }
             } else {
@@ -229,7 +405,20 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
 
             signup(newUser)
         } catch (error) {
-            setErrors({ email: error.message || 'Signup failed' })
+            // Check if it's a duplicate email error
+            if (error.message && error.message.toLowerCase().includes('already exists')) {
+                setErrors({
+                    email: 'An account with this email already exists. Please try logging in instead.',
+                    isDuplicate: true
+                })
+                // Auto-scroll to show error
+                setTimeout(() => {
+                    const emailInput = document.querySelector('input[name="email"]')
+                    emailInput?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }, 100)
+            } else {
+                setErrors({ email: error.message || 'Signup failed' })
+            }
         } finally {
             setIsLoading(false)
         }
@@ -441,7 +630,28 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                                     onChange={handleInputChange}
                                     autoComplete="email"
                                 />
-                                {errors.email && <span className="input-error-text">{errors.email}</span>}
+                                {errors.email && (
+                                    <span className="input-error-text">
+                                        {errors.email}
+                                        {errors.isDuplicate && (
+                                            <>
+                                                {' '}
+                                                <button
+                                                    type="button"
+                                                    className="link-btn"
+                                                    onClick={() => {
+                                                        setMode('login')
+                                                        setStep(1)
+                                                        setErrors({})
+                                                    }}
+                                                    style={{ fontSize: 'inherit', textDecoration: 'underline' }}
+                                                >
+                                                    Switch to Login
+                                                </button>
+                                            </>
+                                        )}
+                                    </span>
+                                )}
                             </div>
 
                             <div className="input-group">
@@ -589,40 +799,116 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                                 </>
                             ) : (
                                 <>
+                                    {/* Cascade Reset Notice */}
+                                    {cascadeNotice && (
+                                        <div className="cascade-notice" role="alert">
+                                            <span>⚠️</span> {cascadeNotice}
+                                        </div>
+                                    )}
+
+                                    {/* College Autocomplete */}
                                     <div className="input-group">
                                         <label htmlFor="collegeName" className="input-label">College Name</label>
-                                        <input
-                                            id="collegeName"
-                                            type="text"
-                                            name="collegeName"
-                                            className={`input ${errors.collegeName ? 'input-error' : ''}`}
-                                            placeholder="Enter your college name"
+                                        <CollegeAutocomplete
                                             value={formData.collegeName}
-                                            onChange={handleInputChange}
+                                            selectedCollege={selectedCollege}
+                                            onSelect={handleCollegeSelect}
+                                            onManualEntry={handleManualCollegeEntry}
+                                            error={errors.collegeName}
                                         />
                                         {errors.collegeName && <span className="input-error-text">{errors.collegeName}</span>}
+                                        {formData.needs_review && (
+                                            <span className="input-helper input-helper-warning">
+                                                ⚠️ Manual entry - will be reviewed by admin
+                                            </span>
+                                        )}
                                     </div>
 
+                                    {/* Degree Select */}
                                     <div className="input-group">
-                                        <label htmlFor="yearSemester" className="input-label">Year / Semester</label>
+                                        <label htmlFor="degree" className="input-label">Degree</label>
                                         <select
-                                            id="yearSemester"
-                                            name="yearSemester"
-                                            className={`input ${errors.yearSemester ? 'input-error' : ''}`}
-                                            value={formData.yearSemester}
-                                            onChange={handleInputChange}
+                                            id="degree"
+                                            name="degree"
+                                            className={`input ${errors.degree ? 'input-error' : ''}`}
+                                            value={formData.degree}
+                                            onChange={handleDegreeChange}
+                                            disabled={!formData.collegeName || collegeMetaLoading}
+                                            aria-describedby={!formData.collegeName ? 'degree-hint' : undefined}
                                         >
-                                            <option value="">Select year/semester</option>
-                                            <option value="1st Year - 1st Sem">1st Year - 1st Semester</option>
-                                            <option value="1st Year - 2nd Sem">1st Year - 2nd Semester</option>
-                                            <option value="2nd Year - 3rd Sem">2nd Year - 3rd Semester</option>
-                                            <option value="2nd Year - 4th Sem">2nd Year - 4th Semester</option>
-                                            <option value="3rd Year - 5th Sem">3rd Year - 5th Semester</option>
-                                            <option value="3rd Year - 6th Sem">3rd Year - 6th Semester</option>
-                                            <option value="4th Year - 7th Sem">4th Year - 7th Semester</option>
-                                            <option value="4th Year - 8th Sem">4th Year - 8th Semester</option>
+                                            <option value="">
+                                                {collegeMetaLoading ? 'Loading...' : 'Select degree'}
+                                            </option>
+                                            {degreeOptions.map(deg => (
+                                                <option key={deg.id} value={deg.id}>{deg.name}</option>
+                                            ))}
                                         </select>
-                                        {errors.yearSemester && <span className="input-error-text">{errors.yearSemester}</span>}
+                                        {!formData.collegeName && (
+                                            <span id="degree-hint" className="input-helper">Select a college first</span>
+                                        )}
+                                        {errors.degree && <span className="input-error-text">{errors.degree}</span>}
+                                    </div>
+
+                                    {/* Branch Select */}
+                                    <div className="input-group">
+                                        <label htmlFor="branch" className="input-label">Branch / Specialization</label>
+                                        <select
+                                            id="branch"
+                                            name="branch"
+                                            className={`input ${errors.branch ? 'input-error' : ''}`}
+                                            value={formData.branch}
+                                            onChange={handleBranchChange}
+                                            disabled={!formData.degree}
+                                            aria-describedby={!formData.degree ? 'branch-hint' : undefined}
+                                        >
+                                            <option value="">Select branch</option>
+                                            {branchOptions.map(b => (
+                                                <option key={b.id} value={b.id}>{b.name}</option>
+                                            ))}
+                                        </select>
+                                        {!formData.degree && (
+                                            <span id="branch-hint" className="input-helper">Select a degree first</span>
+                                        )}
+                                        {errors.branch && <span className="input-error-text">{errors.branch}</span>}
+                                    </div>
+
+                                    {/* Year & Semester Row */}
+                                    <div className="input-row">
+                                        <div className="input-group">
+                                            <label htmlFor="year" className="input-label">Year</label>
+                                            <select
+                                                id="year"
+                                                name="year"
+                                                className={`input ${errors.year ? 'input-error' : ''}`}
+                                                value={formData.year}
+                                                onChange={handleYearChange}
+                                                disabled={!formData.branch}
+                                            >
+                                                <option value="">Select year</option>
+                                                {yearOptions.map(y => (
+                                                    <option key={y.value} value={y.value}>{y.label}</option>
+                                                ))}
+                                            </select>
+                                            {errors.year && <span className="input-error-text">{errors.year}</span>}
+                                        </div>
+
+                                        <div className="input-group">
+                                            <label htmlFor="semester" className="input-label">Semester</label>
+                                            <select
+                                                id="semester"
+                                                name="semester"
+                                                className={`input ${errors.semester ? 'input-error' : ''}`}
+                                                value={formData.semester}
+                                                onChange={handleSemesterChange}
+                                                disabled={!formData.year}
+                                            >
+                                                <option value="">Select semester</option>
+                                                {semesterOptions.map(s => (
+                                                    <option key={s.value} value={s.value}>{s.label}</option>
+                                                ))}
+                                            </select>
+                                            {errors.semester && <span className="input-error-text">{errors.semester}</span>}
+                                        </div>
                                     </div>
                                 </>
                             )}

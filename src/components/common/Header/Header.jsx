@@ -129,7 +129,7 @@ const Header = () => {
                                     aria-expanded={isDropdownOpen}
                                 >
                                     <div className="user-avatar">
-                                        {user.name?.charAt(0).toUpperCase() || 'U'}
+                                        {(user.name || user.fullName)?.charAt(0).toUpperCase() || 'U'}
                                     </div>
                                 </button>
 
@@ -146,7 +146,7 @@ const Header = () => {
                                         />
                                         <div className="user-dropdown-menu">
                                             <div className="dropdown-header">
-                                                <span className="dropdown-name">{user.name || 'User'}</span>
+                                                <span className="dropdown-name">{user.name || user.fullName || 'User'}</span>
                                                 <span className="dropdown-role">{user.role || 'Student'}</span>
                                             </div>
                                             <div className="dropdown-divider" />

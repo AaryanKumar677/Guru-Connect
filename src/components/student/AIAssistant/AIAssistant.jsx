@@ -8,20 +8,40 @@ const AIAssistant = () => {
     const { showToast } = useToast()
     const messagesEndRef = useRef(null)
     const inputRef = useRef(null)
+    const fileInputRef = useRef(null)
 
-    const [messages, setMessages] = useState([
-        {
-            id: 1,
-            type: 'bot',
-            content: isApiConfigured()
-                ? "Hello! I'm your AI learning assistant powered by Gemini. How can I help you today? 🤖"
-                : "Hello! I'm your AI learning assistant. Note: Gemini API is not configured - using demo mode. Add VITE_GEMINI_API_KEY to .env for real AI responses. 🤖",
-            timestamp: new Date()
-        }
-    ])
+    const [messages, setMessages] = useState([])
     const [inputValue, setInputValue] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [remainingQueries, setRemainingQueries] = useState(getRemainingQueries())
+
+    // Get user info for personalization
+    const firstName = user?.name?.split(' ')[0] || user?.fullName?.split(' ')[0] || 'Student'
+    const collegeName = user?.college || 'Your College'
+
+    // Educational quick actions based on student context
+    const getEducationalActions = () => [
+        {
+            icon: '📚',
+            label: 'Help me learn',
+            prompt: 'Help me understand a topic step by step'
+        },
+        {
+            icon: '📝',
+            label: `Study ${collegeName.split(' ')[0]} syllabus`,
+            prompt: `What are the key topics I should focus on for ${collegeName} curriculum?`
+        },
+        {
+            icon: '🧮',
+            label: 'Solve problem',
+            prompt: 'Help me solve this problem: '
+        },
+        {
+            icon: '✍️',
+            label: 'Explain concept',
+            prompt: 'Explain this concept in simple terms: '
+        }
+    ]
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -95,10 +115,23 @@ const AIAssistant = () => {
         // In real app, this would navigate to tutor booking with chat context
     }
 
+    const handleQuickAction = (action) => {
+        setInputValue(action.prompt)
+        inputRef.current?.focus()
+    }
+
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()
             handleSubmit(e)
+        }
+    }
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            showToast(`File selected: ${file.name}`, 'success')
+            // Future implementation: Handle file upload logic here
         }
     }
 
@@ -109,6 +142,82 @@ const AIAssistant = () => {
         "Explain Newton's laws of motion"
     ]
 
+    // Landing Screen - show when no messages exist
+    if (messages.length === 0) {
+        return (
+            <div className="guru-ai-landing">
+                <div className="landing-content">
+                    {/* Greeting with Sparkle */}
+                    <div className="greeting-section">
+                        <span className="sparkle-icon">✦</span>
+                        <h2 className="greeting-text">Hi {firstName}</h2>
+                    </div>
+
+                    {/* Main Heading */}
+                    <h1 className="tagline">Where should we start?</h1>
+
+                    {/* Input Box */}
+                    <div className="landing-input-container">
+                        <form onSubmit={handleSubmit} className="landing-input-form">
+                            <button
+                                type="button"
+                                className="add-btn"
+                                onClick={() => fileInputRef.current?.click()}
+                                title="Add files, photos, etc."
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileUpload}
+                                style={{ display: 'none' }}
+                            />
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Ask GuruAI anything..."
+                                className="landing-input"
+                            />
+                            <button type="button" className="voice-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Quick Action Pills */}
+                    <div className="quick-actions">
+                        {getEducationalActions().map((action, index) => (
+                            <button
+                                key={index}
+                                className="action-pill"
+                                onClick={() => handleQuickAction(action)}
+                            >
+                                <span className="action-icon">{action.icon}</span>
+                                <span className="action-label">{action.label}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Queries Remaining */}
+                    <div className="queries-indicator">
+                        {remainingQueries} queries remaining today
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    // Chat Interface - show when messages exist
     return (
         <div className="ai-assistant-page">
             {/* Header */}

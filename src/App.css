@@ -15,6 +15,8 @@
 
 .main-content {
   flex: 1;
+  position: relative;
+  /* Ensure absolute children position relative to this */
 }
 
 .main-content.with-sidebar {
@@ -22,6 +24,12 @@
   padding: calc(80px + var(--space-6)) var(--space-6) var(--space-6);
   min-height: 100vh;
   background: var(--bg-primary);
+  transition: margin-left var(--duration-normal) var(--ease-default);
+}
+
+/* When sidebar is collapsed, reduce margin */
+.main-content.with-sidebar.collapsed {
+  margin-left: 80px;
 }
 
 @media (max-width: 1024px) {

@@ -8,7 +8,7 @@ const StudentProfile = () => {
 
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({
-        name: user?.name || '',
+        name: user?.name || user?.fullName || '',
         email: user?.email || '',
         phone: user?.phone || '',
         school: user?.school || '',
@@ -64,7 +64,7 @@ const StudentProfile = () => {
                 <div className="profile-card main">
                     <div className="profile-header">
                         <div className="profile-avatar-large">
-                            {user?.name?.charAt(0).toUpperCase() || 'S'}
+                            {(user?.name || user?.fullName)?.charAt(0).toUpperCase() || 'S'}
                         </div>
                         <div className="profile-info">
                             {isEditing ? (
@@ -77,7 +77,7 @@ const StudentProfile = () => {
                                     placeholder="Your name"
                                 />
                             ) : (
-                                <h2 className="profile-name">{user?.name || 'Student'}</h2>
+                                <h2 className="profile-name">{user?.name || user?.fullName || 'Student'}</h2>
                             )}
                             <span className="profile-role">🎓 Student</span>
                             <span className="profile-joined">Member since Jan 2026</span>

@@ -546,3 +546,63 @@
         display: none;
     }
 }
+
+/* ========================================
+   COLLEGE FORM ADDITIONS
+   ======================================== */
+
+/* Cascade Notice */
+.cascade-notice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: rgba(255, 159, 67, 0.1);
+    border: 1px solid rgba(255, 159, 67, 0.3);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--warning);
+    animation: fadeIn var(--duration-fast);
+}
+
+/* Input Row (side-by-side) */
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+@media (max-width: 480px) {
+    .input-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Input Helper Variants */
+.input-helper {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-top: 2px;
+}
+
+.input-helper-warning {
+    color: var(--warning);
+}
+
+/* Disabled Select Styling */
+select.input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--bg-tertiary);
+}
+
+/* Error States */
+.input-error {
+    border-color: var(--error);
+}
+
+.input-error-text {
+    font-size: var(--text-xs);
+    color: var(--error);
+    margin-top: 2px;
+}
