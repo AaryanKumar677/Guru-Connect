@@ -19,6 +19,7 @@ import SessionList from './components/SessionList'
 import TutorRecommendations from './components/TutorRecommendations'
 import AchievementsWidget from './components/AchievementsWidget'
 import ProfileCompletionBanner from '../../common/ProfileCompletionBanner/ProfileCompletionBanner'
+import DashboardSkeleton from './DashboardSkeleton'
 
 const StudentDashboard = () => {
     const { user } = useAuth()
@@ -56,10 +57,7 @@ const StudentDashboard = () => {
         return (
             <div className="dashboard-page student-dashboard">
                 <div className="dashboard-container">
-                    <div className="dashboard-loading">
-                        <div className="loading-spinner"></div>
-                        <p>Loading your dashboard...</p>
-                    </div>
+                    <DashboardSkeleton />
                 </div>
             </div>
         )
