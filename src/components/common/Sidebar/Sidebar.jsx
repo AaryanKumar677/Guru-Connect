@@ -1,10 +1,9 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, NavLink } from 'react-router-dom'
 import { useAuth, useTheme, useSidebar } from '../../../App'
 import './Sidebar.css'
 
 const Sidebar = ({ role }) => {
     const location = useLocation()
-    const navigate = useNavigate()
     const { user, logout } = useAuth()
     const { theme, toggleTheme } = useTheme()
     const { sidebarCollapsed: isCollapsed, toggleSidebar, mobileMenuOpen, closeMobileMenu } = useSidebar()
@@ -137,28 +136,31 @@ const Sidebar = ({ role }) => {
                 {/* Navigation */}
                 <nav className="sidebar-nav">
                     {links.map((link) => (
-                        <button
+                        <NavLink
                             key={link.path}
-                            className={`nav-item ${location.pathname === link.path ? 'active' : ''}`}
-                            onClick={() => handleNavigation(link.path)}
+                            to={link.path}
+                            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                            onClick={closeMobileMenu}
                             title={isCollapsed ? link.label : undefined}
+                            end={link.path.endsWith('dashboard')} // Only exact match for dashboard to prevent active state on sub-routes if any
                         >
                             <span className="nav-icon">{link.icon}</span>
                             {!isCollapsed && <span className="nav-label">{link.label}</span>}
-                        </button>
+                        </NavLink>
                     ))}
                 </nav>
 
                 {/* Bottom Actions */}
                 <div className="sidebar-bottom">
-                    <button
-                        className={`nav-item ${location.pathname === settingsPath ? 'active' : ''}`}
-                        onClick={() => handleNavigation(settingsPath)}
+                    <NavLink
+                        to={settingsPath}
+                        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                        onClick={closeMobileMenu}
                         title={isCollapsed ? 'Settings' : undefined}
                     >
                         <span className="nav-icon"><img src="/assets/icons/settings.png" alt="Settings" width="24" height="24" /></span>
                         {!isCollapsed && <span className="nav-label">Settings</span>}
-                    </button>
+                    </NavLink>
                 </div>
             </aside>
         </>
