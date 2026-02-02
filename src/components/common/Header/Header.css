@@ -141,6 +141,31 @@
     gap: var(--space-3);
 }
 
+/* Header Icon Button (Chat, etc.) */
+.header-icon-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    border: none;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-default);
+    position: relative;
+}
+
+.header-icon-btn:hover {
+    color: var(--text-primary);
+    background: var(--border);
+}
+
+.header-icon-btn.chat-btn:hover {
+    color: var(--primary-500);
+}
+
 .user-avatar {
     width: 36px;
     height: 36px;
@@ -152,6 +177,16 @@
     color: white;
     font-weight: var(--font-semibold);
     font-size: var(--text-sm);
+    overflow: hidden;
+    /* Ensure image stays within circle */
+}
+
+/* Avatar Image in Header */
+.user-avatar .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 /* Search Trigger */
@@ -200,6 +235,44 @@
     }
 }
 
+/* Mobile: Show search icon only */
+@media (max-width: 768px) {
+    .search-trigger {
+        display: flex;
+        min-width: auto;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        justify-content: center;
+        background: transparent;
+        border: none;
+    }
+
+    .search-trigger .search-placeholder,
+    .search-trigger kbd {
+        display: none;
+    }
+
+    .search-trigger:hover {
+        background: var(--bg-tertiary);
+        box-shadow: none;
+    }
+
+    .header-container {
+        padding-left: var(--space-2);
+        padding-right: var(--space-2);
+        gap: var(--space-2);
+    }
+
+    .mobile-sidebar-toggle {
+        margin-right: 0;
+    }
+
+    .user-menu {
+        gap: var(--space-2);
+    }
+}
+
 /* Hide auth buttons on mobile */
 .header-actions>.btn {
     display: none;
@@ -225,6 +298,31 @@
 @media (min-width: 1024px) {
     .mobile-menu-toggle {
         display: none;
+    }
+}
+
+/* Mobile Sidebar Toggle (Logged In) */
+.mobile-sidebar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    margin-right: var(--space-2);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    transition: background var(--duration-fast);
+}
+
+.mobile-sidebar-toggle:hover {
+    background: var(--bg-secondary);
+}
+
+@media (max-width: 1024px) {
+    .mobile-sidebar-toggle {
+        display: flex;
     }
 }
 

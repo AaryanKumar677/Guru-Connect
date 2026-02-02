@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth, useToast } from '../../../App'
+import ProfileImageUpload from '../../common/ProfileImageUpload/ProfileImageUpload'
+import CollegeAutocomplete from '../../auth/CollegeAutocomplete/CollegeAutocomplete'
+import { getCollegeMeta, getYearOptions, getSemesterOptions, getOrdinalSuffix } from '../../../services/collegeService'
 import './StudentProfile.css'
 
 const StudentProfile = () => {
@@ -11,11 +14,24 @@ const StudentProfile = () => {
         name: user?.name || user?.fullName || '',
         email: user?.email || '',
         phone: user?.phone || '',
-        school: user?.school || '',
+        educationType: user?.educationType || 'school',
+        schoolName: user?.schoolName || '',
+        collegeId: user?.collegeId || '',
+        collegeName: user?.collegeName || '',
         grade: user?.grade || '',
+        course: user?.course || user?.degree || '', // Unified as course
+        branch: user?.branch || '',
+        year: user?.year || '',
+        semester: user?.semester || '',
         subjects: user?.subjects || ['Mathematics', 'Physics'],
         bio: user?.bio || ''
     })
+
+    // Dynamic options state
+    const [courseOptions, setCourseOptions] = useState([])
+    const [branchOptions, setBranchOptions] = useState([])
+    const [yearOptions, setYearOptions] = useState([])
+    const [semesterOptions, setSemesterOptions] = useState([])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -26,6 +42,143 @@ const StudentProfile = () => {
         updateUser(formData)
         setIsEditing(false)
         showToast('Profile updated successfully!', 'success')
+    }
+
+    // Load college metadata when collegeId changes
+    useEffect(() => {
+        const loadMeta = async () => {
+            if (formData.collegeId) {
+                const meta = await getCollegeMeta(formData.collegeId)
+                setCourseOptions(meta.degrees || [])
+            } else {
+                setCourseOptions([])
+            }
+        }
+        loadMeta()
+    }, [formData.collegeId])
+
+    // Update year and branch options when course changes
+    useEffect(() => {
+        const loadCourseDetails = async () => {
+            if (!formData.collegeId || !formData.course) {
+                setYearOptions([])
+                setBranchOptions([])
+                return
+            }
+
+            const meta = await getCollegeMeta(formData.collegeId)
+            // Find degree ID based on selected course name
+            const courseObj = meta.degrees?.find(d => d.name === formData.course)
+
+            if (courseObj) {
+                setYearOptions(getYearOptions(courseObj.duration))
+
+                // Set branches if available for this degree
+                const branches = meta.branches?.[courseObj.id] || []
+                setBranchOptions(branches)
+            } else {
+                setYearOptions([])
+                setBranchOptions([])
+            }
+        }
+        loadCourseDetails()
+    }, [formData.course, formData.collegeId, courseOptions])
+
+    // Update semester options when year changes
+    useEffect(() => {
+        if (formData.year) {
+            setSemesterOptions(getSemesterOptions(parseInt(formData.year)))
+        } else {
+            setSemesterOptions([])
+        }
+    }, [formData.year])
+
+    const handleCollegeSelect = (college) => {
+        if (college) {
+            setFormData(prev => ({
+                ...prev,
+                collegeId: college.id,
+                collegeName: college.name,
+                course: '',
+                branch: '',
+                year: '',
+                semester: ''
+            }))
+        } else {
+            // Cleared
+            setFormData(prev => ({
+                ...prev,
+                collegeId: '',
+                collegeName: '',
+                course: '',
+                branch: '',
+                year: '',
+                semester: ''
+            }))
+        }
+    }
+
+    const handleManualEntry = (name) => {
+        setFormData(prev => ({
+            ...prev,
+            collegeId: '', // No ID for manual entry
+            collegeName: name,
+            course: '',
+            branch: '',
+            year: '',
+            semester: ''
+        }))
+        // Load default options for manual entry
+        const loadDefaultAndSet = async () => {
+            const meta = await getCollegeMeta('_default')
+            setCourseOptions(meta.degrees)
+        }
+        loadDefaultAndSet()
+    }
+
+    const handleCourseChange = (e) => {
+        setFormData(prev => ({
+            ...prev,
+            course: e.target.value,
+            branch: '',
+            year: '',
+            semester: ''
+        }))
+    }
+
+    const handleBranchChange = (e) => {
+        setFormData(prev => ({
+            ...prev,
+            branch: e.target.value
+        }))
+    }
+
+    const handleAddSubject = () => {
+        const subject = prompt('Enter subject name:')
+        if (subject && subject.trim()) {
+            setFormData(prev => ({
+                ...prev,
+                subjects: [...prev.subjects, subject.trim()]
+            }))
+        }
+    }
+
+    const handleRemoveSubject = (indexToRemove) => {
+        setFormData(prev => ({
+            ...prev,
+            subjects: prev.subjects.filter((_, index) => index !== indexToRemove)
+        }))
+    }
+
+    const handleYearChange = (e) => {
+        setFormData(prev => ({
+            ...prev,
+            year: e.target.value,
+            semester: ''
+        }))
+    }
+    const handleImageUpdate = (newAvatarUrl) => {
+        updateUser({ avatar: newAvatarUrl })
     }
 
     const stats = [
@@ -63,9 +216,22 @@ const StudentProfile = () => {
                 {/* Profile Card */}
                 <div className="profile-card main">
                     <div className="profile-header">
-                        <div className="profile-avatar-large">
-                            {(user?.name || user?.fullName)?.charAt(0).toUpperCase() || 'S'}
-                        </div>
+                        {isEditing ? (
+                            <ProfileImageUpload
+                                userId={user?.id}
+                                currentAvatar={user?.avatar}
+                                userName={user?.name || user?.fullName}
+                                onImageUpdate={handleImageUpdate}
+                            />
+                        ) : (
+                            <div className="profile-avatar-large">
+                                {user?.avatar ? (
+                                    <img src={user.avatar} alt={user?.name} className="avatar-img" />
+                                ) : (
+                                    (user?.name || user?.fullName)?.charAt(0).toUpperCase() || 'S'
+                                )}
+                            </div>
+                        )}
                         <div className="profile-info">
                             {isEditing ? (
                                 <input
@@ -114,36 +280,167 @@ const StudentProfile = () => {
                                 <span>{formData.phone || 'Not set'}</span>
                             )}
                         </div>
-                        <div className="detail-group">
-                            <label>School/College</label>
+                        <div className="detail-group full">
+                            <label>Education Level</label>
                             {isEditing ? (
-                                <input
-                                    type="text"
-                                    name="school"
-                                    value={formData.school}
-                                    onChange={handleChange}
-                                    className="edit-input"
-                                    placeholder="Your institution"
-                                />
+                                <div className="education-type-selector">
+                                    <label className="radio-label">
+                                        <input
+                                            type="radio"
+                                            name="educationType"
+                                            value="school"
+                                            checked={formData.educationType === 'school'}
+                                            onChange={handleChange}
+                                        />
+                                        School
+                                    </label>
+                                    <label className="radio-label">
+                                        <input
+                                            type="radio"
+                                            name="educationType"
+                                            value="college"
+                                            checked={formData.educationType === 'college'}
+                                            onChange={handleChange}
+                                        />
+                                        College
+                                    </label>
+                                </div>
                             ) : (
-                                <span>{formData.school || 'Not set'}</span>
+                                <span className="capitalize">{formData.educationType || 'Not specified'}</span>
                             )}
                         </div>
-                        <div className="detail-group">
-                            <label>Grade/Year</label>
-                            {isEditing ? (
-                                <input
-                                    type="text"
-                                    name="grade"
-                                    value={formData.grade}
-                                    onChange={handleChange}
-                                    className="edit-input"
-                                    placeholder="e.g., Class 12, 2nd Year"
-                                />
-                            ) : (
-                                <span>{formData.grade || 'Not set'}</span>
-                            )}
-                        </div>
+
+                        {formData.educationType === 'school' && (
+                            <>
+                                <div className="detail-group">
+                                    <label>School Name</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            name="schoolName"
+                                            value={formData.schoolName}
+                                            onChange={handleChange}
+                                            className="edit-input"
+                                            placeholder="Enter school name"
+                                        />
+                                    ) : (
+                                        <span>{formData.schoolName || 'Not set'}</span>
+                                    )}
+                                </div>
+                                <div className="detail-group">
+                                    <label>Class/Grade</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            name="grade"
+                                            value={formData.grade}
+                                            onChange={handleChange}
+                                            className="edit-input"
+                                            placeholder="e.g. Class 10"
+                                        />
+                                    ) : (
+                                        <span>{formData.grade || 'Not set'}</span>
+                                    )}
+                                </div>
+                            </>
+                        )}
+
+                        {formData.educationType === 'college' && (
+                            <>
+                                <div className="detail-group full">
+                                    <label>College Name</label>
+                                    {isEditing ? (
+                                        <CollegeAutocomplete
+                                            value={formData.collegeName}
+                                            selectedCollege={formData.collegeId ? { id: formData.collegeId, name: formData.collegeName } : null}
+                                            onSelect={handleCollegeSelect}
+                                            onManualEntry={handleManualEntry}
+                                            error={!formData.collegeName && false}
+                                        />
+                                    ) : (
+                                        <span>{formData.collegeName || 'Not set'}</span>
+                                    )}
+                                </div>
+                                <div className="detail-group">
+                                    <label>Course</label>
+                                    {isEditing ? (
+                                        <select
+                                            name="course"
+                                            value={formData.course}
+                                            onChange={handleCourseChange}
+                                            className="edit-input"
+                                        >
+                                            <option value="">Select Course</option>
+                                            {courseOptions.map(opt => (
+                                                <option key={opt.id} value={opt.name}>{opt.name}</option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <span>{formData.course || 'Not set'}</span>
+                                    )}
+                                </div>
+
+                                {branchOptions.length > 0 && (
+                                    <div className="detail-group">
+                                        <label>Branch/Stream</label>
+                                        {isEditing ? (
+                                            <select
+                                                name="branch"
+                                                value={formData.branch}
+                                                onChange={handleBranchChange}
+                                                className="edit-input"
+                                            >
+                                                <option value="">Select Branch</option>
+                                                {branchOptions.map(opt => (
+                                                    <option key={opt.id} value={opt.name}>{opt.name}</option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <span>{formData.branch || 'Not set'}</span>
+                                        )}
+                                    </div>
+                                )}
+
+                                <div className="detail-group">
+                                    <label>Year</label>
+                                    {isEditing ? (
+                                        <select
+                                            name="year"
+                                            value={formData.year}
+                                            onChange={handleYearChange}
+                                            className="edit-input"
+                                            disabled={!formData.course}
+                                        >
+                                            <option value="">Select Year</option>
+                                            {yearOptions.map(opt => (
+                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <span>{formData.year ? `${formData.year}${formData.year === '1' ? 'st' : formData.year === '2' ? 'nd' : formData.year === '3' ? 'rd' : 'th'} Year` : 'Not set'}</span>
+                                    )}
+                                </div>
+                                <div className="detail-group">
+                                    <label>Semester</label>
+                                    {isEditing ? (
+                                        <select
+                                            name="semester"
+                                            value={formData.semester}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, semester: e.target.value }))}
+                                            className="edit-input"
+                                            disabled={!formData.year}
+                                        >
+                                            <option value="">Select Semester</option>
+                                            {semesterOptions.map(opt => (
+                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <span>{formData.semester ? `${formData.semester}${getOrdinalSuffix(formData.semester)} Sem` : 'Not set'}</span>
+                                    )}
+                                </div>
+                            </>
+                        )}
                         <div className="detail-group full">
                             <label>Bio</label>
                             {isEditing ? (
@@ -165,10 +462,26 @@ const StudentProfile = () => {
                         <label>Interested Subjects</label>
                         <div className="subject-tags">
                             {formData.subjects.map((subject, i) => (
-                                <span key={i} className="subject-tag">{subject}</span>
+                                <span key={i} className="subject-tag">
+                                    {subject}
+                                    {isEditing && (
+                                        <button
+                                            className="remove-subject-btn"
+                                            onClick={() => handleRemoveSubject(i)}
+                                            aria-label="Remove subject"
+                                        >
+                                            ×
+                                        </button>
+                                    )}
+                                </span>
                             ))}
                             {isEditing && (
-                                <button className="add-subject-btn">+ Add</button>
+                                <button
+                                    className="add-subject-btn"
+                                    onClick={handleAddSubject}
+                                >
+                                    + Add
+                                </button>
                             )}
                         </div>
                     </div>

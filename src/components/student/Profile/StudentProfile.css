@@ -64,6 +64,13 @@
     font-weight: var(--font-bold);
     border-radius: var(--radius-xl);
     flex-shrink: 0;
+    overflow: hidden;
+}
+
+.profile-avatar-large .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .profile-info {
@@ -135,9 +142,48 @@
 .detail-group label {
     font-size: var(--text-xs);
     font-weight: var(--font-medium);
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
+    /* Was tertiary, made darker */
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+[data-theme="light"] .detail-group label {
+    color: #374151;
+    /* Dark gray for better visibility in light mode */
+    font-weight: 600;
+}
+
+[data-theme="light"] .detail-group span {
+    color: #111827;
+    /* Near black for values */
+    font-weight: 500;
+}
+
+.education-type-selector {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    font-weight: var(--font-medium);
+}
+
+[data-theme="light"] .radio-label {
+    color: #111827;
+}
+
+.radio-label input[type="radio"] {
+    accent-color: var(--primary-500);
+    width: 16px;
+    height: 16px;
 }
 
 .detail-group span {

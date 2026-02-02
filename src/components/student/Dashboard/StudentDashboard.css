@@ -28,7 +28,33 @@
     padding: var(--space-4) 0;
     min-height: calc(100vh - 80px);
     /* Adjust based on header height */
+    min-height: calc(100vh - 80px);
+    /* Adjust based on header height */
     overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    .student-dashboard {
+        padding: 0;
+        /* Remove extra wrapper padding if any */
+    }
+
+    .dashboard-container {
+        padding: 0 var(--space-2);
+        /* Reduced side padding */
+        gap: var(--space-2);
+        /* Reduced vertical gap between sections */
+    }
+
+    .welcome-section {
+        padding: var(--space-4);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-4);
+    }
+
+    .greeting {
+        font-size: var(--text-2xl);
+    }
 }
 
 .dashboard-container {
@@ -47,13 +73,17 @@
 .dashboard-header {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
-    padding: var(--space-4) 0;
+    gap: var(--space-2);
+    /* Minimal gap */
+    padding: 0;
+    /* No padding */
 }
 
 .greeting {
     font-size: var(--text-3xl);
     margin-bottom: var(--space-2);
+    margin-top: -4px;
+    /* Slight upward nudge */
 }
 
 .subtitle {
@@ -114,6 +144,88 @@
     font-size: var(--text-2xl);
     margin-left: var(--space-4);
     transition: transform var(--duration-fast) var(--ease-default);
+}
+
+/* Mobile optimizations for CTA - Grid Layout */
+@media (max-width: 640px) {
+    .dashboard-header {
+        display: grid !important;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "greeting greeting"
+            "subtitle cta";
+        align-items: center;
+        gap: 2px var(--space-2);
+        padding: 0 var(--space-1);
+
+        /* Exact alignment without overflow scoll */
+        margin-left: -8px;
+        margin-right: -8px;
+        width: calc(100% + 16px);
+    }
+
+    /* Unwrap the container to let children participate in grid */
+    .header-content {
+        display: contents;
+    }
+
+    .greeting {
+        grid-area: greeting;
+        font-size: var(--text-lg);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .subtitle {
+        grid-area: subtitle;
+        font-size: 11px;
+        /* Reduced from text-xs */
+        line-height: 1.2;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        opacity: 0.9;
+    }
+
+    .cta-container {
+        grid-area: cta;
+        width: auto;
+        margin: 0;
+    }
+
+    /* Mini Button Style */
+    .primary-cta-btn {
+        padding: 4px 10px;
+        min-height: 32px;
+        /* Very compact */
+        width: auto;
+        gap: var(--space-2);
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+    }
+
+    /* Icon size */
+    .cta-icon {
+        font-size: var(--text-base);
+        margin: 0;
+    }
+
+    /* Hide redundant elements */
+    .cta-text,
+    .cta-sublabel,
+    .cta-arrow {
+        display: none;
+    }
+
+    /* Show only label - inline */
+    .cta-label {
+        font-size: var(--text-xs);
+        display: block;
+        white-space: nowrap;
+    }
 }
 
 .primary-cta-btn:hover .cta-arrow {
@@ -226,6 +338,39 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-8);
+}
+
+/* Mobile Stats Grid Optimization */
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        /* Force 2 columns */
+        gap: var(--space-3);
+    }
+
+    .stat-card {
+        padding: var(--space-3);
+        gap: var(--space-1);
+    }
+
+    .stat-card-icon {
+        width: 32px;
+        height: 32px;
+        font-size: var(--text-lg);
+    }
+
+    .stat-card-value {
+        font-size: var(--text-xl);
+    }
+
+    .stat-card-label {
+        font-size: var(--text-xs);
+    }
+
+    .trend-badge {
+        font-size: 9px;
+        padding: 1px 4px;
+    }
 }
 
 .dashboard-left-col,
@@ -357,6 +502,137 @@
 .session-actions {
     display: flex;
     gap: var(--space-2);
+}
+
+/* Mobile Optimizations for Actions & Sessions (Pairs) */
+@media (max-width: 640px) {
+
+    .action-list,
+    .sessions-list {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        /* Force 2 columns preventing overflow */
+        gap: var(--space-2);
+        /* Tighter gap */
+    }
+
+    /* Reduce card padding to make room for columns */
+    .dashboard-card {
+        padding: var(--space-3);
+        /* Exact edge-to-edge alignment */
+        margin-left: -8px;
+        margin-right: -8px;
+        width: auto;
+        /* Let flexbox stretch naturally with negative margins */
+        min-width: calc(100% + 16px);
+        /* Ensure it pulls out */
+        border-radius: 0;
+        /* Square edges for full width look or minimal radius */
+        border-left: none;
+        border-right: none;
+    }
+
+    /* Action Item Compact */
+    .action-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-1);
+        padding: var(--space-2);
+        height: 100%;
+        min-height: 120px;
+    }
+
+    .action-icon {
+        font-size: var(--text-base);
+        width: 28px;
+        height: 28px;
+        margin-bottom: var(--space-1);
+    }
+
+    .action-title {
+        font-size: 11px;
+        line-height: 1.2;
+        margin-bottom: 2px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .action-meta {
+        font-size: 9px;
+        margin-bottom: auto;
+    }
+
+    .action-item .btn {
+        width: 100%;
+        padding: 4px;
+        font-size: 9px;
+        min-height: 24px;
+        margin-top: var(--space-2);
+    }
+
+    /* Session Item Compact */
+    .session-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: var(--space-2);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        gap: var(--space-1);
+        border-bottom: 1px solid var(--border);
+        height: 100%;
+        position: relative;
+    }
+
+    .session-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: var(--text-base);
+    }
+
+    .session-info {
+        width: 100%;
+    }
+
+    .session-tutor {
+        font-size: 11px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .session-topic {
+        font-size: 9px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+        margin-bottom: 2px;
+    }
+
+    .session-time {
+        font-size: 9px;
+    }
+
+    .session-actions {
+        width: 100%;
+        margin-top: auto;
+        flex-direction: column;
+        /* Stack buttons vertically to save width */
+        gap: 2px;
+    }
+
+    .session-actions .btn {
+        width: 100%;
+        padding: 4px 0;
+        font-size: 10px;
+        min-height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 /* Insights Panel */
@@ -587,7 +863,8 @@
 
 @media (min-width: 1024px) {
     .student-dashboard {
-        padding: var(--space-8) 0;
+        padding: 0;
+        /* Zero padding as requested */
     }
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTheme, useAuth } from '../../../App'
+import { useTheme, useAuth, useSidebar } from '../../../App'
 import Notifications from '../Notifications/Notifications'
 import SearchModal from '../SearchModal/SearchModal'
 import './Header.css'
@@ -8,9 +8,10 @@ import './Header.css'
 const Header = () => {
     const { theme, toggleTheme } = useTheme()
     const { user, logout, openAuthModal } = useAuth()
+    const { toggleMobileMenu } = useSidebar()
     const navigate = useNavigate()
     const [isScrolled, setIsScrolled] = useState(false)
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false) // For landing page only
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -45,6 +46,21 @@ const Header = () => {
     return (
         <header className={`header ${isScrolled ? 'header-scrolled' : ''}`}>
             <div className="container header-container">
+                {/* Mobile Sidebar Toggle (Logged In) */}
+                {user && (
+                    <button
+                        className="mobile-sidebar-toggle"
+                        onClick={toggleMobileMenu}
+                        aria-label="Toggle sidebar"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                )}
+
                 {/* Logo */}
                 <a href="/" className="header-logo">
                     <div className="logo-icon">
@@ -118,6 +134,7 @@ const Header = () => {
                                 <span className="search-placeholder">Search...</span>
                                 <kbd>⌘K</kbd>
                             </button>
+                            {/* Message Icon Removed */}
                             <Notifications />
 
                             {/* User Avatar Dropdown */}
@@ -129,7 +146,11 @@ const Header = () => {
                                     aria-expanded={isDropdownOpen}
                                 >
                                     <div className="user-avatar">
-                                        {(user.name || user.fullName)?.charAt(0).toUpperCase() || 'U'}
+                                        {user.avatar ? (
+                                            <img src={user.avatar} alt={user.name} className="avatar-img" />
+                                        ) : (
+                                            (user.name || user.fullName)?.charAt(0).toUpperCase() || 'U'
+                                        )}
                                     </div>
                                 </button>
 
@@ -193,23 +214,25 @@ const Header = () => {
                         </>
                     )}
 
-                    {/* Mobile Menu Toggle */}
-                    <button
-                        className="mobile-menu-toggle"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        aria-label="Toggle menu"
-                        aria-expanded={isMobileMenuOpen}
-                    >
-                        <span className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </span>
-                    </button>
+                    {/* Mobile Menu Toggle (Landing Page Only) */}
+                    {!user && (
+                        <button
+                            className="mobile-menu-toggle"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            aria-label="Toggle menu"
+                            aria-expanded={isMobileMenuOpen}
+                        >
+                            <span className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </span>
+                        </button>
+                    )}
                 </div>
             </div>
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu (Landing Page) */}
             <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
                 {!user && (
                     <nav className="mobile-nav">
@@ -235,9 +258,7 @@ const Header = () => {
                         </button>
                     </div>
                 )}
-            </div>
-
-            {/* Search Modal */}
+            </div>  {/* Search Modal */}
             <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </header>
     )

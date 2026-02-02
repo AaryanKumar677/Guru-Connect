@@ -1,0 +1,586 @@
+/* ========================================
+   MOBILE RESPONSIVENESS FIXES
+   Target: < 480px (Phone)
+   ======================================== */
+
+/* ----------------------------------------
+   GLOBAL MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+
+    /* Reduce container padding on mobile */
+    :root {
+        --container-padding: 1rem;
+    }
+
+    /* Smaller typography on mobile */
+    h1 {
+        font-size: var(--text-2xl) !important;
+    }
+
+    h2 {
+        font-size: var(--text-xl) !important;
+    }
+
+    h3 {
+        font-size: var(--text-lg) !important;
+    }
+
+    .page-title {
+        font-size: var(--text-2xl) !important;
+    }
+
+    .page-subtitle {
+        font-size: var(--text-sm) !important;
+    }
+
+    /* Buttons - larger touch targets */
+    .btn {
+        min-height: 44px;
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .btn-sm {
+        min-height: 36px;
+        padding: var(--space-2) var(--space-3);
+        font-size: var(--text-xs);
+    }
+
+    /* Fix input sizes */
+    .input {
+        font-size: 16px;
+        /* Prevents iOS zoom */
+    }
+}
+
+/* ----------------------------------------
+   HEADER MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .header-container {
+        gap: var(--space-2);
+        padding: 0 var(--space-3);
+    }
+
+    .header-logo {
+        gap: var(--space-2);
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .logo-name {
+        font-size: var(--text-lg);
+    }
+
+    .logo-tagline {
+        display: none;
+    }
+
+    .header-actions {
+        gap: var(--space-2);
+    }
+
+    .theme-toggle,
+    .header-icon-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .search-trigger {
+        display: none !important;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: var(--text-xs);
+    }
+
+    /* Mobile menu full screen */
+    .mobile-menu {
+        top: 60px;
+        padding: var(--space-4);
+    }
+}
+
+/* ----------------------------------------
+   SIDEBAR MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 1024px) {
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        width: 280px;
+        height: 100vh;
+        z-index: 1000;
+        transition: left var(--duration-normal) var(--ease-default);
+    }
+
+    .sidebar.mobile-open {
+        left: 0;
+    }
+
+    .sidebar-toggle {
+        display: none;
+    }
+}
+
+/* ----------------------------------------
+   DASHBOARD MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .main-content.with-sidebar {
+        padding-top: calc(60px + var(--space-3)) !important;
+        padding-left: var(--space-3) !important;
+        padding-right: var(--space-3) !important;
+        padding-bottom: var(--space-3) !important;
+    }
+
+    /* Stats Grid - Single column on small phones */
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-3);
+    }
+
+    .stat-card {
+        padding: var(--space-4);
+    }
+
+    .stat-card-value {
+        font-size: var(--text-xl);
+    }
+
+    .stat-card-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    /* Dashboard Header */
+    .dashboard-header,
+    .tutor-dashboard-header {
+        padding: var(--space-4) !important;
+        gap: var(--space-4);
+    }
+
+    .greeting {
+        font-size: var(--text-xl) !important;
+        line-height: 1.3;
+    }
+
+    .greeting-icon {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .subtitle {
+        font-size: var(--text-sm) !important;
+    }
+
+    /* CTA Button */
+    .primary-cta-btn {
+        min-height: 56px;
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .cta-icon {
+        font-size: var(--text-2xl);
+        margin-right: var(--space-3);
+    }
+
+    .cta-label {
+        font-size: var(--text-base);
+    }
+
+    .cta-sublabel {
+        font-size: var(--text-xs);
+    }
+
+    /* Dashboard Grid */
+    .dashboard-main-grid {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-4);
+    }
+
+    /* Dashboard Cards */
+    .dashboard-card-header {
+        padding: var(--space-3) var(--space-4);
+        flex-wrap: wrap;
+        gap: var(--space-2);
+    }
+
+    .dashboard-card-content {
+        padding: var(--space-4);
+    }
+
+    .section-title {
+        font-size: var(--text-base) !important;
+    }
+
+    /* Session Items */
+    .session-item {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: var(--space-3);
+    }
+
+    .session-actions {
+        width: 100%;
+        display: flex;
+        gap: var(--space-2);
+    }
+
+    .session-actions .btn {
+        flex: 1;
+    }
+
+    /* Action List */
+    .action-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
+
+    .action-item .btn {
+        width: 100%;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-2);
+    }
+
+    .quick-action-btn {
+        padding: var(--space-3);
+    }
+
+    .quick-action-icon {
+        font-size: 1.25rem;
+    }
+
+    .quick-action-text {
+        font-size: var(--text-xs);
+    }
+}
+
+/* ----------------------------------------
+   TUTOR MARKETPLACE MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .marketplace-page {
+        padding: 0 var(--space-3);
+    }
+
+    .marketplace-filters {
+        gap: var(--space-3);
+    }
+
+    .search-box {
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .search-box input {
+        font-size: 16px;
+        /* Prevent iOS zoom */
+    }
+
+    .filter-group {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .filter-select {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .online-filter {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Tutor Cards */
+    .tutors-grid {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-4);
+    }
+
+    .tutor-card-header {
+        padding: var(--space-4);
+    }
+
+    .tutor-avatar-large {
+        width: 64px;
+        height: 64px;
+        font-size: 2rem;
+    }
+
+    .tutor-card-body {
+        padding: var(--space-4);
+    }
+
+    .tutor-name {
+        font-size: var(--text-base);
+    }
+
+    .tutor-bio {
+        font-size: var(--text-xs);
+        -webkit-line-clamp: 2;
+    }
+
+    .tutor-card-footer {
+        flex-direction: column;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .tutor-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .tutor-actions .btn {
+        flex: 1;
+        padding: var(--space-2);
+        font-size: var(--text-xs);
+    }
+}
+
+/* ----------------------------------------
+   MESSAGES PAGE MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .messages-page {
+        height: calc(100vh - 80px);
+        padding: 0;
+    }
+
+    .messages-header {
+        padding: var(--space-3);
+        margin-bottom: var(--space-3);
+    }
+
+    .messages-container {
+        grid-template-columns: 1fr;
+    }
+
+    .messages-sidebar {
+        border-radius: 0;
+        padding: var(--space-3);
+    }
+
+    .chat-list-item {
+        padding: var(--space-2);
+    }
+}
+
+/* ----------------------------------------
+   CHAT COMPONENT MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .chat-panel-overlay {
+        padding: 0;
+    }
+
+    .chat-panel {
+        max-width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+
+    .chat-window {
+        max-width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .chat-header {
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .chat-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: var(--text-lg);
+    }
+
+    .chat-messages {
+        padding: var(--space-3);
+    }
+
+    .message-content {
+        padding: var(--space-2);
+    }
+
+    .message-content p {
+        font-size: var(--text-xs);
+    }
+
+    .chat-input-form {
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .chat-input {
+        padding: var(--space-2) var(--space-3);
+        font-size: 16px;
+    }
+
+    .chat-send-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* ----------------------------------------
+   PROFILE PAGE MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-4);
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: var(--text-3xl);
+    }
+
+    .profile-info {
+        align-items: center;
+    }
+
+    .profile-stats {
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .profile-stat {
+        width: 100%;
+        text-align: center;
+    }
+
+    .settings-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ----------------------------------------
+   EMPTY STATES MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .empty-state {
+        padding: var(--space-8) var(--space-4);
+    }
+
+    .empty-icon {
+        font-size: 2rem;
+    }
+
+    .empty-state h3 {
+        font-size: var(--text-lg);
+    }
+
+    .empty-state p {
+        font-size: var(--text-sm);
+    }
+}
+
+/* ----------------------------------------
+   MODAL MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .modal-content,
+    .auth-modal {
+        max-width: 100%;
+        width: 100%;
+        max-height: 90vh;
+        border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+        margin: 0;
+    }
+
+    .modal-header {
+        padding: var(--space-4);
+    }
+
+    .modal-body {
+        padding: var(--space-4);
+    }
+}
+
+/* ----------------------------------------
+   VIDEO CALL MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .video-call-container {
+        padding: 0;
+    }
+
+    .video-call-frame {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .video-call-controls {
+        bottom: 16px;
+    }
+}
+
+/* ----------------------------------------
+   TUTOR DASHBOARD MOBILE FIXES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    .tutor-dashboard .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .highlight-badge {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+
+    .tutor-session {
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+
+    .session-student {
+        font-size: var(--text-sm);
+    }
+}
+
+/* ----------------------------------------
+   FIX OVERFLOW ISSUES
+   ---------------------------------------- */
+@media (max-width: 480px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .app,
+    .main-content {
+        overflow-x: hidden;
+    }
+
+    /* Prevent horizontal scroll from wide elements */
+    .dashboard-card,
+    .stat-card,
+    .tutor-card,
+    .chat-window {
+        max-width: 100%;
+        overflow: hidden;
+    }
+}

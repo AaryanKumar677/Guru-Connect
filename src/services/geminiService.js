@@ -1,90 +1,80 @@
 /**
- * Gemini API Integration Service
+ * OpenRouter AI Integration Service
  * 
- * This service provides methods to interact with Google's Gemini AI API.
- * Replace GEMINI_API_KEY with your actual API key.
+ * This service provides methods to interact with OpenRouter API (using Google Gemma model).
+ * Uses API Key from environment or fallback.
  */
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'YOUR_API_KEY_HERE'
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
+const SITE_URL = 'http://localhost:5173' // Localhost for dev, update for prod
+const SITE_NAME = 'GuruConnect'
 
 /**
- * Send a message to Gemini AI and get a response
+ * Send a message to OpenRouter AI and get a response
  * @param {string} prompt - The user's question or prompt
  * @param {Array} history - Previous conversation history (optional)
  * @returns {Promise<string>} - The AI's response
  */
 export const sendToGemini = async (prompt, history = []) => {
     try {
-        const contents = [
-            // System instruction for educational context
-            {
-                role: 'user',
-                parts: [{ text: 'You are an educational AI assistant helping students learn. Be helpful, clear, and explain concepts step by step. Use examples when possible.' }]
-            },
-            {
-                role: 'model',
-                parts: [{ text: 'I understand. I\'m here to help students learn. I\'ll explain concepts clearly with step-by-step explanations and examples.' }]
-            },
-            // Include conversation history
+        // Format messages for OpenAI-compatible API
+        const messages = [
+            // Conversation history
             ...history.map(msg => ({
-                role: msg.type === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.content }]
+                role: msg.type === 'bot' ? 'assistant' : 'user',
+                content: msg.content
             })),
-            // Current prompt
+            // Current prompt with system instruction integrated
             {
                 role: 'user',
-                parts: [{ text: prompt }]
+                content: `(System: You are an educational AI assistant helping students learn. Be helpful, clear, and explain concepts step by step.)\n\n${prompt}`
             }
         ]
 
-        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(OPENROUTER_API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                'HTTP-Referer': SITE_URL,
+                'X-Title': SITE_NAME,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                contents,
-                generationConfig: {
-                    temperature: 0.7,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 1024,
-                },
-                safetySettings: [
-                    {
-                        category: 'HARM_CATEGORY_HARASSMENT',
-                        threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                    },
-                    {
-                        category: 'HARM_CATEGORY_HATE_SPEECH',
-                        threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                    },
-                    {
-                        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                        threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                    },
-                    {
-                        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                        threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                    }
-                ]
+                "model": "google/gemma-3-27b-it:free",
+                "messages": messages
             })
         })
 
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`)
+            const errText = await response.text().catch(() => 'No error text')
+            console.error('OpenRouter API Response Error:', {
+                status: response.status,
+                statusText: response.statusText,
+                body: errText
+            })
+            // Parse JSON error if possible
+            try {
+                const errJson = JSON.parse(errText)
+                if (errJson.error) {
+                    throw new Error(`API Error: ${errJson.error.message || response.status}`)
+                }
+            } catch (e) {
+                // Ignore parse error
+            }
+
+            throw new Error(`API Error: ${response.status} ${response.statusText}`)
         }
 
         const data = await response.json()
 
-        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-            return data.candidates[0].content.parts[0].text
+        if (data.choices && data.choices[0]?.message?.content) {
+            return data.choices[0].message.content
         }
 
         throw new Error('No response from AI')
     } catch (error) {
-        console.error('Gemini API Error:', error)
+        console.error('OpenRouter/AI API Error:', error)
         throw error
     }
 }
@@ -94,7 +84,7 @@ export const sendToGemini = async (prompt, history = []) => {
  * @returns {boolean}
  */
 export const isApiConfigured = () => {
-    return GEMINI_API_KEY && GEMINI_API_KEY !== 'YOUR_API_KEY_HERE'
+    return !!OPENROUTER_API_KEY && OPENROUTER_API_KEY !== 'YOUR_API_KEY_HERE'
 }
 
 /**
@@ -108,7 +98,7 @@ export const getUsageStats = () => {
     }
     return {
         queriesUsed: 0,
-        dailyLimit: 10,
+        dailyLimit: 20, // Increased limit for demo
         resetTime: new Date().setHours(24, 0, 0, 0)
     }
 }

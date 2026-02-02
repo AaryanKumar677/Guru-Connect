@@ -35,7 +35,8 @@
 @media (max-width: 1024px) {
   .main-content.with-sidebar {
     margin-left: 0;
-    padding: calc(80px + var(--space-4)) var(--space-4) var(--space-4);
+    padding: calc(60px + var(--space-4)) var(--space-3) var(--space-4);
+    /* Reduced top padding to 60px+space, side to space-3 */
   }
 }
 

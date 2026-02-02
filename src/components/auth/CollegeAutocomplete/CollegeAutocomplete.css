@@ -124,6 +124,11 @@
     color: var(--text-tertiary);
 }
 
+[data-theme="light"] .option-location {
+    color: #4b5563;
+    /* Darker gray for light mode */
+}
+
 /* No results */
 .autocomplete-no-results {
     padding: var(--space-4);
@@ -156,9 +161,17 @@
     font-size: var(--text-sm);
 }
 
+[data-theme="light"] .manual-option .option-text strong {
+    color: #111827;
+}
+
 .manual-option .option-text small {
     color: var(--text-tertiary);
     font-size: var(--text-xs);
+}
+
+[data-theme="light"] .manual-option .option-text small {
+    color: #4b5563;
 }
 
 /* Focus states */

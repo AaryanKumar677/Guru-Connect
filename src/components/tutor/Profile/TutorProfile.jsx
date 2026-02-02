@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth, useToast } from '../../../App'
+import ProfileImageUpload from '../../common/ProfileImageUpload/ProfileImageUpload'
 import './TutorProfile.css'
 
 const TutorProfile = () => {
@@ -9,19 +10,19 @@ const TutorProfile = () => {
     const [profileData, setProfileData] = useState({
         name: user?.name || user?.fullName || '',
         email: user?.email || '',
-        bio: user?.bio || 'Passionate educator with years of experience helping students achieve their academic goals.',
-        subjects: user?.subjects || ['Mathematics', 'Physics'],
-        teachingStyle: user?.teachingStyle || 'Interactive and hands-on approach with real-world examples.',
-        languages: user?.languages || ['English', 'Hindi'],
-        experience: user?.experience || '5-10',
-        education: 'PhD in Mathematics, IIT Delhi',
-        hourlyRate: 10,
-        availability: {
-            monday: { enabled: true, slots: ['9:00 AM - 12:00 PM', '2:00 PM - 6:00 PM'] },
-            tuesday: { enabled: true, slots: ['9:00 AM - 12:00 PM', '2:00 PM - 6:00 PM'] },
-            wednesday: { enabled: true, slots: ['9:00 AM - 12:00 PM'] },
-            thursday: { enabled: true, slots: ['2:00 PM - 6:00 PM'] },
-            friday: { enabled: true, slots: ['9:00 AM - 12:00 PM', '2:00 PM - 6:00 PM'] },
+        bio: user?.bio || '',
+        subjects: user?.subjects || [],
+        teachingStyle: user?.teachingStyle || '',
+        languages: user?.languages || [],
+        experience: user?.experience || '',
+        education: user?.education || '',
+        hourlyRate: user?.hourlyRate || 0,
+        availability: user?.availability || {
+            monday: { enabled: true, slots: [] },
+            tuesday: { enabled: true, slots: [] },
+            wednesday: { enabled: true, slots: [] },
+            thursday: { enabled: true, slots: [] },
+            friday: { enabled: true, slots: [] },
             saturday: { enabled: false, slots: [] },
             sunday: { enabled: false, slots: [] },
         }
@@ -38,6 +39,10 @@ const TutorProfile = () => {
         updateUser(profileData)
         setIsEditing(false)
         showToast('Profile updated successfully!', 'success')
+    }
+
+    const handleImageUpdate = (newAvatarUrl) => {
+        updateUser({ avatar: newAvatarUrl })
     }
 
     const toggleSubject = (subject) => {
@@ -148,9 +153,22 @@ const TutorProfile = () => {
             {activeTab === 'profile' && (
                 <div className="profile-content">
                     <div className="profile-header-card">
-                        <div className="profile-avatar-large">
-                            {(profileData.name || user?.name || user?.fullName)?.charAt(0).toUpperCase() || 'T'}
-                        </div>
+                        {isEditing ? (
+                            <ProfileImageUpload
+                                userId={user?.id}
+                                currentAvatar={user?.avatar}
+                                userName={user?.name || user?.fullName}
+                                onImageUpdate={handleImageUpdate}
+                            />
+                        ) : (
+                            <div className="profile-avatar-large">
+                                {user?.avatar ? (
+                                    <img src={user.avatar} alt={profileData.name} className="avatar-img" />
+                                ) : (
+                                    (profileData.name || user?.name || user?.fullName)?.charAt(0).toUpperCase() || 'T'
+                                )}
+                            </div>
+                        )}
                         <div className="profile-header-info">
                             <h2>{profileData.name}</h2>
                             <p>{profileData.email}</p>
@@ -187,7 +205,9 @@ const TutorProfile = () => {
                                     rows={4}
                                 />
                             ) : (
-                                <p>{profileData.bio}</p>
+                                <p className={!profileData.bio ? 'placeholder-text' : ''}>
+                                    {profileData.bio || 'Add a bio to tell students about yourself...'}
+                                </p>
                             )}
                         </div>
 
@@ -208,9 +228,13 @@ const TutorProfile = () => {
                                 </div>
                             ) : (
                                 <div className="tags-display">
-                                    {profileData.subjects.map(subject => (
-                                        <span key={subject} className="tag">{subject}</span>
-                                    ))}
+                                    {profileData.subjects.length > 0 ? (
+                                        profileData.subjects.map(subject => (
+                                            <span key={subject} className="tag">{subject}</span>
+                                        ))
+                                    ) : (
+                                        <span className="placeholder-text">No subjects selected. Click Edit to add.</span>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -226,7 +250,9 @@ const TutorProfile = () => {
                                     rows={3}
                                 />
                             ) : (
-                                <p>{profileData.teachingStyle}</p>
+                                <p className={!profileData.teachingStyle ? 'placeholder-text' : ''}>
+                                    {profileData.teachingStyle || 'Describe your teaching style...'}
+                                </p>
                             )}
                         </div>
 
@@ -247,10 +273,37 @@ const TutorProfile = () => {
                                 </div>
                             ) : (
                                 <div className="tags-display">
-                                    {profileData.languages.map(lang => (
-                                        <span key={lang} className="tag">{lang}</span>
-                                    ))}
+                                    {profileData.languages.length > 0 ? (
+                                        profileData.languages.map(lang => (
+                                            <span key={lang} className="tag">{lang}</span>
+                                        ))
+                                    ) : (
+                                        <span className="placeholder-text">No languages added in.</span>
+                                    )}
                                 </div>
+                            )}
+                        </div>
+
+                        {/* Experience */}
+                        <div className="profile-section">
+                            <h3>Experience (Years)</h3>
+                            {isEditing ? (
+                                <select
+                                    value={profileData.experience}
+                                    onChange={(e) => setProfileData(prev => ({ ...prev, experience: e.target.value }))}
+                                    className="input"
+                                >
+                                    <option value="" disabled>Select Experience</option>
+                                    <option value="0-1">0-1 Years</option>
+                                    <option value="1-3">1-3 Years</option>
+                                    <option value="3-5">3-5 Years</option>
+                                    <option value="5-10">5-10 Years</option>
+                                    <option value="10+">10+ Years</option>
+                                </select>
+                            ) : (
+                                <p className={!profileData.experience ? 'placeholder-text' : ''}>
+                                    {profileData.experience ? `${profileData.experience} Years` : 'Add your teaching experience...'}
+                                </p>
                             )}
                         </div>
 
@@ -265,7 +318,9 @@ const TutorProfile = () => {
                                     className="input"
                                 />
                             ) : (
-                                <p>{profileData.education}</p>
+                                <p className={!profileData.education ? 'placeholder-text' : ''}>
+                                    {profileData.education || 'Add your educational background...'}
+                                </p>
                             )}
                         </div>
 

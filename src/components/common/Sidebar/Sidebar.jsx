@@ -7,7 +7,7 @@ const Sidebar = ({ role }) => {
     const navigate = useNavigate()
     const { user, logout } = useAuth()
     const { theme, toggleTheme } = useTheme()
-    const { sidebarCollapsed: isCollapsed, toggleSidebar } = useSidebar()
+    const { sidebarCollapsed: isCollapsed, toggleSidebar, mobileMenuOpen, closeMobileMenu } = useSidebar()
 
     const studentLinks = [
         {
@@ -41,6 +41,7 @@ const Sidebar = ({ role }) => {
             label: 'My Doubts'
         },
         { path: '/student/subscription', icon: '💎', label: 'Subscription' },
+        { path: '/student/messages', icon: '💬', label: 'Messages' },
         { path: '/student/help', icon: '❓', label: 'Help & FAQ' },
     ]
 
@@ -55,6 +56,7 @@ const Sidebar = ({ role }) => {
             label: 'Dashboard'
         },
         { path: '/tutor/sessions', icon: '📅', label: 'Sessions' },
+        { path: '/tutor/messages', icon: '💬', label: 'Messages' },
         { path: '/tutor/earnings', icon: <img src="/assets/icons/total-earnings.png" alt="Earnings" width="24" height="24" />, label: 'Earnings' },
         { path: '/tutor/help', icon: '❓', label: 'Help & FAQ' },
     ]
@@ -65,72 +67,101 @@ const Sidebar = ({ role }) => {
 
     const settingsPath = role === 'tutor' ? '/tutor/settings' : '/student/settings'
 
+    const handleNavigation = (path) => {
+        navigate(path)
+        closeMobileMenu()
+    }
+
     return (
-        <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-            {/* Collapse Toggle */}
-            <button
-                className="sidebar-toggle"
-                onClick={toggleSidebar}
-                aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    {isCollapsed ? (
-                        <path d="M9 18l6-6-6-6" />
-                    ) : (
-                        <path d="M15 18l-6-6 6-6" />
-                    )}
-                </svg>
-            </button>
+        <>
+            {/* Mobile Backdrop */}
+            {mobileMenuOpen && (
+                <div
+                    className="sidebar-backdrop"
+                    onClick={closeMobileMenu}
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        zIndex: 90
+                    }}
+                />
+            )}
 
-            {/* User Info */}
-            <div className="sidebar-user">
-                <div className="user-avatar-large">
-                    {user?.name?.charAt(0).toUpperCase() || 'U'}
-                </div>
-                {!isCollapsed && (
-                    <div className="user-info">
-                        <span className="user-name">{user?.name || user?.fullName || 'User'}</span>
-                        <span className="user-role">
-                            <img
-                                src={role === 'tutor' ? "/assets/icons/tutor-role.png" : "/assets/icons/role.png"}
-                                alt="Role"
-                                width="14"
-                                height="14"
-                                style={{ marginRight: '4px', verticalAlign: 'middle', display: 'inline-block' }}
-                            />
-                            {role === 'tutor' ? 'Tutor' : 'Student'}
-                        </span>
-                    </div>
-                )}
-            </div>
-
-            {/* Navigation */}
-            <nav className="sidebar-nav">
-                {links.map((link) => (
-                    <button
-                        key={link.path}
-                        className={`nav-item ${location.pathname === link.path ? 'active' : ''}`}
-                        onClick={() => navigate(link.path)}
-                        title={isCollapsed ? link.label : undefined}
-                    >
-                        <span className="nav-icon">{link.icon}</span>
-                        {!isCollapsed && <span className="nav-label">{link.label}</span>}
-                    </button>
-                ))}
-            </nav>
-
-            {/* Bottom Actions */}
-            <div className="sidebar-bottom">
+            <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'open' : ''}`}>
+                {/* Collapse Toggle */}
                 <button
-                    className={`nav-item ${location.pathname === settingsPath ? 'active' : ''}`}
-                    onClick={() => navigate(settingsPath)}
-                    title={isCollapsed ? 'Settings' : undefined}
+                    className="sidebar-toggle"
+                    onClick={toggleSidebar}
+                    aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                 >
-                    <span className="nav-icon"><img src="/assets/icons/settings.png" alt="Settings" width="24" height="24" /></span>
-                    {!isCollapsed && <span className="nav-label">Settings</span>}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        {isCollapsed ? (
+                            <path d="M9 18l6-6-6-6" />
+                        ) : (
+                            <path d="M15 18l-6-6 6-6" />
+                        )}
+                    </svg>
                 </button>
-            </div>
-        </aside>
+
+                {/* User Info */}
+                <div className="sidebar-user">
+                    <div className="user-avatar-large">
+                        {user?.avatar ? (
+                            <img
+                                src={user.avatar}
+                                alt={user?.name || 'User'}
+                                className="avatar-image"
+                            />
+                        ) : (
+                            user?.name?.charAt(0).toUpperCase() || 'U'
+                        )}
+                    </div>
+                    {!isCollapsed && (
+                        <div className="user-info">
+                            <span className="user-name">{user?.name || user?.fullName || 'User'}</span>
+                            <span className="user-role">
+                                <img
+                                    src={role === 'tutor' ? "/assets/icons/tutor-role.png" : "/assets/icons/role.png"}
+                                    alt="Role"
+                                    width="14"
+                                    height="14"
+                                    style={{ marginRight: '4px', verticalAlign: 'middle', display: 'inline-block' }}
+                                />
+                                {role === 'tutor' ? 'Tutor' : 'Student'}
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                {/* Navigation */}
+                <nav className="sidebar-nav">
+                    {links.map((link) => (
+                        <button
+                            key={link.path}
+                            className={`nav-item ${location.pathname === link.path ? 'active' : ''}`}
+                            onClick={() => handleNavigation(link.path)}
+                            title={isCollapsed ? link.label : undefined}
+                        >
+                            <span className="nav-icon">{link.icon}</span>
+                            {!isCollapsed && <span className="nav-label">{link.label}</span>}
+                        </button>
+                    ))}
+                </nav>
+
+                {/* Bottom Actions */}
+                <div className="sidebar-bottom">
+                    <button
+                        className={`nav-item ${location.pathname === settingsPath ? 'active' : ''}`}
+                        onClick={() => handleNavigation(settingsPath)}
+                        title={isCollapsed ? 'Settings' : undefined}
+                    >
+                        <span className="nav-icon"><img src="/assets/icons/settings.png" alt="Settings" width="24" height="24" /></span>
+                        {!isCollapsed && <span className="nav-label">Settings</span>}
+                    </button>
+                </div>
+            </aside>
+        </>
     )
 }
 

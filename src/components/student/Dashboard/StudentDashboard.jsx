@@ -18,6 +18,7 @@ import InsightsPanel from './components/InsightsPanel'
 import SessionList from './components/SessionList'
 import TutorRecommendations from './components/TutorRecommendations'
 import AchievementsWidget from './components/AchievementsWidget'
+import ProfileCompletionBanner from '../../common/ProfileCompletionBanner/ProfileCompletionBanner'
 
 const StudentDashboard = () => {
     const { user } = useAuth()
@@ -69,6 +70,9 @@ const StudentDashboard = () => {
             <div className="dashboard-container">
                 {/* 1. Header with Dynamic CTA */}
                 <DashboardHeader user={user} sessions={sessions} nextActions={nextActions} />
+
+                {/* Profile Completion Nudge */}
+                <ProfileCompletionBanner />
 
                 {/* 2. Stats Overview */}
                 <StatsOverview stats={stats} />

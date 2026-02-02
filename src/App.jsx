@@ -1,12 +1,15 @@
 import { useState, useEffect, createContext, useContext, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { authService } from './services/authService'
+import { auth, db } from './config/firebase' // Import auth directly
+import { onAuthStateChanged } from 'firebase/auth'
+import { doc, getDoc } from 'firebase/firestore'
 import Header from './components/common/Header/Header'
 import Footer from './components/common/Footer/Footer'
 import Sidebar from './components/common/Sidebar/Sidebar'
 import Toast from './components/common/Toast/Toast'
 
-// Lazy load landing page components
+// ... (Lazy loads remain the same) ...
 const Hero = lazy(() => import('./components/landing/Hero/Hero'))
 const Features = lazy(() => import('./components/landing/Features/Features'))
 const AIFeatures = lazy(() => import('./components/landing/AIFeatures/AIFeatures'))
@@ -22,12 +25,14 @@ const TutorMarketplace = lazy(() => import('./components/student/TutorMarketplac
 const MyDoubts = lazy(() => import('./components/student/MyDoubts/MyDoubts'))
 const Subscription = lazy(() => import('./components/student/Subscription/Subscription'))
 const StudentProfile = lazy(() => import('./components/student/Profile/StudentProfile'))
+const StudentMessages = lazy(() => import('./components/student/Messages/Messages'))
 
 // Lazy load Tutor Components
 const TutorDashboard = lazy(() => import('./components/tutor/Dashboard/TutorDashboard'))
 const TutorProfile = lazy(() => import('./components/tutor/Profile/TutorProfile'))
 const Sessions = lazy(() => import('./components/tutor/Sessions/Sessions'))
 const Earnings = lazy(() => import('./components/tutor/Earnings/Earnings'))
+const TutorMessages = lazy(() => import('./components/student/Messages/Messages')) // Reuse Messages component
 
 // Lazy load Shared Components
 const NotFound = lazy(() => import('./components/common/NotFound/NotFound'))
@@ -85,11 +90,23 @@ function App() {
     return saved ? JSON.parse(saved) : null
   })
 
+  // Auth Loading State
+  const [isAuthLoading, setIsAuthLoading] = useState(true)
+
   // Sidebar collapsed state (global)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const toggleSidebar = () => {
     setSidebarCollapsed(prev => !prev)
+  }
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(prev => !prev)
+  }
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false)
   }
 
   // First visit detection
@@ -105,7 +122,7 @@ function App() {
 
   // Show auth modal on first visit
   useEffect(() => {
-    if (!hasVisited && !user) {
+    if (!hasVisited && !user && !isAuthLoading) {
       const timer = setTimeout(() => {
         setShowAuthModal(true)
         setAuthMode('signup')
@@ -114,7 +131,51 @@ function App() {
       }, 3000)
       return () => clearTimeout(timer)
     }
-  }, [hasVisited, user])
+  }, [hasVisited, user, isAuthLoading])
+
+  // LISTEN INITIAL AUTH STATE
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      try {
+        if (firebaseUser) {
+          // User is signed in, sync with Firestore to get role/name
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
+          if (userDoc.exists()) {
+            const userData = { id: firebaseUser.uid, ...userDoc.data() }
+            setUser(userData)
+            localStorage.setItem('guru-connect-user', JSON.stringify(userData))
+          } else {
+            // If user authenticated but no firestore doc, try localStorage or clear
+            // This prevents "stuck" loading if FS fails but Auth succeeds
+            const saved = localStorage.getItem('guru-connect-user')
+            if (saved) {
+              // Verify ID matches
+              const parsed = JSON.parse(saved)
+              if (parsed.id === firebaseUser.uid) {
+                setUser(parsed)
+              } else {
+                setUser(null)
+                localStorage.removeItem('guru-connect-user')
+              }
+            }
+          }
+        } else {
+          // User is signed out
+          setUser(null)
+          localStorage.removeItem('guru-connect-user')
+        }
+      } catch (error) {
+        console.error("Auth state sync error:", error)
+        // Ensure we don't get stuck in loading state on error
+        setUser(null)
+      } finally {
+        setIsAuthLoading(false)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
+
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
@@ -167,7 +228,7 @@ function App() {
 
   const updateUser = async (updates) => {
     try {
-      const updated = await authService.updateUser(user.email, updates)
+      const updated = await authService.updateUser(user.id, updates)
       setUser(updated)
       // localStorage update is handled by authService
     } catch (error) {
@@ -176,16 +237,20 @@ function App() {
     }
   }
 
-  // Check if user is on a dashboard route
   const isDashboardRoute = user && (
     location.pathname.startsWith('/student') ||
     location.pathname.startsWith('/tutor')
   )
 
+  // Show loading spinner while checking auth state
+  if (isAuthLoading) {
+    return <LoadingSpinner />
+  }
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       <ToastContext.Provider value={{ showToast, dismissToast }}>
-        <SidebarContext.Provider value={{ sidebarCollapsed, toggleSidebar }}>
+        <SidebarContext.Provider value={{ sidebarCollapsed, toggleSidebar, mobileMenuOpen, toggleMobileMenu, closeMobileMenu }}>
           <AuthContext.Provider value={{ user, login, signup, logout, openAuthModal, updateUser }}>
             <div className={`app ${isDashboardRoute ? 'app-dashboard' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
               <Header />
@@ -237,6 +302,9 @@ function App() {
                     <Route path="/student/profile" element={
                       user?.role === 'student' ? <StudentProfile /> : <Navigate to="/" replace />
                     } />
+                    <Route path="/student/messages" element={
+                      user?.role === 'student' ? <StudentMessages /> : <Navigate to="/" replace />
+                    } />
 
                     {/* Tutor Routes */}
                     <Route path="/tutor/dashboard" element={
@@ -253,6 +321,9 @@ function App() {
                     } />
                     <Route path="/tutor/settings" element={
                       user?.role === 'tutor' ? <Settings /> : <Navigate to="/" replace />
+                    } />
+                    <Route path="/tutor/messages" element={
+                      user?.role === 'tutor' ? <TutorMessages /> : <Navigate to="/" replace />
                     } />
 
                     {/* Student Settings */}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTheme, useAuth, useToast } from '../../../App'
+import { authService } from '../../../services/authService'
 import './Settings.css'
 
 const Settings = () => {
@@ -20,6 +21,12 @@ const Settings = () => {
         allowMessages: true
     })
 
+    // Delete Account Modal State
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [deletePassword, setDeletePassword] = useState('')
+    const [deleteLoading, setDeleteLoading] = useState(false)
+    const [deleteError, setDeleteError] = useState('')
+
     const handleNotificationChange = (key) => {
         setNotifications(prev => ({ ...prev, [key]: !prev[key] }))
         showToast('Notification settings updated', 'success')
@@ -30,12 +37,32 @@ const Settings = () => {
         showToast('Privacy settings updated', 'success')
     }
 
-    const handleDeleteAccount = () => {
-        if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+    const handleDeleteAccount = async () => {
+        setDeleteLoading(true)
+        setDeleteError('')
+
+        try {
+            // Check if user logged in with Google (no password needed)
+            const currentUser = authService.getCurrentUser()
+            const isGoogleUser = currentUser?.providerData[0]?.providerId === 'google.com'
+
+            if (!isGoogleUser && !deletePassword) {
+                setDeleteError('Please enter your password to confirm')
+                setDeleteLoading(false)
+                return
+            }
+
+            await authService.deleteAccount(isGoogleUser ? null : deletePassword)
+            showToast('Your account has been permanently deleted', 'info')
             logout()
-            showToast('Account deleted successfully', 'info')
+        } catch (error) {
+            setDeleteError(error.message)
+        } finally {
+            setDeleteLoading(false)
         }
     }
+
+    const isGoogleUser = authService.getCurrentUser()?.providerData[0]?.providerId === 'google.com'
 
     return (
         <div className="settings-page">
@@ -172,12 +199,72 @@ const Settings = () => {
                             <span className="setting-label">Delete Account</span>
                             <span className="setting-desc">Permanently delete your account and all data</span>
                         </div>
-                        <button className="btn btn-danger" onClick={handleDeleteAccount}>
+                        <button className="btn btn-danger" onClick={() => setShowDeleteModal(true)}>
                             Delete Account
                         </button>
                     </div>
                 </div>
             </section>
+
+            {/* Delete Account Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+                    <div className="delete-modal" onClick={e => e.stopPropagation()}>
+                        <div className="delete-modal-header">
+                            <span className="delete-icon">⚠️</span>
+                            <h3>Delete Your Account?</h3>
+                        </div>
+                        <div className="delete-modal-body">
+                            <p className="delete-warning">
+                                This action is <strong>permanent</strong> and cannot be undone.
+                                All your data, messages, and session history will be permanently deleted.
+                            </p>
+
+                            {!isGoogleUser && (
+                                <div className="delete-password-field">
+                                    <label>Enter your password to confirm:</label>
+                                    <input
+                                        type="password"
+                                        className="input"
+                                        placeholder="Your password"
+                                        value={deletePassword}
+                                        onChange={(e) => setDeletePassword(e.target.value)}
+                                    />
+                                </div>
+                            )}
+
+                            {isGoogleUser && (
+                                <p className="google-notice">
+                                    You'll be asked to re-authenticate with Google to confirm.
+                                </p>
+                            )}
+
+                            {deleteError && (
+                                <p className="delete-error">{deleteError}</p>
+                            )}
+                        </div>
+                        <div className="delete-modal-actions">
+                            <button
+                                className="btn btn-secondary"
+                                onClick={() => {
+                                    setShowDeleteModal(false)
+                                    setDeletePassword('')
+                                    setDeleteError('')
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="btn btn-danger"
+                                onClick={handleDeleteAccount}
+                                disabled={deleteLoading}
+                            >
+                                {deleteLoading ? 'Deleting...' : 'Delete Forever'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

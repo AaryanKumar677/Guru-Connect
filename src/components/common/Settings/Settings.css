@@ -113,3 +113,142 @@
     opacity: 0.9;
     transform: translateY(-1px);
 }
+
+/* Delete Account Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn var(--duration-fast) var(--ease-default);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Delete Account Modal */
+.delete-modal {
+    background: var(--surface);
+    border: 1px solid var(--error);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    max-width: 420px;
+    width: 90%;
+    animation: scaleIn var(--duration-normal) var(--ease-default);
+}
+
+.delete-modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    text-align: center;
+}
+
+.delete-icon {
+    font-size: 2.5rem;
+}
+
+.delete-modal-header h3 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--error);
+}
+
+.delete-modal-body {
+    margin-bottom: var(--space-5);
+}
+
+.delete-warning {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+}
+
+.delete-password-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.delete-password-field label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+}
+
+.google-notice {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    text-align: center;
+    padding: var(--space-3);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+}
+
+.delete-error {
+    font-size: var(--text-sm);
+    color: var(--error);
+    text-align: center;
+    margin-top: var(--space-3);
+    padding: var(--space-2);
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: var(--radius-md);
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+}
+
+.delete-modal-actions .btn {
+    min-width: 100px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+
+    .delete-modal {
+        padding: var(--space-4);
+    }
+
+    .delete-modal-actions {
+        flex-direction: column;
+    }
+
+    .delete-modal-actions .btn {
+        width: 100%;
+    }
+}
