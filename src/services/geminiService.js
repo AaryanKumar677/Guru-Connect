@@ -5,7 +5,7 @@
  * Uses API Key from environment or fallback.
  */
 
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const SITE_URL = 'http://localhost:5173' // Localhost for dev, update for prod
 const SITE_NAME = 'GuruConnect'
@@ -17,67 +17,71 @@ const SITE_NAME = 'GuruConnect'
  * @returns {Promise<string>} - The AI's response
  */
 export const sendToGemini = async (prompt, history = []) => {
-    try {
-        // Format messages for OpenAI-compatible API
-        const messages = [
-            // Conversation history
-            ...history.map(msg => ({
-                role: msg.type === 'bot' ? 'assistant' : 'user',
-                content: msg.content
-            })),
-            // Current prompt with system instruction integrated
-            {
-                role: 'user',
-                content: `(System: You are an educational AI assistant helping students learn. Be helpful, clear, and explain concepts step by step.)\n\n${prompt}`
-            }
-        ]
+    // List of models to try in order
+    // We try Gemma first (as requested), then reliable backups
+    const models = [
+        "google/gemma-3-27b-it:free",
+        "google/gemma-3-12b-it:free",
+        "google/gemini-2.0-flash-lite-preview-02-05:free",
+        "mistralai/mistral-7b-instruct:free"
+    ];
 
-        const response = await fetch(OPENROUTER_API_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                'HTTP-Referer': SITE_URL,
-                'X-Title': SITE_NAME,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "model": "google/gemma-3-27b-it:free",
-                "messages": messages
-            })
-        })
+    // Format messages for OpenAI-compatible API
+    const messages = [
+        // Conversation history
+        ...history.map(msg => ({
+            role: msg.type === 'bot' ? 'assistant' : 'user',
+            content: msg.content
+        })),
+        // Current prompt with system instruction integrated
+        {
+            role: 'user',
+            content: `(System: You are an educational AI assistant helping students learn. Be helpful, clear, and explain concepts step by step.)\n\n${prompt}`
+        }
+    ];
 
-        if (!response.ok) {
-            const errText = await response.text().catch(() => 'No error text')
-            console.error('OpenRouter API Response Error:', {
-                status: response.status,
-                statusText: response.statusText,
-                body: errText
-            })
-            // Parse JSON error if possible
-            try {
-                const errJson = JSON.parse(errText)
-                if (errJson.error) {
-                    throw new Error(`API Error: ${errJson.error.message || response.status}`)
+    let lastError = null;
+
+    // Try models one by one
+    for (const model of models) {
+        try {
+            console.log(`Trying model: ${model}...`);
+            const response = await fetch(OPENROUTER_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                    'HTTP-Referer': SITE_URL,
+                    'X-Title': SITE_NAME,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "model": model,
+                    "messages": messages
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.choices && data.choices[0]?.message?.content) {
+                    return data.choices[0].message.content;
                 }
-            } catch (e) {
-                // Ignore parse error
             }
 
-            throw new Error(`API Error: ${response.status} ${response.statusText}`)
+            // If we get here, response wasn't ok or format was wrong
+            const errText = await response.text().catch(() => 'No error text');
+            console.warn(`Model ${model} failed (${response.status}):`, errText);
+            lastError = new Error(`API Error (${response.status}) using ${model}: ${errText.substring(0, 100)}`);
+
+        } catch (err) {
+            console.warn(`Model ${model} error:`, err);
+            lastError = err;
         }
-
-        const data = await response.json()
-
-        if (data.choices && data.choices[0]?.message?.content) {
-            return data.choices[0].message.content
-        }
-
-        throw new Error('No response from AI')
-    } catch (error) {
-        console.error('OpenRouter/AI API Error:', error)
-        throw error
     }
-}
+
+    // If all models fail
+    console.error("All models failed. Last error:", lastError);
+    throw lastError || new Error("All AI models are currently unavailable. Please try again later.");
+};
 
 /**
  * Check if the API key is configured

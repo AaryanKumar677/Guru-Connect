@@ -12,6 +12,8 @@
   "dependencies": {
     "@daily-co/daily-js": "^0.87.0",
     "firebase": "^12.8.0",
+    "framer-motion": "^12.30.0",
+    "markdown-it": "^14.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0"
