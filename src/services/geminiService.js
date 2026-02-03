@@ -18,13 +18,13 @@ const SITE_NAME = 'GuruConnect'
  */
 export const sendToGemini = async (prompt, history = []) => {
     // List of models to try in order
-    // We prioritize models that are currently available and free
+    // Prioritizing confirmed working free models
     const models = [
-        "google/gemini-2.0-flash-lite-preview-02-05:free", // Most reliable free model currently
-        "google/gemini-2.0-pro-exp-02-05:free",
-        "google/gemma-3-27b-it:free",
-        "meta-llama/llama-3.1-8b-instruct:free",
-        "unsloth/llama-3-8b-instruct:free"
+        "google/gemma-3-27b-it:free", // confirmed working
+        "google/gemini-2.0-flash-exp:free", // backup
+        "google/gemma-2-9b-it:free",
+        "mistralai/mistral-7b-instruct:free",
+        "meta-llama/llama-3.1-8b-instruct:free"
     ];
 
     // Format messages for OpenAI-compatible API
