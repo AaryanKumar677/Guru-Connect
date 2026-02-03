@@ -1,6 +1,6 @@
 import React from 'react'
-import ContextProvider from './MannMitra/Context'
-import Main from './MannMitra/Main/Main'
+import ContextProvider from './GuruAI/Context'
+import Main from './GuruAI/Main/Main'
 import './AIAssistant.css'
 
 const AIAssistant = () => {

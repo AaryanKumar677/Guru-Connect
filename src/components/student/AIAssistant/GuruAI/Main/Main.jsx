@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import './Main.css'
-import { assets } from '../../../../../assets/mannmitra/assets'
+import { assets } from '../../../../../assets/guruai/assets'
 import { Context } from '../Context'
 import MarkdownIt from "markdown-it";
 import { useAuth } from '../../../../../App';

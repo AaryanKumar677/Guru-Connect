@@ -13,7 +13,7 @@ import message_icon from './message_icon.png'
 import code_icon from './code_icon.png'
 import send_icon from './send_icon.png'
 import gemini_icon from './gemini_icon.png'
-import MannMitraname from './MannMitraname.png'
+import MannMitraname from './GuruAIname.png'
 import booking_icon from './booking_icon.png';
 import resources_icon from './resources_icon.png';
 import community_icon from './community_icon.png';
