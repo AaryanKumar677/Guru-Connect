@@ -83,7 +83,8 @@ const ChatList = ({ onSelectChat }) => {
 
         const unsubscribe = subscribeToUserChats(userId, (chatList) => {
             // Sort by last message time
-            const sorted = chatList.sort((a, b) => {
+            const validChats = chatList.filter(chat => chat.lastMessage);
+            const sorted = validChats.sort((a, b) => {
                 const aTime = a.lastMessage?.timestamp?.toMillis?.() || 0;
                 const bTime = b.lastMessage?.timestamp?.toMillis?.() || 0;
                 return bTime - aTime;

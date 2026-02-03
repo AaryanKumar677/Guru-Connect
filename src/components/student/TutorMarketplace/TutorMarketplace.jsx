@@ -34,9 +34,26 @@ const TutorMarketplace = () => {
     useEffect(() => {
         try {
             const unsubscribe = subscribeTutors((realTutors) => {
-                if (realTutors.length > 0) {
-                    setTutors(realTutors)
-                }
+                // Combine real tutors with mock tutors
+                // Mark real tutors to sort them first and normalize data
+                const markedRealTutors = realTutors.map(t => ({
+                    ...t,
+                    isReal: true,
+                    // Default values for fields that might be missing in new profiles
+                    rating: t.rating || 0, // Show 0 or New for new tutors
+                    sessions: t.sessions || 0,
+                    avatar: t.photoURL ? <img src={t.photoURL} alt={t.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} /> : (t.avatar || '👨‍🏫'),
+                    bio: t.bio || 'Passionate educator ready to help you learn.',
+                    languages: t.languages || ['English'],
+                    price: t.price || 15, // Default price
+                    subject: t.subject || 'General'
+                }));
+
+                // Use a Map to distinct tutors by ID in case of overlap
+                const combined = [...markedRealTutors, ...mockTutors];
+                const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
+
+                setTutors(unique);
             })
             return () => unsubscribe?.()
         } catch (error) {
@@ -59,15 +76,24 @@ const TutorMarketplace = () => {
             tutor.subject.toLowerCase().includes(searchQuery.toLowerCase())
         const matchesSubject = selectedSubject === 'all' || tutor.subject === selectedSubject
         const matchesRating = selectedRating === 'all' || tutor.rating >= parseFloat(selectedRating)
-        const matchesOnline = !onlineOnly || tutor.presence?.online
+        const matchesOnline = !onlineOnly || (tutor.presence && tutor.presence.online)
         return matchesSearch && matchesSubject && matchesRating && matchesOnline
     })
 
-    // Sort: online tutors first
+    // Sort: 
+    // 1. Real tutors first
+    // 2. Online tutors
+    // 3. Others
     const sortedTutors = [...filteredTutors].sort((a, b) => {
-        if (a.presence?.online && !b.presence?.online) return -1
-        if (!a.presence?.online && b.presence?.online) return 1
-        return 0
+        // Real tutors first
+        if (a.isReal && !b.isReal) return -1;
+        if (!a.isReal && b.isReal) return 1;
+
+        // Then online status
+        if (a.presence?.online && !b.presence?.online) return -1;
+        if (!a.presence?.online && b.presence?.online) return 1;
+
+        return 0;
     })
 
     return (

@@ -5,7 +5,7 @@
  * Uses API Key from environment or fallback.
  */
 
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const SITE_URL = 'http://localhost:5173' // Localhost for dev, update for prod
 const SITE_NAME = 'GuruConnect'
@@ -18,12 +18,13 @@ const SITE_NAME = 'GuruConnect'
  */
 export const sendToGemini = async (prompt, history = []) => {
     // List of models to try in order
-    // We try Gemma first (as requested), then reliable backups
+    // We prioritize models that are currently available and free
     const models = [
+        "google/gemini-2.0-flash-lite-preview-02-05:free", // Most reliable free model currently
+        "google/gemini-2.0-pro-exp-02-05:free",
         "google/gemma-3-27b-it:free",
-        "google/gemma-3-12b-it:free",
-        "google/gemini-2.0-flash-lite-preview-02-05:free",
-        "mistralai/mistral-7b-instruct:free"
+        "meta-llama/llama-3.1-8b-instruct:free",
+        "unsloth/llama-3-8b-instruct:free"
     ];
 
     // Format messages for OpenAI-compatible API
