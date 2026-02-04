@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import { useAuth } from '../../../App'
 import './ProfileCompletionBanner.css'
 
@@ -10,8 +11,9 @@ import './ProfileCompletionBanner.css'
 const ProfileCompletionBanner = () => {
     const { user } = useAuth()
     const navigate = useNavigate()
+    const [isVisible, setIsVisible] = useState(true)
 
-    if (!user) return null
+    if (!user || !isVisible) return null
 
     // Calculate profile completion
     const getCompletionStatus = () => {
@@ -59,9 +61,7 @@ const ProfileCompletionBanner = () => {
 
     const handleDismiss = () => {
         localStorage.setItem(dismissKey, Date.now().toString())
-        // Force re-render by triggering state change would need useState
-        // For now, page refresh will hide it
-        window.location.reload()
+        setIsVisible(false)
     }
 
     const handleComplete = () => {
