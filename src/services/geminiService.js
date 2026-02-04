@@ -7,8 +7,8 @@
 
 import { OpenRouter } from "@openrouter/sdk";
 
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
-const SITE_URL = 'http://localhost:5173' // Localhost for dev, update for prod
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173'
 const SITE_NAME = 'GuruConnect'
 
 const openrouter = new OpenRouter({
