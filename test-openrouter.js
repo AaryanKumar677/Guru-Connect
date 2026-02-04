@@ -1,11 +1,9 @@
-// Retrying with native fetch (Node 18+)// If native fetch is available (Node 18+), we don't need require. 
-// I'll try native fetch logic wrapped in a self-executing async function.
-
-const API_KEY = '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';
-const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const API_KEY = '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';
 
 async function testApi() {
-    console.log("Testing OpenRouter API...");
+    console.log("Testing Chat Completion with google/gemma-3-12b-it:free...");
+    const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -16,9 +14,9 @@ async function testApi() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "model": "google/gemma-3-27b-it:free",
+                "model": "google/gemma-3-12b-it:free",
                 "messages": [
-                    { "role": "user", "content": "Say hello in one word." }
+                    { "role": "user", "content": "Say 'API Working' if you see this." }
                 ]
             })
         });
@@ -30,7 +28,11 @@ async function testApi() {
         } else {
             const data = await response.json();
             console.log("Success!");
-            console.log("Response:", JSON.stringify(data, null, 2));
+            if (data.choices && data.choices.length > 0) {
+                console.log("Response:", data.choices[0].message.content);
+            } else {
+                console.log("Full response:", JSON.stringify(data, null, 2));
+            }
         }
     } catch (e) {
         console.error("Error:", e.message);

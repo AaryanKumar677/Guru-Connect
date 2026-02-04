@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@daily-co/daily-js": "^0.87.0",
+    "@openrouter/sdk": "^0.5.1",
     "firebase": "^12.8.0",
     "framer-motion": "^12.30.0",
     "markdown-it": "^14.1.0",

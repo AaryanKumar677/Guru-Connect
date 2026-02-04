@@ -5,10 +5,15 @@
  * Uses API Key from environment or fallback.
  */
 
+import { OpenRouter } from "@openrouter/sdk";
+
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 const SITE_URL = 'http://localhost:5173' // Localhost for dev, update for prod
 const SITE_NAME = 'GuruConnect'
+
+const openrouter = new OpenRouter({
+    apiKey: OPENROUTER_API_KEY
+});
 
 /**
  * Send a message to OpenRouter AI and get a response
@@ -17,16 +22,6 @@ const SITE_NAME = 'GuruConnect'
  * @returns {Promise<string>} - The AI's response
  */
 export const sendToGemini = async (prompt, history = []) => {
-    // List of models to try in order
-    // Prioritizing confirmed working free models
-    const models = [
-        "google/gemma-3-27b-it:free", // confirmed working
-        "google/gemini-2.0-flash-exp:free", // backup
-        "google/gemma-2-9b-it:free",
-        "mistralai/mistral-7b-instruct:free",
-        "meta-llama/llama-3.1-8b-instruct:free"
-    ];
-
     // Format messages for OpenAI-compatible API
     const messages = [
         // Conversation history
@@ -41,47 +36,52 @@ export const sendToGemini = async (prompt, history = []) => {
         }
     ];
 
-    let lastError = null;
+    try {
+        console.log("Sending request to OpenRouter (gpt-oss-120b)....");
 
-    // Try models one by one
-    for (const model of models) {
-        try {
-            console.log(`Trying model: ${model}...`);
-            const response = await fetch(OPENROUTER_API_URL, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                    'HTTP-Referer': SITE_URL,
-                    'X-Title': SITE_NAME,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "model": model,
-                    "messages": messages
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.choices && data.choices[0]?.message?.content) {
-                    return data.choices[0].message.content;
-                }
+        // Stream the response
+        const stream = await openrouter.chat.send({
+            model: "google/gemma-3-12b-it:free",
+            messages: messages,
+            stream: true,
+            headers: {
+                'HTTP-Referer': SITE_URL,
+                'X-Title': SITE_NAME,
             }
+        });
 
-            // If we get here, response wasn't ok or format was wrong
-            const errText = await response.text().catch(() => 'No error text');
-            console.warn(`Model ${model} failed (${response.status}):`, errText);
-            lastError = new Error(`API Error (${response.status}) using ${model}: ${errText.substring(0, 100)}`);
+        let fullResponse = "";
 
-        } catch (err) {
-            console.warn(`Model ${model} error:`, err);
-            lastError = err;
+        // Consume the stream
+        for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content;
+            if (content) {
+                fullResponse += content;
+            }
+            // Usage information comes in the final chunk if available
+            if (chunk.usage) {
+                console.log("Reasoning tokens:", chunk.usage.reasoningTokens);
+            }
         }
-    }
 
-    // If all models fail
-    console.error("All models failed. Last error:", lastError);
-    throw lastError || new Error("All AI models are currently unavailable. Please try again later.");
+        if (!fullResponse) {
+            throw new Error("Empty response from AI service");
+        }
+
+        return fullResponse;
+
+    } catch (err) {
+        console.error("OpenRouter SDK Error:", err);
+
+        // Fallback or re-throw friendlier error
+        if (err.message && err.message.includes("404")) {
+            throw new Error("Model not found or unavailable. Please check API key/permissions.");
+        } else if (err.message && err.message.includes("429")) {
+            throw new Error("Rate limit exceeded. Please try again in a moment.");
+        }
+
+        throw err;
+    }
 };
 
 /**

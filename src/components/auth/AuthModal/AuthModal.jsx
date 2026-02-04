@@ -541,18 +541,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                 {/* Header */}
                 <div className="auth-header">
                     <div className="auth-logo">
-                        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="authLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stopColor="#667EEA" />
-                                    <stop offset="100%" stopColor="#764BA2" />
-                                </linearGradient>
-                            </defs>
-                            <circle cx="20" cy="20" r="18" stroke="url(#authLogoGradient)" strokeWidth="3" fill="none" />
-                            <path d="M14 16C14 14.8954 14.8954 14 16 14H24C25.1046 14 26 14.8954 26 16V18C26 19.1046 25.1046 20 24 20H16C14.8954 20 14 19.1046 14 18V16Z" fill="url(#authLogoGradient)" />
-                            <path d="M16 23H24" stroke="url(#authLogoGradient)" strokeWidth="2" strokeLinecap="round" />
-                            <path d="M18 26H22" stroke="url(#authLogoGradient)" strokeWidth="2" strokeLinecap="round" />
-                        </svg>
+                        <img src="/guruconnect-logo.png" alt="Guru Connect" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
                     </div>
                     <h2 id="auth-modal-title" className="auth-title">
                         {mode === 'login' ? 'Welcome Back!' : 'Create Account'}

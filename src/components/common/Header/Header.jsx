@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTheme, useAuth, useSidebar } from '../../../App'
@@ -62,7 +63,8 @@ const Header = () => {
                 )}
 
                 {/* Logo */}
-                <a href="/" className="header-logo">
+                {/* Logo */}
+                <Link to="/" className="header-logo">
                     <div className="logo-icon">
                         <img src="/guruconnect-logo.png" alt="GuruConnect" style={{ width: '90px', height: '90px', objectFit: 'contain', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
                     </div>
@@ -70,7 +72,7 @@ const Header = () => {
                         <span className="logo-name">Guru Connect</span>
                         <span className="logo-tagline">Knowledge Meets Technology</span>
                     </div>
-                </a>
+                </Link>
 
                 {/* Desktop Navigation - Only show when not logged in */}
                 {!user && (

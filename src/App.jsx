@@ -9,35 +9,36 @@ import Footer from './components/common/Footer/Footer'
 import Sidebar from './components/common/Sidebar/Sidebar'
 import Toast from './components/common/Toast/Toast'
 
+// Static Imports for Reliable Navigation
+import Hero from './components/landing/Hero/Hero'
+import Features from './components/landing/Features/Features'
+import AIFeatures from './components/landing/AIFeatures/AIFeatures'
+import Comparison from './components/landing/Comparison/Comparison'
+import Facilities from './components/landing/Facilities/Facilities'
+import AuthModal from './components/auth/AuthModal/AuthModal'
+
+import StudentDashboard from './components/student/Dashboard/StudentDashboard'
+import AIAssistant from './components/student/AIAssistant/AIAssistant'
+import TutorMarketplace from './components/student/TutorMarketplace/TutorMarketplace'
+import MyDoubts from './components/student/MyDoubts/MyDoubts'
+import Subscription from './components/student/Subscription/Subscription'
+import StudentProfile from './components/student/Profile/StudentProfile'
+import StudentMessages from './components/student/Messages/Messages'
+
+import TutorDashboard from './components/tutor/Dashboard/TutorDashboard'
+import TutorProfile from './components/tutor/Profile/TutorProfile'
+import Sessions from './components/tutor/Sessions/Sessions'
+import Earnings from './components/tutor/Earnings/Earnings'
+// TutorMessages reuses StudentMessages component, imported above as StudentMessages
+const TutorMessages = StudentMessages;
+
+import NotFound from './components/common/NotFound/NotFound'
+import Settings from './components/common/Settings/Settings'
+import Help from './components/common/Help/Help'
+
 // ... (Lazy loads remain the same) ...
-const Hero = lazy(() => import('./components/landing/Hero/Hero'))
-const Features = lazy(() => import('./components/landing/Features/Features'))
-const AIFeatures = lazy(() => import('./components/landing/AIFeatures/AIFeatures'))
-const Comparison = lazy(() => import('./components/landing/Comparison/Comparison'))
-const Facilities = lazy(() => import('./components/landing/Facilities/Facilities'))
-
-const AuthModal = lazy(() => import('./components/auth/AuthModal/AuthModal'))
-
-// Lazy load Student Components
-const StudentDashboard = lazy(() => import('./components/student/Dashboard/StudentDashboard'))
-const AIAssistant = lazy(() => import('./components/student/AIAssistant/AIAssistant'))
-const TutorMarketplace = lazy(() => import('./components/student/TutorMarketplace/TutorMarketplace'))
-const MyDoubts = lazy(() => import('./components/student/MyDoubts/MyDoubts'))
-const Subscription = lazy(() => import('./components/student/Subscription/Subscription'))
-const StudentProfile = lazy(() => import('./components/student/Profile/StudentProfile'))
-const StudentMessages = lazy(() => import('./components/student/Messages/Messages'))
-
-// Lazy load Tutor Components
-const TutorDashboard = lazy(() => import('./components/tutor/Dashboard/TutorDashboard'))
-const TutorProfile = lazy(() => import('./components/tutor/Profile/TutorProfile'))
-const Sessions = lazy(() => import('./components/tutor/Sessions/Sessions'))
-const Earnings = lazy(() => import('./components/tutor/Earnings/Earnings'))
-const TutorMessages = lazy(() => import('./components/student/Messages/Messages')) // Reuse Messages component
-
-// Lazy load Shared Components
-const NotFound = lazy(() => import('./components/common/NotFound/NotFound'))
-const Settings = lazy(() => import('./components/common/Settings/Settings'))
-const Help = lazy(() => import('./components/common/Help/Help'))
+// Lazy load removed for stability during presentation
+// Components are now statically imported at the top
 
 // Loading Spinner Component
 const LoadingSpinner = () => (
