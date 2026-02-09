@@ -65,7 +65,16 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
                     disableInviteFunctions: true,
                     hideConferenceSubject: true,
                     hideConferenceTimer: true,
-                    subject: 'GuruConnect Call'
+                    subject: 'GuruConnect Call',
+                    // Disable lobby and moderator requirements
+                    enableLobbyChat: false,
+                    hideLobbyButton: true,
+                    requireDisplayName: false,
+                    enableInsecureRoomNameWarning: false,
+                    disableModeratorIndicator: true,
+                    startAudioOnly: false,
+                    enableNoisyMicDetection: false,
+                    enableNoAudioDetection: false
                 },
                 interfaceConfigOverwrite: {
                     TOOLBAR_BUTTONS: [
