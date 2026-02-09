@@ -106,37 +106,20 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
 
     return (
         <div className="video-call-container">
-            {callState === 'joining' && (
-                <div className="video-call-loading">
-                    <div className="loading-spinner"></div>
-                    <p>Connecting to call...</p>
-                </div>
-            )}
-
-            {callState === 'error' && (
-                <div className="video-call-error">
-                    <span className="material-symbols-outlined">error</span>
-                    <p>Failed to connect to call</p>
-                    <button className="btn btn-primary" onClick={onLeave}>
-                        Close
-                    </button>
-                </div>
-            )}
-
+            {/* Jitsi iframe container - always visible */}
             <div
                 ref={containerRef}
-                className={`video-call-frame ${callState === 'joined' ? 'visible' : ''}`}
+                className="video-call-frame"
                 style={{ width: '100%', height: '100%' }}
             />
 
-            {callState === 'joined' && (
-                <div className="video-call-controls">
-                    <button className="btn btn-error" onClick={handleLeave}>
-                        <span className="material-symbols-outlined">call_end</span>
-                        End Call
-                    </button>
-                </div>
-            )}
+            {/* End call button */}
+            <div className="video-call-controls">
+                <button className="btn btn-error" onClick={handleLeave}>
+                    <span className="material-symbols-outlined">call_end</span>
+                    End Call
+                </button>
+            </div>
         </div>
     );
 };
