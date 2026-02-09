@@ -65,8 +65,8 @@ const IncomingCall = ({ callerName, callerAvatar, onAccept, onDecline }) => {
 
                     {/* Footer Option */}
                     <button className="audio-only-btn">
-                        <span className="material-symbols-outlined">mic</span>
-                        Join with Audio Only
+                        <span className="material-symbols-outlined">chat</span>
+                        Send Message
                     </button>
                 </div>
             </div>
