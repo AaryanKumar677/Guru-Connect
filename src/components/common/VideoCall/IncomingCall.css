@@ -82,8 +82,8 @@
 
 .call-header p {
     font-size: 0.75rem;
-    /* User Request: Grey for "GuruConnect..." */
-    color: #6b7280;
+    /* User Request: Grey for "GuruConnect..." - Force with !important */
+    color: #6b7280 !important;
     /* Gray 500 */
     margin: 0;
 }
@@ -107,8 +107,10 @@
 
 .avatar-wrapper {
     position: relative;
-    width: 128px;
-    height: 128px;
+    width: 100px;
+    /* Reduced from 128px */
+    height: 100px;
+    /* Reduced from 128px */
     border-radius: 50%;
     padding: 4px;
     background: white;
