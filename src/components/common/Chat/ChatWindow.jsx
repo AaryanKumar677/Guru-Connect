@@ -9,8 +9,15 @@ import {
     subscribeToUserPresence,
     clearChat
 } from '../../../services/firebaseService';
+import {
+    initiateCall,
+    acceptCall as acceptCallService,
+    declineCall as declineCallService,
+    subscribeToIncomingCalls,
+    subscribeToCallStatus
+} from '../../../services/callService';
 import OnlineIndicator from '../OnlineIndicator/OnlineIndicator';
-import VideoCall, { createDailyRoom } from '../VideoCall/VideoCall';
+import VideoCall from '../VideoCall/VideoCall';
 import IncomingCall from '../VideoCall/IncomingCall';
 import './Chat.css';
 
@@ -27,7 +34,9 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
     const [showVideoCall, setShowVideoCall] = useState(false);
     const [videoRoomUrl, setVideoRoomUrl] = useState(null);
     const [showIncomingCall, setShowIncomingCall] = useState(false);
-    const [isAiMode, setIsAiMode] = useState(true); // Default to true as per UI hint
+    const [incomingCallData, setIncomingCallData] = useState(null);
+    const [currentCallId, setCurrentCallId] = useState(null);
+    const [isAiMode, setIsAiMode] = useState(true);
     const [showOptions, setShowOptions] = useState(false);
 
     // Refs
@@ -80,23 +89,56 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         };
     }, []);
 
-    // Simulate incoming call for demo purposes (remove in production)
+    // Subscribe to incoming calls
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowIncomingCall(true);
-        }, 5000);
-        return () => clearTimeout(timer);
-    }, []);
+        if (!user) return;
+        const userId = user.uid || user.id;
+
+        const unsubscribe = subscribeToIncomingCalls(userId, (calls) => {
+            if (calls.length > 0) {
+                // Show the most recent incoming call
+                const latestCall = calls[0];
+                setIncomingCallData(latestCall);
+                setShowIncomingCall(true);
+            } else {
+                setShowIncomingCall(false);
+                setIncomingCallData(null);
+            }
+        });
+
+        return () => unsubscribe();
+    }, [user]);
 
     const startVideoCall = async () => {
         try {
-            const roomName = `guru-chat-${chatId}-${Date.now()}`;
-            const url = await createDailyRoom(roomName);
-            setVideoRoomUrl(url);
+            const userId = user.uid || user.id;
+            const userName = user.name || user.displayName || 'User';
+            const userAvatar = user.photoURL || user.avatar || '';
+
+            const { callId, roomUrl } = await initiateCall(
+                userId,
+                userName,
+                userAvatar,
+                recipientId,
+                chatId,
+                'video'
+            );
+
+            setCurrentCallId(callId);
+            setVideoRoomUrl(roomUrl);
             setShowVideoCall(true);
 
-            // Send a system message that call started
-            sendMessage(chatId, user.uid || user.id, '📞 Started a video call');
+            // Listen for call status changes
+            const unsubscribe = subscribeToCallStatus(callId, (callData) => {
+                if (callData.status === 'declined') {
+                    alert('Call was declined');
+                    closeVideoCall();
+                    unsubscribe();
+                } else if (callData.status === 'accepted') {
+                    // Call accepted, video call is already showing
+                    unsubscribe();
+                }
+            });
         } catch (error) {
             console.error('Failed to start video call:', error);
         }
@@ -105,15 +147,25 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
     const closeVideoCall = () => {
         setShowVideoCall(false);
         setVideoRoomUrl(null);
+        setCurrentCallId(null);
     };
 
-    const acceptCall = () => {
-        setShowIncomingCall(false);
-        startVideoCall();
+    const acceptCall = async () => {
+        if (incomingCallData) {
+            await acceptCallService(incomingCallData.id);
+            setVideoRoomUrl(incomingCallData.roomUrl);
+            setShowVideoCall(true);
+            setShowIncomingCall(false);
+            setIncomingCallData(null);
+        }
     };
 
-    const declineCall = () => {
-        setShowIncomingCall(false);
+    const declineCall = async () => {
+        if (incomingCallData) {
+            await declineCallService(incomingCallData.id);
+            setShowIncomingCall(false);
+            setIncomingCallData(null);
+        }
     };
 
     const toggleAiMode = () => {
@@ -246,10 +298,10 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
             )}
 
             {/* Incoming Call Overlay */}
-            {showIncomingCall && !showVideoCall && (
+            {showIncomingCall && incomingCallData && !showVideoCall && (
                 <IncomingCall
-                    callerName={recipient?.name || 'Tutor'}
-                    callerAvatar={recipient?.avatar || recipient?.photoURL}
+                    callerName={incomingCallData.callerName || 'Someone'}
+                    callerAvatar={incomingCallData.callerAvatar}
                     onAccept={acceptCall}
                     onDecline={declineCall}
                 />
