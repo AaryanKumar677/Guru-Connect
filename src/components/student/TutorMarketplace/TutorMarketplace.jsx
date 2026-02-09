@@ -30,10 +30,16 @@ const TutorMarketplace = () => {
 
     const subjects = ['All Subjects', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'English', 'Computer Science', 'History']
 
+    // Store presence unsubscribers
+    const [presenceUnsubscribers, setPresenceUnsubscribers] = useState({});
+
     // Try to load real tutors from Firebase
     useEffect(() => {
+        let tutorUnsubscribe = null;
+        const presenceUnsubs = {};
+
         try {
-            const unsubscribe = subscribeTutors((realTutors) => {
+            tutorUnsubscribe = subscribeTutors((realTutors) => {
                 // Combine real tutors with mock tutors
                 // Mark real tutors to sort them first and normalize data
                 const markedRealTutors = realTutors.map(t => ({
@@ -42,7 +48,7 @@ const TutorMarketplace = () => {
                     // Default values for fields that might be missing in new profiles
                     rating: t.rating || 0, // Show 0 or New for new tutors
                     sessions: t.sessions || 0,
-                    avatar: t.photoURL ? <img src={t.photoURL} alt={t.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} /> : (t.avatar || '👨‍🏫'),
+                    avatar: (t.photoURL || (typeof t.avatar === 'string' && (t.avatar.startsWith('http') || t.avatar.startsWith('/')))) ? <img src={t.photoURL || t.avatar} alt={t.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} /> : (t.avatar || '👨‍🏫'),
                     bio: t.bio || 'Passionate educator ready to help you learn.',
                     languages: t.languages || ['English'],
                     price: t.price || 15, // Default price
@@ -54,12 +60,28 @@ const TutorMarketplace = () => {
                 const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
 
                 setTutors(unique);
-            })
-            return () => unsubscribe?.()
+
+                // Subscribe to real-time presence for each real tutor
+                markedRealTutors.forEach(tutor => {
+                    if (!presenceUnsubs[tutor.id]) {
+                        presenceUnsubs[tutor.id] = subscribeToUserPresence(tutor.id, (presence) => {
+                            setTutors(prev => prev.map(t =>
+                                t.id === tutor.id ? { ...t, presence } : t
+                            ));
+                        });
+                    }
+                });
+            });
         } catch (error) {
             // Firebase not configured, use mock data
             console.log('Using mock tutors (Firebase not configured)')
         }
+
+        return () => {
+            tutorUnsubscribe?.();
+            // Cleanup all presence subscriptions
+            Object.values(presenceUnsubs).forEach(unsub => unsub?.());
+        };
     }, [])
 
     const handleStartChat = (tutorId) => {

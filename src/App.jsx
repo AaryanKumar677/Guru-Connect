@@ -136,15 +136,24 @@ function App() {
 
   // LISTEN INITIAL AUTH STATE
   useEffect(() => {
+    let presenceUnsubscribe = null;
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
         if (firebaseUser) {
+          console.log('[App] User authenticated:', firebaseUser.uid);
+
           // User is signed in, sync with Firestore to get role/name
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
           if (userDoc.exists()) {
             const userData = { id: firebaseUser.uid, ...userDoc.data() }
             setUser(userData)
             localStorage.setItem('guru-connect-user', JSON.stringify(userData))
+
+            // Setup presence tracking for online status
+            console.log('[App] Setting up presence...');
+            const { setupPresence } = await import('./services/firebaseService');
+            presenceUnsubscribe = setupPresence(firebaseUser.uid);
           } else {
             // If user authenticated but no firestore doc, try localStorage or clear
             // This prevents "stuck" loading if FS fails but Auth succeeds
@@ -154,6 +163,11 @@ function App() {
               const parsed = JSON.parse(saved)
               if (parsed.id === firebaseUser.uid) {
                 setUser(parsed)
+
+                // Setup presence tracking  
+                console.log('[App] Setting up presence (from localStorage)...');
+                const { setupPresence } = await import('./services/firebaseService');
+                presenceUnsubscribe = setupPresence(firebaseUser.uid);
               } else {
                 setUser(null)
                 localStorage.removeItem('guru-connect-user')
@@ -162,8 +176,15 @@ function App() {
           }
         } else {
           // User is signed out
+          console.log('[App] User signed out');
           setUser(null)
           localStorage.removeItem('guru-connect-user')
+
+          // Cleanup presence subscription
+          if (presenceUnsubscribe) {
+            presenceUnsubscribe();
+            presenceUnsubscribe = null;
+          }
         }
       } catch (error) {
         console.error("Auth state sync error:", error)
@@ -174,7 +195,12 @@ function App() {
       }
     })
 
-    return () => unsubscribe()
+    return () => {
+      unsubscribe();
+      if (presenceUnsubscribe) {
+        presenceUnsubscribe();
+      }
+    };
   }, [])
 
 

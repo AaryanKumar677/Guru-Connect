@@ -39,7 +39,7 @@ const AIFeatures = () => {
                     <div className="ai-features-info">
                         <span className="section-label">AI Powered</span>
                         <h2 className="section-title">
-                            Experience the Future of <span className="text-gradient">Learning</span>
+                            Experience the Future of<br /><span className="text-gradient">Learning</span>
                         </h2>
                         <p className="ai-features-description">
                             Our advanced AI assistant is available 24/7 to help you understand complex

@@ -23,7 +23,7 @@ const TutorRecommendations = ({ tutors }) => {
                 </div>
             )}
 
-            <div className="section-header">
+            <div className="recommendations-header">
                 <h3 className="section-title">🎓 Recommended for You</h3>
                 <button className="btn-link" onClick={() => navigate('/student/tutors')}>See All</button>
             </div>

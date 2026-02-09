@@ -6,6 +6,7 @@ import { storage, db } from '../config/firebase';
 export const storageService = {
     // Upload profile image
     uploadProfileImage: async (userId, file) => {
+        console.log('storageService.uploadProfileImage called', { userId, file });
         if (!file) throw new Error('No file provided');
 
         // Validate file type
@@ -25,12 +26,16 @@ export const storageService = {
             const fileExtension = file.name.split('.').pop();
             const fileName = `${userId}_${Date.now()}.${fileExtension}`;
             const storageRef = ref(storage, `avatars/${fileName}`);
+            console.log('Storage Ref created:', storageRef);
 
             // Upload the file
+            console.log('Starting uploadBytes...');
             const snapshot = await uploadBytes(storageRef, file);
+            console.log('uploadBytes complete:', snapshot);
 
             // Get the download URL
             const downloadURL = await getDownloadURL(snapshot.ref);
+            console.log('Download URL retrieved:', downloadURL);
 
             // Update user profile in Firestore
             const userRef = doc(db, 'users', userId);
@@ -38,10 +43,11 @@ export const storageService = {
                 avatar: downloadURL,
                 updatedAt: new Date().toISOString()
             });
+            console.log('Firestore updated');
 
             return downloadURL;
         } catch (error) {
-            console.error('Upload error:', error);
+            console.error('Upload error in storageService:', error);
             throw new Error('Failed to upload image. Please try again.');
         }
     },

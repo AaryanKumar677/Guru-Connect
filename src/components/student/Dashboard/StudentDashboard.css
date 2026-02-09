@@ -763,7 +763,7 @@
     gap: var(--space-4);
 }
 
-.section-header {
+.recommendations-header {
     display: flex;
     justify-content: space-between;
     align-items: center;

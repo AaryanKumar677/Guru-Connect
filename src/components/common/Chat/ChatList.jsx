@@ -43,11 +43,20 @@ const ChatListItem = ({ chat, currentUserId, onClick }) => {
 
     const unreadCount = chat.unreadCount?.[currentUserId] || 0;
 
+    // Helper to render avatar
+    const renderAvatar = () => {
+        const avatar = otherUser?.avatar || otherUser?.photoURL;
+        if (avatar && typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
+            return <img src={avatar} alt={otherUser?.name || 'User'} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />;
+        }
+        return avatar || '👤';
+    };
+
     return (
         <div className="chat-list-item" onClick={() => onClick(chat, otherUserId)}>
             <div className="chat-list-avatar">
                 <div className="chat-avatar">
-                    {otherUser?.avatar || '👤'}
+                    {renderAvatar()}
                 </div>
                 <OnlineIndicator online={presence.online} size="small" />
             </div>

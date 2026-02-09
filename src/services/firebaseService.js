@@ -82,42 +82,64 @@ export const subscribeTutors = (callback) => {
  * Set up presence tracking for a user
  */
 export const setupPresence = (userId) => {
+    console.log('[Presence] Setting up presence for user:', userId);
+
     const userStatusRef = ref(rtdb, `/status/${userId}`);
     const userDocRef = doc(db, 'users', userId);
 
     // When connected, update presence
     const connectedRef = ref(rtdb, '.info/connected');
 
-    onValue(connectedRef, async (snapshot) => {
+    const unsubscribe = onValue(connectedRef, async (snapshot) => {
+        console.log('[Presence] Connection status changed:', snapshot.val());
+
         if (snapshot.val() === true) {
-            // Set online status
-            await set(userStatusRef, {
-                online: true,
-                lastSeen: rtdbTimestamp()
-            });
+            console.log('[Presence] Connected! Setting online status...');
 
-            // When disconnected, set offline
-            onDisconnect(userStatusRef).set({
-                online: false,
-                lastSeen: rtdbTimestamp()
-            });
+            try {
+                // Set online status in Realtime Database
+                await set(userStatusRef, {
+                    online: true,
+                    lastSeen: rtdbTimestamp()
+                });
+                console.log('[Presence] RTDB status set to online');
 
-            // Update Firestore too
-            await updateDoc(userDocRef, {
-                'presence.online': true,
-                'presence.lastSeen': serverTimestamp()
-            });
+                // When disconnected, set offline
+                await onDisconnect(userStatusRef).set({
+                    online: false,
+                    lastSeen: rtdbTimestamp()
+                });
+                console.log('[Presence] onDisconnect handler set');
+
+                // Update Firestore too (use setDoc with merge to avoid errors if doc doesn't exist)
+                await setDoc(userDocRef, {
+                    presence: {
+                        online: true,
+                        lastSeen: serverTimestamp()
+                    }
+                }, { merge: true });
+                console.log('[Presence] Firestore presence updated');
+            } catch (error) {
+                console.error('[Presence] Error setting presence:', error);
+            }
+        } else {
+            console.log('[Presence] Not connected to Firebase RTDB');
         }
     });
+
+    // Return unsubscribe function for cleanup
+    return unsubscribe;
 };
 
 /**
  * Subscribe to a user's online status
  */
 export const subscribeToUserPresence = (userId, callback) => {
+    console.log('[Presence] Subscribing to presence for user:', userId);
     const userStatusRef = ref(rtdb, `/status/${userId}`);
     return onValue(userStatusRef, (snapshot) => {
         const data = snapshot.val();
+        console.log('[Presence] Received presence data for', userId, ':', data);
         callback(data || { online: false, lastSeen: null });
     });
 };

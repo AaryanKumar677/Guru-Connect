@@ -1,7 +1,7 @@
 // Firebase Configuration
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getDatabase } from 'firebase/database';
 import { getStorage } from 'firebase/storage';
 
@@ -20,7 +20,11 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize services
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+// Use long-polling instead of WebSocket/QUIC to fix connection issues
+export const db = initializeFirestore(app, {
+    experimentalForceLongPolling: true,
+    useFetchStreams: false,
+});
 export const rtdb = getDatabase(app);
 export const storage = getStorage(app);
 

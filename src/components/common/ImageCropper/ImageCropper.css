@@ -1,0 +1,113 @@
+/* Image Cropper Styles */
+
+.cropper-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    /* Darker backdrop for focus */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn var(--duration-fast) var(--ease-default);
+    backdrop-filter: blur(4px);
+}
+
+.cropper-modal {
+    width: 90%;
+    max-width: 480px;
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-2xl);
+    border: 1px solid var(--border);
+    animation: scaleIn var(--duration-fast) var(--ease-default);
+}
+
+.cropper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border);
+}
+
+.cropper-header h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    line-height: 1;
+    padding: var(--space-1);
+    border-radius: var(--radius-md);
+    transition: all var(--duration-fast);
+}
+
+.close-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.cropper-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background: #333;
+}
+
+.slider-container {
+    padding: var(--space-4) var(--space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.slider-icon {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    font-weight: bold;
+}
+
+.zoom-range {
+    flex: 1;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-full);
+    outline: none;
+}
+
+.zoom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--primary-500);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform var(--duration-fast);
+}
+
+.zoom-range::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.cropper-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--border);
+    background: var(--bg-tertiary);
+    /* Light contrast footer */
+}

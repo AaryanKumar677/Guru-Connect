@@ -66,13 +66,22 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
+    // Helper to render avatar
+    const renderAvatar = (user) => {
+        const avatar = user?.avatar || user?.photoURL;
+        if (avatar && typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
+            return <img src={avatar} alt={user?.name || 'User'} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />;
+        }
+        return avatar || '👤';
+    };
+
     return (
         <div className="chat-window">
             {/* Header */}
             <div className="chat-header">
                 <div className="chat-recipient">
                     <div className="chat-avatar">
-                        {recipient?.avatar || '👤'}
+                        {renderAvatar(recipient)}
                     </div>
                     <div className="chat-recipient-info">
                         <span className="chat-recipient-name">

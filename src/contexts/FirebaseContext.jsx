@@ -20,24 +20,39 @@ export const FirebaseProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let presenceUnsubscribe = null;
+
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            console.log('[FirebaseContext] Auth state changed:', user?.uid || 'no user');
             setFirebaseUser(user);
 
             if (user) {
                 // Get user profile from Firestore
                 const profile = await getUserProfile(user.uid);
+                console.log('[FirebaseContext] User profile loaded:', profile?.name || 'no profile');
                 setUserProfile(profile);
 
                 // Setup presence tracking
-                setupPresence(user.uid);
+                console.log('[FirebaseContext] Setting up presence...');
+                presenceUnsubscribe = setupPresence(user.uid);
             } else {
                 setUserProfile(null);
+                // Cleanup presence subscription
+                if (presenceUnsubscribe) {
+                    presenceUnsubscribe();
+                    presenceUnsubscribe = null;
+                }
             }
 
             setLoading(false);
         });
 
-        return () => unsubscribe();
+        return () => {
+            unsubscribe();
+            if (presenceUnsubscribe) {
+                presenceUnsubscribe();
+            }
+        };
     }, []);
 
     const value = {

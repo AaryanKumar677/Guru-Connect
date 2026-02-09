@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { storageService } from '../../../services/storageService'
 import { useToast } from '../../../App'
+import ImageCropper from '../ImageCropper/ImageCropper'
 import './ProfileImageUpload.css'
 
 const ProfileImageUpload = ({ userId, currentAvatar, userName, onImageUpdate }) => {
@@ -8,6 +9,8 @@ const ProfileImageUpload = ({ userId, currentAvatar, userName, onImageUpdate }) 
     const fileInputRef = useRef(null)
     const [isUploading, setIsUploading] = useState(false)
     const [previewUrl, setPreviewUrl] = useState(null)
+    const [cropImage, setCropImage] = useState(null)
+    const [showCropper, setShowCropper] = useState(false)
 
     // Get initials from name
     const getInitials = (name) => {
@@ -15,24 +18,46 @@ const ProfileImageUpload = ({ userId, currentAvatar, userName, onImageUpdate }) 
         return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     }
 
-    const handleFileSelect = async (e) => {
+    const handleFileSelect = (e) => {
         const file = e.target.files?.[0]
         if (!file) return
 
-        // Show preview immediately
+        // Read file for cropper
+        const reader = new FileReader()
+        reader.onload = () => {
+            setCropImage(reader.result)
+            setShowCropper(true)
+        }
+        reader.readAsDataURL(file)
+
+        // Reset input immediately so same file can be selected again if cancelled
+        e.target.value = ''
+    }
+
+    const handleCropComplete = async (croppedImageBlob) => {
+        console.log('handleCropComplete started', croppedImageBlob);
+        setShowCropper(false)
+        setCropImage(null)
+
+        // Show preview of cropped image
         const reader = new FileReader()
         reader.onloadend = () => {
             setPreviewUrl(reader.result)
         }
-        reader.readAsDataURL(file)
+        reader.readAsDataURL(croppedImageBlob)
 
         setIsUploading(true)
         try {
-            // Compress image before upload
-            const compressedFile = await storageService.compressImage(file, 400, 0.8)
+            console.log('Preparing file for upload...');
+            // No need to compress again as cropper outputs efficiently, 
+            // but we can ensure it's a File object
+            const fileToUpload = new File([croppedImageBlob], "avatar.jpg", { type: "image/jpeg" })
+            console.log('File created:', fileToUpload);
 
             // Upload to Firebase Storage
-            const downloadURL = await storageService.uploadProfileImage(userId, compressedFile)
+            console.log('Calling storageService.uploadProfileImage...');
+            const downloadURL = await storageService.uploadProfileImage(userId, fileToUpload)
+            console.log('Upload successful, URL:', downloadURL);
 
             // Notify parent component
             if (onImageUpdate) {
@@ -41,14 +66,19 @@ const ProfileImageUpload = ({ userId, currentAvatar, userName, onImageUpdate }) 
 
             showToast('Profile photo updated!', 'success')
         } catch (error) {
-            showToast(error.message, 'error')
+            console.error('Upload failed:', error);
+            showToast(error.message || 'Failed to update photo', 'error')
             setPreviewUrl(null) // Revert preview on error
         } finally {
             setIsUploading(false)
-            // Reset file input
-            if (fileInputRef.current) {
-                fileInputRef.current.value = ''
-            }
+        }
+    }
+
+    const handleCancelCrop = () => {
+        setShowCropper(false)
+        setCropImage(null)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''
         }
     }
 
@@ -76,6 +106,14 @@ const ProfileImageUpload = ({ userId, currentAvatar, userName, onImageUpdate }) 
 
     return (
         <div className="profile-image-upload">
+            {showCropper && cropImage && (
+                <ImageCropper
+                    image={cropImage}
+                    onCropComplete={handleCropComplete}
+                    onCancel={handleCancelCrop}
+                />
+            )}
+
             <div className="avatar-container">
                 {displayImage ? (
                     <img

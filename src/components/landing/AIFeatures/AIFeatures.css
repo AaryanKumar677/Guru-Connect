@@ -62,11 +62,24 @@
 
 /* Info Section */
 .ai-features-info {
-    max-width: 500px;
+    max-width: 700px;
+}
+
+/* AI Features section title - proper stacking */
+.ai-features .section-title {
+    font-size: 2.5rem !important;
+    line-height: 1.2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.ai-features .section-title .text-gradient {
+    display: block;
 }
 
 .ai-features-description {
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     /* Reduced font size */
     color: var(--text-secondary);
     line-height: 1.6;
