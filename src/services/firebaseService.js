@@ -12,7 +12,8 @@ import {
     orderBy,
     addDoc,
     serverTimestamp,
-    limit
+    limit,
+    writeBatch
 } from 'firebase/firestore';
 import {
     ref,
@@ -249,5 +250,33 @@ export const markMessagesAsRead = async (chatId, userId) => {
     const chatRef = doc(db, 'chats', chatId);
     await updateDoc(chatRef, {
         [`unreadCount.${userId}`]: 0
+    });
+};
+
+/**
+ * Clear chat messages
+ */
+export const clearChat = async (chatId) => {
+    // 1. Get all messages
+    const messagesRef = collection(db, 'chats', chatId, 'messages');
+    const snapshot = await getDocs(messagesRef);
+
+    // 2. Delete in batches
+    // Note: This is client-side deletion. For prod, use Cloud Functions.
+    const batch = writeBatch(db);
+    snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+    });
+
+    await batch.commit();
+
+    // 3. Update chat last message
+    const chatRef = doc(db, 'chats', chatId);
+    await updateDoc(chatRef, {
+        lastMessage: {
+            text: 'Chat cleared',
+            timestamp: serverTimestamp(),
+            system: true
+        }
     });
 };
