@@ -15,37 +15,20 @@
     animation: fadeIn 0.3s ease-out;
 }
 
-/* Glassmorphism Card */
+/* Glassmorphism Card - ALWAYS Light/White like Stitch design */
 .incoming-call-card {
     position: relative;
     width: 100%;
     max-width: 420px;
     padding: 3rem 2rem;
     border-radius: 2rem;
-    /* Default to Light Mode Glass (Stitch: rgba(255, 255, 255, 0.85)) */
-    background: rgba(255, 255, 255, 0.85);
+    /* Always white/light background like Stitch */
+    background: rgba(255, 255, 255, 0.9) !important;
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.5);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     overflow: hidden;
     animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Dark Mode Support - Adjusted to match user screenshot (Lighter Charcoal) */
-@media (prefers-color-scheme: dark) {
-    .incoming-call-card {
-        /* Lighter background to avoid "black" look - using Gray 800/90 */
-        background: rgba(31, 41, 55, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-}
-
-/* Force dark mode if .dark class is present on body/parent (common in Tailwind apps) */
-:global(.dark) .incoming-call-card {
-    background: rgba(31, 41, 55, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 /* Decorative Blobs */
