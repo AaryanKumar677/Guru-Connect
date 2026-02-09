@@ -155,13 +155,15 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
                 style={{ width: '100%', height: '100%' }}
             />
 
-            {/* End call button */}
-            <div className="video-call-controls">
-                <button className="btn btn-error" onClick={handleLeave}>
-                    <span className="material-symbols-outlined">call_end</span>
-                    End Call
-                </button>
-            </div>
+            {/* End call button - Only show if NOT joined (Jitsi has its own controls) */}
+            {callState !== 'joined' && (
+                <div className="video-call-controls">
+                    <button className="btn btn-error" onClick={handleLeave}>
+                        <span className="material-symbols-outlined">call_end</span>
+                        End Call
+                    </button>
+                </div>
+            )}
         </div>,
         document.body
     );
