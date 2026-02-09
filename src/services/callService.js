@@ -13,7 +13,7 @@ import {
     Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { createDailyRoom } from '../components/common/VideoCall/VideoCall';
+import { createVideoRoom } from '../components/common/VideoCall/VideoCall';
 import { sendMessage } from './firebaseService';
 
 /**
@@ -21,9 +21,7 @@ import { sendMessage } from './firebaseService';
  */
 export const initiateCall = async (callerId, callerName, callerAvatar, recipientId, chatId, type = 'video') => {
     try {
-        // Create Daily.co room
-        const roomName = `guru-call-${chatId}-${Date.now()}`;
-        const roomUrl = await createDailyRoom(roomName);
+        const roomUrl = createVideoRoom(`guru-call-${chatId}`);
 
         // Create call request in Firestore
         const callRef = await addDoc(collection(db, 'callRequests'), {
