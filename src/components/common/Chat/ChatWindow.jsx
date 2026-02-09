@@ -150,6 +150,14 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         setShowVideoCall(false);
         setVideoRoomUrl(null);
         setCurrentCallId(null);
+        setIsCalling(false);
+    };
+
+    const handleCancelCall = async () => {
+        if (currentCallId) {
+            await cancelCallService(currentCallId);
+        }
+        closeVideoCall();
     };
 
     const acceptCall = async () => {
