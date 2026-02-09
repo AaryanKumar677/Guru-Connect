@@ -20,6 +20,7 @@ import {
 import OnlineIndicator from '../OnlineIndicator/OnlineIndicator';
 import VideoCall from '../VideoCall/VideoCall';
 import IncomingCall from '../VideoCall/IncomingCall';
+import '../VideoCall/VideoCall.css';
 import './Chat.css';
 
 const ChatWindow = ({ chatId, recipientId, onClose }) => {
