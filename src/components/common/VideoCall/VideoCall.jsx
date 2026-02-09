@@ -55,6 +55,7 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
         // Extract room name from URL (remove domain and tenant path)
         // URL format: https://8x8.vc/vpaas-magic-cookie-.../roomName
         const apiDomain = '8x8.vc';
+        const domain = '8x8.vc';
         const tenantPath = 'vpaas-magic-cookie-58eecbe32e2e4466a89ceaa3d993654d';
 
         let roomName = roomUrl;
