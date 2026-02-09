@@ -1,4 +1,3 @@
-// Call Service - Firebase functions for video/voice call management
 import {
     collection,
     doc,
@@ -16,14 +15,10 @@ import { db } from '../config/firebase';
 import { createVideoRoom } from '../components/common/VideoCall/VideoCall';
 import { sendMessage } from './firebaseService';
 
-/**
- * Initiate a call to another user
- */
 export const initiateCall = async (callerId, callerName, callerAvatar, recipientId, chatId, type = 'video') => {
     try {
         const roomUrl = createVideoRoom(`guru-call-${chatId}`);
 
-        // Create call request in Firestore
         const callRef = await addDoc(collection(db, 'callRequests'), {
             callerId,
             callerName,
@@ -36,14 +31,11 @@ export const initiateCall = async (callerId, callerName, callerAvatar, recipient
             createdAt: serverTimestamp()
         });
 
-        // Auto-timeout after 30 seconds
         setTimeout(async () => {
             try {
                 const callDoc = doc(db, 'callRequests', callRef.id);
-                // Check if still ringing, then mark as missed
                 await updateDoc(callDoc, { status: 'missed' });
 
-                // Send missed call message to chat
                 const timeStr = new Date().toLocaleTimeString('en-US', {
                     hour: 'numeric',
                     minute: '2-digit',
@@ -51,7 +43,6 @@ export const initiateCall = async (callerId, callerName, callerAvatar, recipient
                 });
                 await sendMessage(chatId, callerId, `📞 Missed ${type} call at ${timeStr}`);
             } catch (e) {
-                // Call might have been answered/declined already
                 console.log('Call status already changed');
             }
         }, 30000);
@@ -63,41 +54,26 @@ export const initiateCall = async (callerId, callerName, callerAvatar, recipient
     }
 };
 
-/**
- * Accept an incoming call
- */
 export const acceptCall = async (callId) => {
     const callRef = doc(db, 'callRequests', callId);
     await updateDoc(callRef, { status: 'accepted' });
 };
 
-/**
- * Decline an incoming call
- */
 export const declineCall = async (callId) => {
     const callRef = doc(db, 'callRequests', callId);
     await updateDoc(callRef, { status: 'declined' });
 };
 
-/**
- * Cancel an outgoing call
- */
 export const cancelCall = async (callId) => {
     const callRef = doc(db, 'callRequests', callId);
-    await updateDoc(callRef, { status: 'missed' }); // Mark as missed so it shows up in history
+    await updateDoc(callRef, { status: 'missed' });
 };
 
-/**
- * End an ongoing call
- */
 export const endCall = async (callId) => {
     const callRef = doc(db, 'callRequests', callId);
     await updateDoc(callRef, { status: 'ended' });
 };
 
-/**
- * Subscribe to incoming calls for a user
- */
 export const subscribeToIncomingCalls = (userId, callback) => {
     const callsQuery = query(
         collection(db, 'callRequests'),
@@ -114,9 +90,6 @@ export const subscribeToIncomingCalls = (userId, callback) => {
     });
 };
 
-/**
- * Subscribe to call status changes (for the caller)
- */
 export const subscribeToCallStatus = (callId, callback) => {
     const callRef = doc(db, 'callRequests', callId);
     return onSnapshot(callRef, (snapshot) => {
@@ -126,11 +99,6 @@ export const subscribeToCallStatus = (callId, callback) => {
     });
 };
 
-/**
- * Clean up old call requests (called periodically or on app start)
- */
 export const cleanupOldCalls = async (userId) => {
-    // This would typically be done with a Cloud Function
-    // For now, we just listen to active calls
     console.log('Call cleanup would run here');
 };

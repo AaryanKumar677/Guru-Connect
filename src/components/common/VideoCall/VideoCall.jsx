@@ -1,15 +1,10 @@
-// Video Call Component - Jitsi Meet integration (FREE, no account required)
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './VideoCall.css';
 
-// Generate a JaaS room name
 export const createVideoRoom = (baseName) => {
-    // Sanitize baseName
     const safe = String(baseName).replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
-    // 8x8 JaaS Tenant Path
     const tenantPath = 'vpaas-magic-cookie-58eecbe32e2e4466a89ceaa3d993654d';
-    // Usage: https://8x8.vc/{tenantPath}/{roomName}
     return `https://8x8.vc/${tenantPath}/${safe}`;
 };
 
@@ -19,9 +14,7 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
     const [callState, setCallState] = useState('joining');
     const [jitsiLoaded, setJitsiLoaded] = useState(false);
 
-    // Load Jitsi API script from 8x8
     useEffect(() => {
-        // Prevent creating multiple instances
         if (apiRef.current) return;
 
         if (window.JitsiMeetExternalAPI) {
@@ -30,7 +23,6 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
         }
 
         const script = document.createElement('script');
-        // 8x8 JaaS External API Script
         script.src = 'https://8x8.vc/vpaas-magic-cookie-58eecbe32e2e4466a89ceaa3d993654d/external_api.js';
         script.async = true;
         script.onload = () => setJitsiLoaded(true);
@@ -41,26 +33,20 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
         document.body.appendChild(script);
 
         return () => {
-            // Don't remove script on unmount as other calls might need it
         };
     }, []);
 
-    // Initialize Jitsi call when script is loaded
     useEffect(() => {
         if (!jitsiLoaded || !roomUrl || !containerRef.current) return;
 
-        // Prevent creating multiple instances (avoid duplicate frames)
         if (apiRef.current) return;
 
-        // Extract room name from URL (remove domain and tenant path)
-        // URL format: https://8x8.vc/vpaas-magic-cookie-.../roomName
         const apiDomain = '8x8.vc';
         const domain = '8x8.vc';
         const tenantPath = 'vpaas-magic-cookie-58eecbe32e2e4466a89ceaa3d993654d';
 
         let roomName = roomUrl;
         if (roomUrl.includes(apiDomain)) {
-            // Remove domain
             roomName = roomUrl.replace(`https://${apiDomain}/`, '');
         }
 
@@ -70,7 +56,6 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
                 width: '100%',
                 height: '100%',
                 parentNode: containerRef.current,
-                // JWT Token for JaaS (Provided by user)
                 jwt: "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtNThlZWNiZTMyZTJlNDQ2NmE4OWNlYWEzZDk5MzY1NGQvODcwNDhlLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3NzA2Njg4OTcsImV4cCI6MTc3MDY3NjA5NywibmJmIjoxNzcwNjY4ODkyLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtNThlZWNiZTMyZTJlNDQ2NmE4OWNlYWEzZDk5MzY1NGQiLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOmZhbHNlLCJmaWxlLXVwbG9hZCI6ZmFsc2UsIm91dGJvdW5kLWNhbGwiOmZhbHNlLCJzaXAtb3V0Ym91bmQtY2FsbCI6ZmFsc2UsInRyYW5zY3JpcHRpb24iOmZhbHNlLCJsaXN0LXZpc2l0b3JzIjpmYWxzZSwicmVjb3JkaW5nIjpmYWxzZSwiZmxpcCI6ZmFsc2V9LCJ1c2VyIjp7ImhpZGRlbi1mcm9tLXJlY29yZGVyIjpmYWxzZSwibW9kZXJhdG9yIjp0cnVlLCJuYW1lIjoiVGVzdCBVc2VyIiwiaWQiOiJnb29nbGUtb2F1dGgyfDEwMzg3NjYzMDM1ODQ0MjEzNDQ3MiIsImF2YXRhciI6IiIsImVtYWlsIjoidGVzdC51c2VyQGNvbXBhbnkuY29tIn19LCJyb29tIjoiKiJ9.I5Yjtezz1H3PhUghjzStxB6x9Kw2p6O2LR3sfVMVqfdJ1jq1nN3sX-TTNR9tGIn0H6B21hPrKYarUEKkscoc6r5h_tGxCTKM_suytKPlFT8nHFIfsXTyKQzqHZmDYnj3jDaXYoEFUXg0yrahmx8rjfIOUopMkx3Cte3vlano32_sxCFXlZ8smHemf2Ni3hbGRNrjbGGdENN17mBTDX23ZzyCFu3bsmCxZBF3Ta-L6rGSk7vjpKWB0_v6VH425-DtB2nali6H7AILnbN1MHvrfHjQZORw59nWqiEXSxm-zmBXEIlviZYQTcVB1Vlwm_itxaHo-DOpMedhf-c3LympIw",
                 userInfo: {
                     displayName: participantName || 'User'
@@ -86,7 +71,6 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
                     hideConferenceSubject: true,
                     hideConferenceTimer: true,
                     subject: 'GuruConnect Call',
-                    // Disable lobby and moderator requirements
                     enableLobbyChat: false,
                     hideLobbyButton: true,
                     requireDisplayName: false,
@@ -145,17 +129,14 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
         onLeave?.();
     };
 
-    // Use Portal to render at body level - bypasses all parent container constraints
     return createPortal(
         <div className="video-call-container">
-            {/* Jitsi iframe container - always visible */}
             <div
                 ref={containerRef}
                 className="video-call-frame"
                 style={{ width: '100%', height: '100%' }}
             />
 
-            {/* End call button - Only show if NOT joined (Jitsi has its own controls) */}
             {callState !== 'joined' && (
                 <div className="video-call-controls">
                     <button className="btn btn-error" onClick={handleLeave}>
