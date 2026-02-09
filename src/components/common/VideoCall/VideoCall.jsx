@@ -57,7 +57,14 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
                 configOverwrite: {
                     startWithAudioMuted: false,
                     startWithVideoMuted: false,
-                    prejoinPageEnabled: false
+                    prejoinPageEnabled: false,
+                    disableDeepLinking: true,
+                    enableWelcomePage: false,
+                    enableClosePage: false,
+                    disableInviteFunctions: true,
+                    hideConferenceSubject: true,
+                    hideConferenceTimer: true,
+                    subject: 'GuruConnect Call'
                 },
                 interfaceConfigOverwrite: {
                     TOOLBAR_BUTTONS: [
@@ -65,7 +72,11 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
                         'hangup', 'chat', 'settings', 'videoquality'
                     ],
                     SHOW_JITSI_WATERMARK: false,
-                    SHOW_WATERMARK_FOR_GUESTS: false
+                    SHOW_WATERMARK_FOR_GUESTS: false,
+                    DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+                    MOBILE_APP_PROMO: false,
+                    HIDE_INVITE_MORE_HEADER: true,
+                    DISABLE_PRESENCE_STATUS: true
                 }
             };
 
