@@ -1,5 +1,6 @@
 // Video Call Component - Jitsi Meet integration (FREE, no account required)
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './VideoCall.css';
 
 // Generate a random room name for Jitsi
@@ -115,7 +116,8 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
         onLeave?.();
     };
 
-    return (
+    // Use Portal to render at body level - bypasses all parent container constraints
+    return createPortal(
         <div className="video-call-container">
             {/* Jitsi iframe container - always visible */}
             <div
@@ -131,7 +133,8 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
                     End Call
                 </button>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 
