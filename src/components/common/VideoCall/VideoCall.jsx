@@ -9,11 +9,16 @@ export const createVideoRoom = (baseName) => {
     return `https://meet.jit.si/${roomId}`;
 };
 
-const VideoCall = ({ roomUrl, onLeave, participantName }) => {
+const VideoCall = ({ roomUrl, onLeave, participantName, isCalling, onCancel }) => {
     const containerRef = useRef(null);
     const apiRef = useRef(null);
     const [callState, setCallState] = useState('joining');
     const [jitsiLoaded, setJitsiLoaded] = useState(false);
+
+    // ... (rest of jitsi loading logic remains same)
+
+    // Handle isCalling state - if true, we show a calling overlay instead of Jitsi
+    const showJitsi = !isCalling && roomUrl;
 
     // Load Jitsi API script
     useEffect(() => {
@@ -37,9 +42,9 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
         };
     }, []);
 
-    // Initialize Jitsi call when script is loaded
+    // Initialize Jitsi call when script is loaded AND not calling state
     useEffect(() => {
-        if (!jitsiLoaded || !roomUrl || !containerRef.current) return;
+        if (!jitsiLoaded || !showJitsi || !containerRef.current) return;
 
         // Extract room name from URL
         const roomName = roomUrl.replace('https://meet.jit.si/', '');
@@ -95,7 +100,7 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
                 apiRef.current = null;
             }
         };
-    }, [jitsiLoaded, roomUrl, participantName, onLeave]);
+    }, [jitsiLoaded, roomUrl, participantName, onLeave, showJitsi]);
 
     const handleLeave = () => {
         if (apiRef.current) {
@@ -103,6 +108,25 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
         }
         onLeave?.();
     };
+
+    if (isCalling) {
+        return (
+            <div className="video-call-container">
+                <div className="video-call-calling">
+                    <div className="calling-avatar">
+                        <span className="material-symbols-outlined" style={{ fontSize: '48px' }}>person</span>
+                    </div>
+                    <h3>Calling...</h3>
+                    <p>Waiting for answer</p>
+                    <div className="calling-actions">
+                        <button className="btn btn-error btn-circle" onClick={onCancel}>
+                            <span className="material-symbols-outlined">call_end</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="video-call-container">

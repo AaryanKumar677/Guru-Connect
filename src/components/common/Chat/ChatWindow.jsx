@@ -13,6 +13,7 @@ import {
     initiateCall,
     acceptCall as acceptCallService,
     declineCall as declineCallService,
+    cancelCall as cancelCallService,
     subscribeToIncomingCalls,
     subscribeToCallStatus
 } from '../../../services/callService';
@@ -36,6 +37,7 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
     const [showIncomingCall, setShowIncomingCall] = useState(false);
     const [incomingCallData, setIncomingCallData] = useState(null);
     const [currentCallId, setCurrentCallId] = useState(null);
+    const [isCalling, setIsCalling] = useState(false); // True when calling someone
     const [isAiMode, setIsAiMode] = useState(true);
     const [showOptions, setShowOptions] = useState(false);
 
@@ -293,6 +295,8 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
                         roomUrl={videoRoomUrl}
                         onLeave={closeVideoCall}
                         participantName={user.name || 'User'}
+                        isCalling={isCalling}
+                        onCancel={handleCancelCall}
                     />
                 </div>
             )}

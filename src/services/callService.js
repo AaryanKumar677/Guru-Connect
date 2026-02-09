@@ -80,6 +80,14 @@ export const declineCall = async (callId) => {
 };
 
 /**
+ * Cancel an outgoing call
+ */
+export const cancelCall = async (callId) => {
+    const callRef = doc(db, 'callRequests', callId);
+    await updateDoc(callRef, { status: 'missed' }); // Mark as missed so it shows up in history
+};
+
+/**
  * End an ongoing call
  */
 export const endCall = async (callId) => {
