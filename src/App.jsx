@@ -35,6 +35,7 @@ const TutorMessages = StudentMessages;
 import NotFound from './components/common/NotFound/NotFound'
 import Settings from './components/common/Settings/Settings'
 import Help from './components/common/Help/Help'
+import GlobalCallListener from './components/global/GlobalCallListener'
 
 // ... (Lazy loads remain the same) ...
 // Lazy load removed for stability during presentation
@@ -283,6 +284,9 @@ function App() {
           <AuthContext.Provider value={{ user, login, signup, logout, openAuthModal, updateUser }}>
             <div className={`app ${isDashboardRoute ? 'app-dashboard' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
               <Header />
+
+              {/* Global Call Listener - shows incoming calls anywhere */}
+              <GlobalCallListener />
 
               {/* Sidebar for dashboard routes */}
               {user && (
