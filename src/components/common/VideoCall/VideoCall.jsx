@@ -3,7 +3,46 @@ import React, { useEffect, useRef, useState } from 'react';
 import DailyIframe from '@daily-co/daily-js';
 import './VideoCall.css';
 
-const DAILY_API_KEY = 'YOUR_DAILY_API_KEY'; // Get from daily.co dashboard
+const DAILY_API_KEY = '56139e61e2883d0063d0e207b4af79a428c1fe27fe64d6c195daf6ae16012b7';
+
+// Helper function to create a Daily.co room
+export const createDailyRoom = async (roomName) => {
+    try {
+        const response = await fetch('https://api.daily.co/v1/rooms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${DAILY_API_KEY}`
+            },
+            body: JSON.stringify({
+                name: roomName,
+                properties: {
+                    exp: Math.floor(Date.now() / 1000) + 3600, // Expires in 1 hour
+                    enable_chat: true,
+                    enable_screenshare: true,
+                    start_video_off: false,
+                    start_audio_off: false
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            // If room already exists, just return the URL
+            if (errorData.error === 'invalid-request-error' && errorData.info?.includes('already exists')) {
+                return `https://guruconnect.daily.co/${roomName}`;
+            }
+            throw new Error(errorData.info || 'Failed to create room');
+        }
+
+        const data = await response.json();
+        return data.url;
+    } catch (error) {
+        console.error('Error creating Daily room:', error);
+        // Fallback to direct URL (room might already exist)
+        return `https://guruconnect.daily.co/${roomName}`;
+    }
+};
 
 const VideoCall = ({ roomUrl, onLeave, participantName }) => {
     const callRef = useRef(null);
@@ -74,7 +113,7 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
 
             {callState === 'error' && (
                 <div className="video-call-error">
-                    <span>❌</span>
+                    <span className="material-symbols-outlined">error</span>
                     <p>Failed to connect to call</p>
                     <button className="btn btn-primary" onClick={onLeave}>
                         Close
@@ -90,6 +129,7 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
             {callState === 'joined' && (
                 <div className="video-call-controls">
                     <button className="btn btn-error" onClick={handleLeave}>
+                        <span className="material-symbols-outlined">call_end</span>
                         End Call
                     </button>
                 </div>
@@ -102,21 +142,11 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
 export const VideoCallButton = ({ tutorId, tutorName, onStartCall }) => {
     const [creating, setCreating] = useState(false);
 
-    const createRoom = async () => {
+    const handleCreateRoom = async () => {
         setCreating(true);
         try {
-            // For demo, we'll create a simple room URL
-            // In production, you'd call Daily.co API to create a room
-            const roomName = `guruconnect-${tutorId}-${Date.now()}`;
-            const roomUrl = `https://guruconnect.daily.co/${roomName}`;
-
-            // In production, create room via API:
-            // const response = await fetch('https://api.daily.co/v1/rooms', {
-            //     method: 'POST',
-            //     headers: { Authorization: `Bearer ${DAILY_API_KEY}` },
-            //     body: JSON.stringify({ name: roomName, properties: { exp: Date.now()/1000 + 3600 } })
-            // });
-
+            const roomName = `guru-${tutorId}-${Date.now()}`;
+            const roomUrl = await createDailyRoom(roomName);
             onStartCall(roomUrl);
         } catch (error) {
             console.error('Failed to create room:', error);
@@ -127,10 +157,11 @@ export const VideoCallButton = ({ tutorId, tutorName, onStartCall }) => {
     return (
         <button
             className="btn btn-secondary video-call-button"
-            onClick={createRoom}
+            onClick={handleCreateRoom}
             disabled={creating}
         >
-            {creating ? '...' : '📹'} Video Call
+            <span className="material-symbols-outlined">videocam</span>
+            {creating ? 'Starting...' : 'Video Call'}
         </button>
     );
 };

@@ -10,7 +10,7 @@ import {
     clearChat
 } from '../../../services/firebaseService';
 import OnlineIndicator from '../OnlineIndicator/OnlineIndicator';
-import VideoCall from '../VideoCall/VideoCall';
+import VideoCall, { createDailyRoom } from '../VideoCall/VideoCall';
 import IncomingCall from '../VideoCall/IncomingCall';
 import './Chat.css';
 
@@ -88,15 +88,18 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         return () => clearTimeout(timer);
     }, []);
 
-    const startVideoCall = () => {
-        // In a real app, call API to create room. Here we mock it.
-        const roomName = `guruconnect-${chatId}-${Date.now()}`;
-        const url = `https://guruconnect.daily.co/${roomName}`;
-        setVideoRoomUrl(url);
-        setShowVideoCall(true);
+    const startVideoCall = async () => {
+        try {
+            const roomName = `guru-chat-${chatId}-${Date.now()}`;
+            const url = await createDailyRoom(roomName);
+            setVideoRoomUrl(url);
+            setShowVideoCall(true);
 
-        // Send a system message that call started
-        sendMessage(chatId, user.uid || user.id, '📞 Started a video call');
+            // Send a system message that call started
+            sendMessage(chatId, user.uid || user.id, '📞 Started a video call');
+        } catch (error) {
+            console.error('Failed to start video call:', error);
+        }
     };
 
     const closeVideoCall = () => {
