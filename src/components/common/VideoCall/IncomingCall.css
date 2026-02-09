@@ -87,15 +87,16 @@
     font-size: 0.875rem;
     font-weight: 600;
     letter-spacing: 0.05em;
-    color: #10b981;
-    /* Emerald 500 */
+    /* Stitch: text-[#61896f] */
+    color: #61896f;
     margin: 0 0 4px 0;
     text-transform: uppercase;
 }
 
 .call-header p {
     font-size: 0.75rem;
-    color: #6b7280;
+    /* Stitch: text-[#61896f]/70 */
+    color: rgba(97, 137, 111, 0.7);
     margin: 0;
 }
 
@@ -112,7 +113,7 @@
     position: absolute;
     inset: -8px;
     border-radius: 50%;
-    background: rgba(16, 185, 129, 0.2);
+    background: rgba(19, 236, 91, 0.2);
     animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 
@@ -139,7 +140,7 @@
     right: 4px;
     width: 32px;
     height: 32px;
-    background: #10b981;
+    background: #13ec5b;
     border: 2px solid white;
     border-radius: 50%;
     display: flex;
@@ -161,15 +162,70 @@
 .caller-details h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
+    /* Stitch: text-[#111813] (Dark Green, NOT BLACK) */
+    color: #111813;
     margin: 0 0 4px 0;
 }
 
 .caller-details .session-type {
     font-size: 1rem;
     font-weight: 500;
-    color: #10b981;
+    /* Stitch: text-[#61896f] */
+    color: #61896f;
     margin: 0;
+}
+
+/* Dark Mode Text Support */
+@media (prefers-color-scheme: dark) {
+    .call-header h3 {
+        color: #34d399;
+        /* Emerald 400 */
+    }
+
+    .call-header p {
+        color: rgba(52, 211, 153, 0.7);
+    }
+
+    .caller-details h2 {
+        color: #ffffff;
+    }
+
+    .caller-details .session-type {
+        color: #d1d5db;
+        /* Gray 300 */
+    }
+
+    .status-badge {
+        border-color: #102216;
+    }
+
+    .avatar-wrapper {
+        background: #102216;
+    }
+}
+
+:global(.dark) .call-header h3 {
+    color: #34d399;
+}
+
+:global(.dark) .call-header p {
+    color: rgba(52, 211, 153, 0.7);
+}
+
+:global(.dark) .caller-details h2 {
+    color: #ffffff;
+}
+
+:global(.dark) .caller-details .session-type {
+    color: #d1d5db;
+}
+
+:global(.dark) .status-badge {
+    border-color: #102216;
+}
+
+:global(.dark) .avatar-wrapper {
+    background: #102216;
 }
 
 /* Action Buttons */
