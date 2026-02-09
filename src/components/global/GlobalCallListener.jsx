@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { subscribeToIncomingCalls, acceptCall, declineCall } from '../../services/callService';
 import { useAuth } from '../../App';
-import IncomingCall from '../common/Chat/IncomingCall';
 import VideoCall from '../common/VideoCall/VideoCall';
 import './GlobalCallListener.css';
 
