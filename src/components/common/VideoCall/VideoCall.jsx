@@ -3,11 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './VideoCall.css';
 
-// Generate a random room name for Jitsi
+// Generate a deterministic & safe room name for Jitsi
 export const createVideoRoom = (baseName) => {
-    const roomId = `${baseName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // sanitize baseName so both sides get same valid room name
+    const safe = String(baseName).replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase();
     // Jitsi Meet public server - completely free, no account needed
-    return `https://meet.jit.si/${roomId}`;
+    return `https://meet.jit.si/${safe}`;
 };
 
 const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
@@ -41,6 +42,9 @@ const VideoCall = ({ roomUrl, onLeave, participantName, onCancel }) => {
     // Initialize Jitsi call when script is loaded
     useEffect(() => {
         if (!jitsiLoaded || !roomUrl || !containerRef.current) return;
+
+        // Prevent creating multiple instances (avoid duplicate frames)
+        if (apiRef.current) return;
 
         // Extract room name from URL
         const roomName = roomUrl.replace('https://meet.jit.si/', '');
