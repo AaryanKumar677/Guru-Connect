@@ -32,11 +32,23 @@
   margin-left: 80px;
 }
 
+/* Messages Mode - Full Width/Height, No Padding */
+.main-content.with-sidebar.messages-mode {
+  padding: 65px 0 0 0;
+  /* Match header height (64px) + 1px border */
+  height: 100vh;
+  overflow: hidden;
+}
+
 @media (max-width: 1024px) {
   .main-content.with-sidebar {
     margin-left: 0;
     padding: calc(60px + var(--space-4)) var(--space-3) var(--space-4);
     /* Reduced top padding to 60px+space, side to space-3 */
+  }
+
+  .main-content.with-sidebar.messages-mode {
+    padding: 60px 0 0 0;
   }
 }
 

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GuruConnect - Tutor Session Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "primary-dark": "#0b5ec2",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "slate-750": "#1e293b", // Custom dark shade
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        /* Custom scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white h-screen overflow-hidden flex flex-col font-display">
+<!-- Top Header -->
+<header class="flex shrink-0 items-center justify-between whitespace-nowrap border-b border-solid border-[#f0f2f4] dark:border-slate-800 bg-white dark:bg-[#101922] px-6 py-3 z-20">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">school</span>
+</div>
+<h2 class="text-[#111418] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">GuruConnect</h2>
+</div>
+<!-- Right side user profile -->
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined">notifications</span>
+<span class="material-symbols-outlined">help</span>
+</div>
+<div class="flex items-center gap-3 pl-6 border-l border-slate-200 dark:border-slate-800">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-bold leading-none text-[#111418] dark:text-white">Dr. A. Peterson</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Senior Math Tutor</p>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-slate-100 dark:border-slate-700" data-alt="Tutor profile picture showing a professional man in a suit" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyB2Ub-v9h0Lmvo6cHSqtTP44IQR3qZeJJDsO-_KblyoqmYhthgWFiCJLQIlDxu4TCzHHYvPqSs-Wq9cB6S2M9UMm6zYiKSMDGgBKZUIBYEmx3DNOFQrmPDa8IyIB87rhy6MfBI55x1ZKeC3z2IYr4MgVz1XnzksTR9zcVXqTmE_kB-1kYN-Doq0Z-2zQ421msqsirflfq9V6WgMLj4akJYNmZjYGjPtWMNMa1LPT52uwN9jC5KUgQzaOCw5EVfD9D6rMhxELTGQgS");'>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Layout Container -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar: Request Queue -->
+<aside class="w-full max-w-[400px] flex flex-col border-r border-[#dbe0e6] dark:border-slate-800 bg-white dark:bg-[#101922] z-10">
+<!-- Tabs -->
+<div class="px-4 pt-2">
+<div class="flex border-b border-[#dbe0e6] dark:border-slate-700 gap-8">
+<button class="flex flex-col items-center justify-center border-b-[3px] border-b-[#111418] dark:border-b-white text-[#111418] dark:text-white pb-[13px] pt-4 flex-1">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">New Requests <span class="ml-2 bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full">3</span></p>
+</button>
+<button class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#617589] dark:text-slate-400 pb-[13px] pt-4 flex-1 hover:text-primary transition-colors">
+<p class="text-sm font-bold leading-normal tracking-[0.015em]">History</p>
+</button>
+</div>
+</div>
+<!-- Search -->
+<div class="px-4 py-4">
+<label class="flex flex-col h-10 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full group focus-within:ring-2 ring-primary/20">
+<div class="text-[#617589] dark:text-slate-400 flex border-none bg-[#f0f2f4] dark:bg-slate-800 items-center justify-center pl-3 rounded-l-lg">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white focus:outline-0 border-none bg-[#f0f2f4] dark:bg-slate-800 h-full placeholder:text-[#617589] px-3 rounded-l-none pl-2 text-sm font-normal leading-normal" placeholder="Search students or subjects"/>
+</div>
+</label>
+</div>
+<!-- List of Requests -->
+<div class="flex-1 overflow-y-auto">
+<!-- Item 1 (Active) -->
+<div class="flex cursor-pointer items-start gap-4 bg-primary/5 dark:bg-primary/10 border-l-[4px] border-primary px-4 py-4 transition-colors">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-12 w-12 border border-slate-200 dark:border-slate-600" data-alt="Portrait of student Sarah M." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8YXXIektFXqcA9AGmTM8_bDCvfPh0Y0R0lpGcuGViSGypQCeJdxwMruzhIn2fZe2Uxom5mA4zJr4VwanpdyAuXtJ55dhPXfzws91GkLow4X1cLsUsfT0vU_y_JarDyPtE-BMXn2kBPfQb6hnnKpMjUMfoJ1wfhv0mj-hHkHvoYM5_0XuRBeFG7G6-upyrCza1f5FL8C6n85uIH8fdwkeAMU8sCdx7727f_deko0YbJ-4JguLOAHTsC_vQXgg_7eJsRfDINCVWLPjZ");'></div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white dark:border-[#101922] rounded-full w-3.5 h-3.5"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-[#111418] dark:text-white text-sm font-bold truncate">Sarah M.</p>
+<span class="text-xs text-primary font-medium whitespace-nowrap">2m ago</span>
+</div>
+<p class="text-[#111418] dark:text-slate-200 text-xs font-medium mt-0.5">Calculus II</p>
+<p class="text-[#617589] dark:text-slate-400 text-xs font-normal line-clamp-1 mt-1">Integration by Parts doubt...</p>
+<div class="mt-2 flex gap-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                Urgent
+                            </span>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex cursor-pointer items-start gap-4 bg-white dark:bg-[#101922] px-4 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 border-b border-slate-100 dark:border-slate-800 transition-colors border-l-[4px] border-transparent">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-12 w-12 border border-slate-200 dark:border-slate-600" data-alt="Portrait of student David L." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAwacgNDXtkOrXpkG5whwS_5e5TuSOg84Fm0t4mauS3BPr25SrbuAVTDlJsmKQ7AJsDk-PnlBL7W3ji1USFyiBHwcV8i940FC04JRRHXlb5iXVsZSJAAIz7RsBjS3MbnRpK-gQazN8A6n8YI2zy8diuWcTyNIDx3sh3nHX8TzTOmrvXAJta7UZfpqjsgSzNBkjFwm6fwcWq196yA6uZa_FBQ3VzrXNz3B0KzW7vFx29Tn0FtW7htTaDHclSorKKNePAK0i0hUr7g72s");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-[#111418] dark:text-white text-sm font-bold truncate">David L.</p>
+<span class="text-xs text-slate-500 font-medium whitespace-nowrap">15m ago</span>
+</div>
+<p class="text-[#111418] dark:text-slate-200 text-xs font-medium mt-0.5">Creative Writing</p>
+<p class="text-[#617589] dark:text-slate-400 text-xs font-normal line-clamp-1 mt-1">Character development arc help</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex cursor-pointer items-start gap-4 bg-white dark:bg-[#101922] px-4 py-4 hover:bg-slate-50 dark:hover:bg-slate-800 border-b border-slate-100 dark:border-slate-800 transition-colors border-l-[4px] border-transparent">
+<div class="relative">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-12 w-12 border border-slate-200 dark:border-slate-600" data-alt="Portrait of student Jenny K." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDsYvW_plhf97vYv4fBysU4Ups8mjhdicxilCJ-Kbgyj7vFGlt2faKjC_dA7rvfCw7qYOzZGUjCDLdTIEhzsU4ou8FqqZS_xdYKVBazrfoCGa5LSqQA4gMiraMQvlMRbY0v1ny3FzGmoPYq5LWe14toI1k3ZDwYB7TfWuj1GocR1ojwMXZ-wI04UDBHHb_584ZcwHZcRn_Vt0lRkElpEslIT8pSMTUfbe-DGfL_hYAi0xk04Op_HnbBeJc4M6H5G41UOvxp9esFKxbQ");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-[#111418] dark:text-white text-sm font-bold truncate">Jenny K.</p>
+<span class="text-xs text-slate-500 font-medium whitespace-nowrap">1h ago</span>
+</div>
+<p class="text-[#111418] dark:text-slate-200 text-xs font-medium mt-0.5">Physics I</p>
+<p class="text-[#617589] dark:text-slate-400 text-xs font-normal line-clamp-1 mt-1">Projectile motion vectors</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content: Request Details -->
+<main class="flex-1 flex flex-col bg-background-light dark:bg-background-dark overflow-hidden relative">
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto p-8">
+<div class="max-w-4xl mx-auto space-y-6">
+<!-- Header Card -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+<div class="flex items-center gap-5">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full h-20 w-20 border-4 border-slate-50 dark:border-slate-800 shadow-md" data-alt="Large profile picture of Sarah M." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBfiylASPAkSsqTySwBlzPvwweMDFBTZCsKz6XcXHGKe6PPx5zfCW8Pj6KYUUHZJgZBcLOQI84bzpEhgbNQlJnk8JKtN-iQIck-fooTVaoQm_OsIqgwOJ-3uQ_Wmj-W4zapJ3B1prhZSn0z4yo_srDDarT3AZ4TpodftqP2nW33ZUNc4y7TSh9Re_Ug-coV1zY7ZxpdDQ7U4m8jEUUjF9BrNxAvC7xmQio3Ggki22z8GtvPtQHPx0A8smaTsWE143mieNwairvqsvDu");'></div>
+<div>
+<div class="flex items-center gap-3">
+<h1 class="text-2xl font-bold text-[#111418] dark:text-white">Sarah Jenkins</h1>
+<span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-xs px-2 py-1 rounded-full border border-yellow-200 dark:border-yellow-800 font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">star</span> 4.9
+                                    </span>
+</div>
+<div class="flex items-center gap-4 mt-2 text-sm text-slate-500 dark:text-slate-400">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">school</span> Grade 11</span>
+<span class="w-1 h-1 rounded-full bg-slate-300"></span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Seattle, WA</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold border border-primary/20">
+                                Pending Review
+                            </span>
+<span class="text-xs text-slate-400">Request ID: #88392</span>
+</div>
+</div>
+<!-- Details Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Column: Context -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Topic & Doubt -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+<h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Topic &amp; Doubt</h3>
+<div class="mb-4">
+<span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-md text-sm font-medium border border-slate-200 dark:border-slate-700">
+                                        Calculus II: Integration by Parts
+                                    </span>
+</div>
+<div class="relative pl-6 border-l-4 border-slate-200 dark:border-slate-700 py-2">
+<span class="material-symbols-outlined absolute -left-3 -top-2 bg-white dark:bg-slate-900 text-slate-400 text-2xl">format_quote</span>
+<p class="text-lg text-[#111418] dark:text-white font-medium italic">
+                                        "I'm stuck on how to choose 'u' and 'dv' for this specific log function problem. I know the formula, but I keep getting the integral part wrong when I simplify it."
+                                    </p>
+</div>
+<!-- Attachments -->
+<div class="mt-6">
+<p class="text-xs font-semibold text-slate-500 mb-2">ATTACHMENTS</p>
+<div class="flex gap-3">
+<div class="group relative w-24 h-24 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer">
+<div class="bg-center bg-no-repeat bg-cover w-full h-full transform transition-transform group-hover:scale-110" data-alt="Handwritten math problem on paper" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC95GhJPfB_Uq_g-oSb69hPaOKeS-3L1clRL0WVFia_bfYmcHD0AIQEPjPWOlp36QmxxMY7U_i13IwEmkEGVVysix0narCYo4vrxoZ36T__9A3SrihcsrSVEw9Di3F6DRK-yBI851FpEzBzlWLIaYBEGn70OYMvFBeRbHRAzGvR_T63fIxePJ3zNGJ68XotSTddUEjSUuNUqh4CaU0vEGDv9o1IbN7q1m3V6WEbk5L4Qw7b_14aIQQUU4hoWngL8BxVTfMaqzJptLky");'></div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-white opacity-0 group-hover:opacity-100">visibility</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Context -->
+<div class="bg-gradient-to-br from-blue-50 to-white dark:from-slate-800 dark:to-slate-900 rounded-xl p-6 shadow-sm border border-blue-100 dark:border-slate-700 ring-1 ring-blue-500/20">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+<h3 class="text-sm font-bold text-primary uppercase tracking-wide">AI Assistant Context</h3>
+</div>
+<p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                    Before requesting a tutor, Sarah attempted to solve 3 practice problems on this topic. The AI detected she consistently misidentifies <code class="bg-blue-100 dark:bg-blue-900/40 px-1 py-0.5 rounded text-blue-700 dark:text-blue-300 font-mono text-xs">dv</code> when logarithmic functions are present. She understands the LIATE rule in theory but struggles applying it to mixed functions.
+                                </p>
+<div class="mt-4 pt-4 border-t border-blue-100 dark:border-slate-700 flex gap-2">
+<span class="text-xs font-medium text-slate-500">AI Suggested Focus:</span>
+<span class="text-xs font-semibold text-slate-700 dark:text-slate-300">LIATE Rule Application, Logarithmic Integration</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Scheduling -->
+<div class="lg:col-span-1 space-y-6">
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 h-full flex flex-col">
+<h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-4">Proposed Times</h3>
+<form class="space-y-3 flex-1">
+<!-- Option 1 -->
+<label class="relative flex items-center justify-between p-4 rounded-lg border-2 border-primary bg-primary/5 cursor-pointer transition-all shadow-sm">
+<div class="flex items-center gap-3">
+<input checked="" class="text-primary focus:ring-primary w-5 h-5 border-gray-300" name="time-slot" type="radio"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#111418] dark:text-white">Today</span>
+<span class="text-xs text-slate-500">4:00 PM - 4:45 PM</span>
+</div>
+</div>
+<span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full">Best Match</span>
+</label>
+<!-- Option 2 -->
+<label class="relative flex items-center justify-between p-4 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary/50 cursor-pointer transition-all bg-white dark:bg-slate-800">
+<div class="flex items-center gap-3">
+<input class="text-primary focus:ring-primary w-5 h-5 border-gray-300" name="time-slot" type="radio"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#111418] dark:text-white">Tomorrow</span>
+<span class="text-xs text-slate-500">10:00 AM - 10:45 AM</span>
+</div>
+</div>
+</label>
+<!-- Option 3 -->
+<label class="relative flex items-center justify-between p-4 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary/50 cursor-pointer transition-all bg-white dark:bg-slate-800">
+<div class="flex items-center gap-3">
+<input class="text-primary focus:ring-primary w-5 h-5 border-gray-300" name="time-slot" type="radio"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#111418] dark:text-white">Friday, Oct 24</span>
+<span class="text-xs text-slate-500">2:15 PM - 3:00 PM</span>
+</div>
+</div>
+</label>
+</form>
+<div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+<button class="w-full py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary flex items-center justify-center gap-2 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">calendar_add_on</span>
+                                        Propose New Time
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Action Footer -->
+<div class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#101922] p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
+<div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="hidden sm:flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined text-[20px]">info</span>
+<span>Session will be recorded for quality assurance.</span>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            Decline
+                        </button>
+<button class="flex-1 sm:flex-none px-8 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white font-bold shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+                            Accept Session
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

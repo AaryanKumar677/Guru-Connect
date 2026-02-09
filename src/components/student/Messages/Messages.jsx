@@ -22,15 +22,13 @@ const Messages = () => {
 
     return (
         <div className="messages-page">
-            <div className="messages-header">
-                <h1 className="page-title">Messages</h1>
-                <p className="page-subtitle">Chat with your tutors</p>
-            </div>
-
             <div className="messages-container">
                 {/* Chat List */}
                 <div className={`messages-sidebar ${selectedChat ? 'hidden-mobile' : ''}`}>
-                    <ChatList onSelectChat={handleSelectChat} />
+                    <ChatList
+                        onSelectChat={handleSelectChat}
+                        selectedChatId={selectedChat?.id}
+                    />
                 </div>
 
                 {/* Chat Window */}
@@ -43,9 +41,21 @@ const Messages = () => {
                         />
                     ) : (
                         <div className="no-chat-selected">
-                            <span>💬</span>
+                            <div className="empty-icon-container">
+                                <span className="material-icons-outlined main-icon">chat_bubble</span>
+                                <div className="floating-icon video">
+                                    <span className="material-icons-outlined">videocam</span>
+                                </div>
+                                <div className="floating-icon mic">
+                                    <span className="material-icons-outlined">mic</span>
+                                </div>
+                            </div>
                             <h3>Select a conversation</h3>
-                            <p>Choose a chat from the sidebar to start messaging</p>
+                            <p>Choose a chat from the sidebar to start messaging, or search for a new tutor to connect with.</p>
+                            <button className="start-chat-btn">
+                                <span className="material-icons-outlined">add_comment</span>
+                                Start New Chat
+                            </button>
                         </div>
                     )}
                 </div>

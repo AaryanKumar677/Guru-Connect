@@ -274,6 +274,8 @@ function App() {
     return <LoadingSpinner />
   }
 
+  const isMessagesRoute = location.pathname.includes('/messages')
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       <ToastContext.Provider value={{ showToast, dismissToast }}>
@@ -291,7 +293,7 @@ function App() {
                 </Routes>
               )}
 
-              <main className={`main-content ${isDashboardRoute ? 'with-sidebar' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}>
+              <main className={`main-content ${isDashboardRoute ? 'with-sidebar' : ''} ${sidebarCollapsed ? 'collapsed' : ''} ${isMessagesRoute ? 'messages-mode' : ''}`}>
                 <Suspense fallback={<LoadingSpinner />}>
                   <Routes>
                     {/* Landing Page */}

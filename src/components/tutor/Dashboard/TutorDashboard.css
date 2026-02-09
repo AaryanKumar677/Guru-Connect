@@ -51,7 +51,7 @@
 }
 
 .greeting {
-    font-size: var(--text-3xl);
+    font-size: 26px !important;
     font-weight: var(--font-bold);
     color: var(--text-primary);
     display: flex;
@@ -221,7 +221,7 @@
 }
 
 .stat-card-value {
-    font-size: var(--text-2xl);
+    font-size: 22px !important;
     font-weight: var(--font-bold);
     color: var(--text-primary);
 }
@@ -281,7 +281,7 @@
 }
 
 .section-title {
-    font-size: var(--text-lg);
+    font-size: 17px !important;
     font-weight: var(--font-semibold);
     color: var(--text-primary);
     display: flex;

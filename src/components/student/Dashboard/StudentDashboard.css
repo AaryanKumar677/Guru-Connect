@@ -80,7 +80,7 @@
 }
 
 .greeting {
-    font-size: var(--text-3xl);
+    font-size: 26px !important;
     margin-bottom: var(--space-2);
     margin-top: -4px;
     /* Slight upward nudge */
@@ -321,7 +321,7 @@
 }
 
 .stat-card-value {
-    font-size: var(--text-2xl);
+    font-size: 22px !important;
     font-weight: var(--font-bold);
     color: var(--text-primary);
 }
@@ -398,7 +398,7 @@
 }
 
 .section-title {
-    font-size: var(--text-lg);
+    font-size: 17px !important;
     color: var(--text-primary);
 }
 

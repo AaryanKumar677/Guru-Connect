@@ -5,7 +5,7 @@ import { subscribeToUserChats, getUserProfile, subscribeToUserPresence } from '.
 import OnlineIndicator from '../OnlineIndicator/OnlineIndicator';
 import './Chat.css';
 
-const ChatListItem = ({ chat, currentUserId, onClick }) => {
+const ChatListItem = ({ chat, currentUserId, onClick, isActive }) => {
     const [otherUser, setOtherUser] = useState(null);
     const [presence, setPresence] = useState({ online: false });
 
@@ -49,29 +49,42 @@ const ChatListItem = ({ chat, currentUserId, onClick }) => {
         if (avatar && typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
             return <img src={avatar} alt={otherUser?.name || 'User'} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />;
         }
-        return avatar || '👤';
+        return avatar || <span className="material-icons-outlined">person</span>;
     };
 
+    // Determine role
+    const role = otherUser?.role || 'user';
+
     return (
-        <div className="chat-list-item" onClick={() => onClick(chat, otherUserId)}>
+        <div
+            className={`chat-list-item ${isActive ? 'active' : ''}`}
+            onClick={() => onClick(chat, otherUserId)}
+        >
             <div className="chat-list-avatar">
                 <div className="chat-avatar">
                     {renderAvatar()}
                 </div>
-                <OnlineIndicator online={presence.online} size="small" />
+                <OnlineIndicator online={presence.online} size="medium" />
             </div>
             <div className="chat-list-info">
-                <span className="chat-list-name">
-                    {otherUser?.name || 'Loading...'}
-                </span>
+                <div className="chat-list-name-row">
+                    <span className="chat-list-name">
+                        {otherUser?.name || 'Loading...'}
+                    </span>
+                    <span className="chat-list-time">
+                        {formatTime(chat.lastMessage?.timestamp)}
+                    </span>
+                </div>
                 <span className="chat-list-preview">
                     {chat.lastMessage?.text || 'No messages yet'}
                 </span>
+                {role !== 'user' && (
+                    <span className={`chat-role-badge ${role}`}>
+                        {role === 'tutor' ? 'Tutor' : 'Student'}
+                    </span>
+                )}
             </div>
             <div className="chat-list-meta">
-                <span className="chat-list-time">
-                    {formatTime(chat.lastMessage?.timestamp)}
-                </span>
                 {unreadCount > 0 && (
                     <span className="chat-unread-badge">{unreadCount}</span>
                 )}
@@ -80,10 +93,11 @@ const ChatListItem = ({ chat, currentUserId, onClick }) => {
     );
 };
 
-const ChatList = ({ onSelectChat }) => {
+const ChatList = ({ onSelectChat, selectedChatId }) => {
     const { user } = useAuth();
     const [chats, setChats] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const userId = user?.uid || user?.id;
 
@@ -105,6 +119,9 @@ const ChatList = ({ onSelectChat }) => {
         return () => unsubscribe();
     }, [userId]);
 
+    // Filter chats based on search
+    const filteredChats = chats; // Search filtering would need async user name lookup
+
     if (loading) {
         return (
             <div className="chat-list-loading">
@@ -114,27 +131,43 @@ const ChatList = ({ onSelectChat }) => {
         );
     }
 
-    if (chats.length === 0) {
-        return (
-            <div className="chat-list-empty">
-                <span>💬</span>
-                <p>No conversations yet</p>
-                <p className="text-sm text-secondary">Start chatting with a tutor!</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="chat-list">
-            {chats.map((chat) => (
-                <ChatListItem
-                    key={chat.id}
-                    chat={chat}
-                    currentUserId={userId}
-                    onClick={onSelectChat}
-                />
-            ))}
-        </div>
+        <>
+            {/* Search Input */}
+            <div className="chat-search-container">
+                <div className="chat-search-wrapper">
+                    <span className="material-icons-outlined search-icon">search</span>
+                    <input
+                        type="text"
+                        className="chat-search-input"
+                        placeholder="Search conversations"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+            </div>
+
+            {/* Chat List */}
+            <div className="chat-list">
+                {filteredChats.length === 0 ? (
+                    <div className="chat-list-empty">
+                        <span className="material-icons-outlined">chat_bubble_outline</span>
+                        <p>No conversations yet</p>
+                        <p className="text-sm text-secondary">Start chatting with a tutor!</p>
+                    </div>
+                ) : (
+                    filteredChats.map((chat) => (
+                        <ChatListItem
+                            key={chat.id}
+                            chat={chat}
+                            currentUserId={userId}
+                            onClick={onSelectChat}
+                            isActive={selectedChatId === chat.id}
+                        />
+                    ))
+                )}
+            </div>
+        </>
     );
 };
 

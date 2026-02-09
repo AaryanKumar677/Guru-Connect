@@ -1,13 +1,17 @@
 // Chat Window Component - Real-time messaging interface
 import React, { useState, useEffect, useRef } from 'react';
+import EmojiPicker from 'emoji-picker-react';
 import { useAuth } from '../../../App';
 import {
     subscribeToMessages,
     sendMessage,
     getUserProfile,
-    subscribeToUserPresence
+    subscribeToUserPresence,
+    clearChat
 } from '../../../services/firebaseService';
 import OnlineIndicator from '../OnlineIndicator/OnlineIndicator';
+import VideoCall from '../VideoCall/VideoCall';
+import IncomingCall from '../VideoCall/IncomingCall';
 import './Chat.css';
 
 const ChatWindow = ({ chatId, recipientId, onClose }) => {
@@ -17,7 +21,20 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
     const [recipient, setRecipient] = useState(null);
     const [recipientPresence, setRecipientPresence] = useState({ online: false });
     const [sending, setSending] = useState(false);
+
+    // Interactive Feature States
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [showVideoCall, setShowVideoCall] = useState(false);
+    const [videoRoomUrl, setVideoRoomUrl] = useState(null);
+    const [showIncomingCall, setShowIncomingCall] = useState(false);
+    const [isAiMode, setIsAiMode] = useState(true); // Default to true as per UI hint
+    const [showOptions, setShowOptions] = useState(false);
+
+    // Refs
     const messagesEndRef = useRef(null);
+    const emojiPickerRef = useRef(null);
+    const fileInputRef = useRef(null);
+    const optionsRef = useRef(null);
 
     // Load recipient info
     useEffect(() => {
@@ -46,6 +63,88 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    // Close popups on outside click
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+                setShowEmojiPicker(false);
+            }
+            if (optionsRef.current && !optionsRef.current.contains(event.target)) {
+                setShowOptions(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    // Simulate incoming call for demo purposes (remove in production)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowIncomingCall(true);
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const startVideoCall = () => {
+        // In a real app, call API to create room. Here we mock it.
+        const roomName = `guruconnect-${chatId}-${Date.now()}`;
+        const url = `https://guruconnect.daily.co/${roomName}`;
+        setVideoRoomUrl(url);
+        setShowVideoCall(true);
+
+        // Send a system message that call started
+        sendMessage(chatId, user.uid || user.id, '📞 Started a video call');
+    };
+
+    const closeVideoCall = () => {
+        setShowVideoCall(false);
+        setVideoRoomUrl(null);
+    };
+
+    const acceptCall = () => {
+        setShowIncomingCall(false);
+        startVideoCall();
+    };
+
+    const declineCall = () => {
+        setShowIncomingCall(false);
+    };
+
+    const toggleAiMode = () => {
+        setIsAiMode(!isAiMode);
+    };
+
+    const handleClearChat = async () => {
+        if (window.confirm('Are you sure you want to clear this chat? This cannot be undone.')) {
+            try {
+                await clearChat(chatId);
+                setShowOptions(false);
+            } catch (error) {
+                console.error('Error clearing chat:', error);
+            }
+        }
+    };
+
+    const handleFileClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // In a real app, upload file to storage and send URL
+            // For now, just send a message saying file attached
+            setNewMessage(prev => `${prev} [Attached: ${file.name}]`);
+        }
+    };
+
+    const onEmojiClick = (emojiObject) => {
+        setNewMessage(prev => prev + emojiObject.emoji);
+    };
+
     const handleSend = async (e) => {
         e.preventDefault();
         if (!newMessage.trim() || sending) return;
@@ -60,6 +159,13 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         setSending(false);
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSend(e);
+        }
+    };
+
     const formatTime = (timestamp) => {
         if (!timestamp) return '';
         const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -67,12 +173,12 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
     };
 
     // Helper to render avatar
-    const renderAvatar = (user) => {
-        const avatar = user?.avatar || user?.photoURL;
+    const renderAvatar = (userData) => {
+        const avatar = userData?.avatar || userData?.photoURL;
         if (avatar && typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
-            return <img src={avatar} alt={user?.name || 'User'} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />;
+            return <img src={avatar} alt={userData?.name || 'User'} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />;
         }
-        return avatar || '👤';
+        return avatar || <span className="material-icons-outlined">person</span>;
     };
 
     return (
@@ -96,19 +202,60 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
                     </div>
                 </div>
                 <div className="chat-actions">
-                    <button className="btn btn-ghost btn-sm" title="Video Call">
-                        📹
+                    <button className="chat-action-btn" title="Voice Call" onClick={startVideoCall}>
+                        <span className="material-symbols-outlined">call</span>
                     </button>
-                    <button className="btn btn-ghost btn-sm" onClick={onClose}>
-                        ✕
+                    <button className="chat-action-btn" title="Video Call" onClick={startVideoCall}>
+                        <span className="material-symbols-outlined">videocam</span>
+                    </button>
+                    <div className="chat-options-container" ref={optionsRef}>
+                        <button
+                            className="chat-action-btn"
+                            title="More Options"
+                            onClick={() => setShowOptions(!showOptions)}
+                        >
+                            <span className="material-symbols-outlined">more_vert</span>
+                        </button>
+                        {showOptions && (
+                            <div className="chat-options-menu">
+                                <button className="chat-option-item danger" onClick={handleClearChat}>
+                                    <span className="material-symbols-outlined">delete</span>
+                                    Clear Chat
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <button className="chat-action-btn" onClick={onClose} title="Close">
+                        <span className="material-symbols-outlined">close</span>
                     </button>
                 </div>
             </div>
 
+            {/* Video Call Overlay */}
+            {showVideoCall && (
+                <div className="video-call-overlay">
+                    <VideoCall
+                        roomUrl={videoRoomUrl}
+                        onLeave={closeVideoCall}
+                        participantName={user.name || 'User'}
+                    />
+                </div>
+            )}
+
+            {/* Incoming Call Overlay */}
+            {showIncomingCall && !showVideoCall && (
+                <IncomingCall
+                    callerName={recipient?.name || 'Tutor'}
+                    callerAvatar={recipient?.avatar || recipient?.photoURL}
+                    onAccept={acceptCall}
+                    onDecline={declineCall}
+                />
+            )}
+
             {/* Offline Notice */}
             {!recipientPresence.online && (
                 <div className="offline-notice">
-                    <span>📬</span>
+                    <span className="material-icons-outlined">mark_email_read</span>
                     {recipient?.name || 'User'} is offline. They'll be notified when online.
                 </div>
             )}
@@ -117,7 +264,7 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
             <div className="chat-messages">
                 {messages.length === 0 ? (
                     <div className="chat-empty">
-                        <span>💬</span>
+                        <span className="material-icons-outlined">chat_bubble_outline</span>
                         <p>No messages yet. Start the conversation!</p>
                     </div>
                 ) : (
@@ -128,7 +275,12 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
                         >
                             <div className="message-content">
                                 <p>{msg.text}</p>
-                                <span className="message-time">{formatTime(msg.timestamp)}</span>
+                                <div className="message-time">
+                                    <span>{formatTime(msg.timestamp)}</span>
+                                    {msg.senderId === (user.uid || user.id) && (
+                                        <span className="material-symbols-outlined message-status">done_all</span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     ))
@@ -138,21 +290,74 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
 
             {/* Input */}
             <form className="chat-input-form" onSubmit={handleSend}>
-                <input
-                    type="text"
-                    className="chat-input"
-                    placeholder="Type a message..."
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    disabled={sending}
-                />
-                <button
-                    type="submit"
-                    className="btn btn-primary chat-send-btn"
-                    disabled={!newMessage.trim() || sending}
-                >
-                    {sending ? '...' : '➤'}
-                </button>
+                <div className="chat-input-container">
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
+                    <button
+                        type="button"
+                        className="chat-input-btn"
+                        title="Attachments"
+                        onClick={handleFileClick}
+                    >
+                        <span className="material-symbols-outlined">attach_file</span>
+                    </button>
+                    <button
+                        type="button"
+                        className={`chat-input-btn ai-btn ${isAiMode ? 'active' : ''}`}
+                        title="Ask GuruAI"
+                        onClick={toggleAiMode}
+                    >
+                        <span className="material-symbols-outlined">smart_toy</span>
+                    </button>
+                    <input
+                        type="text"
+                        className="chat-input"
+                        placeholder="Type a message..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        disabled={sending}
+                    />
+                    <div className="emoji-picker-container" ref={emojiPickerRef}>
+                        {showEmojiPicker && (
+                            <div className="emoji-picker-popup">
+                                <EmojiPicker
+                                    onEmojiClick={onEmojiClick}
+                                    theme="dark"
+                                    width={300}
+                                    height={400}
+                                />
+                            </div>
+                        )}
+                        <button
+                            type="button"
+                            className={`chat-input-btn emoji-btn ${showEmojiPicker ? 'active' : ''}`}
+                            title="Emoji"
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        >
+                            <span className="material-symbols-outlined">sentiment_satisfied</span>
+                        </button>
+                    </div>
+                    <button
+                        type="submit"
+                        className="chat-send-btn"
+                        disabled={!newMessage.trim() || sending}
+                    >
+                        {sending ? (
+                            <span className="material-symbols-outlined animate-spin">refresh</span>
+                        ) : (
+                            <span className="material-symbols-outlined">send</span>
+                        )}
+                    </button>
+                </div>
+                <div className="chat-input-hints">
+                    <p>Press <strong>Enter</strong> to send</p>
+                    <p>GuruAI Assist is <strong>{isAiMode ? 'Active' : 'Off'}</strong></p>
+                </div>
             </form>
         </div>
     );
