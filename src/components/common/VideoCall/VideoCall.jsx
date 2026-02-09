@@ -1,9 +1,11 @@
 // Video Call Component - Daily.co integration
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import DailyIframe from '@daily-co/daily-js';
 import './VideoCall.css';
 
-const DAILY_API_KEY = '56139e61e2883d0063d0e207b4af79a428c1fe27fe64d6c195daf6ae16012b7';
+const DAILY_API_KEY = '956139e61e2883d0063d0e207b4af79a428c1fe27fe64d6c195daf6ae16012b7';
+// IMPORTANT: Change this to your Daily.co subdomain from your dashboard
+const DAILY_DOMAIN = 'guruconnect'; // e.g., if your rooms are at yourname.daily.co, use 'yourname'
 
 // Helper function to create a Daily.co room
 export const createDailyRoom = async (roomName) => {
@@ -28,9 +30,10 @@ export const createDailyRoom = async (roomName) => {
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.error('Daily API Error:', errorData);
             // If room already exists, just return the URL
             if (errorData.error === 'invalid-request-error' && errorData.info?.includes('already exists')) {
-                return `https://guruconnect.daily.co/${roomName}`;
+                return `https://${DAILY_DOMAIN}.daily.co/${roomName}`;
             }
             throw new Error(errorData.info || 'Failed to create room');
         }
@@ -40,7 +43,7 @@ export const createDailyRoom = async (roomName) => {
     } catch (error) {
         console.error('Error creating Daily room:', error);
         // Fallback to direct URL (room might already exist)
-        return `https://guruconnect.daily.co/${roomName}`;
+        return `https://${DAILY_DOMAIN}.daily.co/${roomName}`;
     }
 };
 
@@ -48,12 +51,24 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
     const callRef = useRef(null);
     const containerRef = useRef(null);
     const [callState, setCallState] = useState('joining'); // joining, joined, left, error
+    const hasInitialized = useRef(false);
 
     useEffect(() => {
-        if (!roomUrl || !containerRef.current) return;
+        // Prevent duplicate initialization (React Strict Mode fix)
+        if (!roomUrl || !containerRef.current || hasInitialized.current) return;
+        hasInitialized.current = true;
 
         const startCall = async () => {
             try {
+                // Destroy any existing iframe first
+                if (callRef.current) {
+                    try {
+                        await callRef.current.destroy();
+                    } catch (e) {
+                        console.log('No existing call to destroy');
+                    }
+                }
+
                 callRef.current = DailyIframe.createFrame(containerRef.current, {
                     iframeStyle: {
                         width: '100%',
@@ -89,18 +104,24 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
         startCall();
 
         return () => {
+            hasInitialized.current = false;
             if (callRef.current) {
-                callRef.current.destroy();
+                try {
+                    callRef.current.destroy();
+                } catch (e) {
+                    console.log('Cleanup error:', e);
+                }
+                callRef.current = null;
             }
         };
     }, [roomUrl, participantName, onLeave]);
 
-    const handleLeave = () => {
+    const handleLeave = useCallback(() => {
         if (callRef.current) {
             callRef.current.leave();
         }
         onLeave?.();
-    };
+    }, [onLeave]);
 
     return (
         <div className="video-call-container">
@@ -115,6 +136,7 @@ const VideoCall = ({ roomUrl, onLeave, participantName }) => {
                 <div className="video-call-error">
                     <span className="material-symbols-outlined">error</span>
                     <p>Failed to connect to call</p>
+                    <p style={{ fontSize: '12px', opacity: 0.7 }}>Please check your Daily.co configuration</p>
                     <button className="btn btn-primary" onClick={onLeave}>
                         Close
                     </button>
