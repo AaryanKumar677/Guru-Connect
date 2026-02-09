@@ -62,8 +62,6 @@ const Sidebar = ({ role }) => {
 
     const links = role === 'tutor' ? tutorLinks : studentLinks
 
-    // Removed handleLogout as it's no longer used here
-
     const settingsPath = role === 'tutor' ? '/tutor/settings' : '/student/settings'
 
     const handleNavigation = (path) => {
@@ -73,7 +71,6 @@ const Sidebar = ({ role }) => {
 
     return (
         <>
-            {/* Mobile Backdrop */}
             {mobileMenuOpen && (
                 <div
                     className="sidebar-backdrop"
@@ -88,7 +85,6 @@ const Sidebar = ({ role }) => {
             )}
 
             <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'open' : ''}`}>
-                {/* Collapse Toggle */}
                 <button
                     className="sidebar-toggle"
                     onClick={toggleSidebar}
@@ -103,7 +99,6 @@ const Sidebar = ({ role }) => {
                     </svg>
                 </button>
 
-                {/* User Info */}
                 <div className="sidebar-user">
                     <div className="user-avatar-large">
                         {user?.avatar ? (
@@ -133,7 +128,6 @@ const Sidebar = ({ role }) => {
                     )}
                 </div>
 
-                {/* Navigation */}
                 <nav className="sidebar-nav">
                     {links.map((link) => (
                         <NavLink
@@ -142,7 +136,7 @@ const Sidebar = ({ role }) => {
                             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                             onClick={closeMobileMenu}
                             title={isCollapsed ? link.label : undefined}
-                            end={link.path.endsWith('dashboard')} // Only exact match for dashboard to prevent active state on sub-routes if any
+                            end={link.path.endsWith('dashboard')}
                         >
                             <span className="nav-icon">{link.icon}</span>
                             {!isCollapsed && <span className="nav-label">{link.label}</span>}
@@ -150,7 +144,6 @@ const Sidebar = ({ role }) => {
                     ))}
                 </nav>
 
-                {/* Bottom Actions */}
                 <div className="sidebar-bottom">
                     <NavLink
                         to={settingsPath}

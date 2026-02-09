@@ -12,7 +12,7 @@ const Header = () => {
     const { toggleMobileMenu } = useSidebar()
     const navigate = useNavigate()
     const [isScrolled, setIsScrolled] = useState(false)
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false) // For landing page only
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -24,7 +24,6 @@ const Header = () => {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    // Keyboard shortcut for search (Ctrl+K or Cmd+K)
     useEffect(() => {
         const handleKeyDown = (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -47,7 +46,6 @@ const Header = () => {
     return (
         <header className={`header ${isScrolled ? 'header-scrolled' : ''}`}>
             <div className="container header-container">
-                {/* Mobile Sidebar Toggle (Logged In) */}
                 {user && (
                     <button
                         className="mobile-sidebar-toggle"
@@ -62,8 +60,6 @@ const Header = () => {
                     </button>
                 )}
 
-                {/* Logo */}
-                {/* Logo */}
                 <Link to="/" className="header-logo">
                     <div className="logo-icon">
                         <img src="/guruconnect-logo.png" alt="GuruConnect" style={{ width: '90px', height: '90px', objectFit: 'contain', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
@@ -74,7 +70,6 @@ const Header = () => {
                     </div>
                 </Link>
 
-                {/* Desktop Navigation - Only show when not logged in */}
                 {!user && (
                     <nav className="header-nav">
                         <button onClick={() => scrollToSection('features')} className="nav-link">Features</button>
@@ -84,9 +79,7 @@ const Header = () => {
                     </nav>
                 )}
 
-                {/* Right Actions */}
                 <div className="header-actions">
-                    {/* Theme Toggle */}
                     <button
                         className="theme-toggle"
                         onClick={toggleTheme}
@@ -125,10 +118,8 @@ const Header = () => {
                                 <span className="search-placeholder">Search...</span>
                                 <kbd>⌘K</kbd>
                             </button>
-                            {/* Message Icon Removed */}
                             <Notifications />
 
-                            {/* User Avatar Dropdown */}
                             <div className="user-dropdown-container" style={{ position: 'relative' }}>
                                 <button
                                     className="user-avatar-btn"
@@ -205,7 +196,6 @@ const Header = () => {
                         </>
                     )}
 
-                    {/* Mobile Menu Toggle (Landing Page Only) */}
                     {!user && (
                         <button
                             className="mobile-menu-toggle"
@@ -223,7 +213,6 @@ const Header = () => {
                 </div>
             </div>
 
-            {/* Mobile Menu (Landing Page) */}
             <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
                 {!user && (
                     <nav className="mobile-nav">
@@ -249,7 +238,7 @@ const Header = () => {
                         </button>
                     </div>
                 )}
-            </div>  {/* Search Modal */}
+            </div>
             <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </header>
     )

@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useContext, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { authService } from './services/authService'
-import { auth, db } from './config/firebase' // Import auth directly
+import { auth, db } from './config/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import Header from './components/common/Header/Header'
@@ -9,7 +9,6 @@ import Footer from './components/common/Footer/Footer'
 import Sidebar from './components/common/Sidebar/Sidebar'
 import Toast from './components/common/Toast/Toast'
 
-// Static Imports for Reliable Navigation
 import Hero from './components/landing/Hero/Hero'
 import Features from './components/landing/Features/Features'
 import AIFeatures from './components/landing/AIFeatures/AIFeatures'
@@ -29,19 +28,13 @@ import TutorDashboard from './components/tutor/Dashboard/TutorDashboard'
 import TutorProfile from './components/tutor/Profile/TutorProfile'
 import Sessions from './components/tutor/Sessions/Sessions'
 import Earnings from './components/tutor/Earnings/Earnings'
-// TutorMessages reuses StudentMessages component, imported above as StudentMessages
-const TutorMessages = StudentMessages;
-
-import NotFound from './components/common/NotFound/NotFound'
 import Settings from './components/common/Settings/Settings'
 import Help from './components/common/Help/Help'
 import GlobalCallListener from './components/global/GlobalCallListener'
+import NotFound from './components/common/NotFound/NotFound'
 
-// ... (Lazy loads remain the same) ...
-// Lazy load removed for stability during presentation
-// Components are now statically imported at the top
+const TutorMessages = StudentMessages;
 
-// Loading Spinner Component
 const LoadingSpinner = () => (
   <div className="loading-container">
     <div className="loading-spinner"></div>
@@ -52,50 +45,40 @@ const LoadingSpinner = () => (
 import './index.css'
 import './App.css'
 
-// Theme Context
 export const ThemeContext = createContext()
 
 export const useTheme = () => useContext(ThemeContext)
 
-// Toast Context
 export const ToastContext = createContext()
 
 export const useToast = () => useContext(ToastContext)
 
-// Auth Context
 export const AuthContext = createContext()
 
 export const useAuth = () => useContext(AuthContext)
 
-// Sidebar Context
 export const SidebarContext = createContext()
 
 export const useSidebar = () => useContext(SidebarContext)
 
 function App() {
-  // Theme state
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('guru-connect-theme')
     return saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
   })
 
-  // Auth modal state
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState('login')
 
-  // Toast state
   const [toasts, setToasts] = useState([])
 
-  // User state
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('guru-connect-user')
     return saved ? JSON.parse(saved) : null
   })
 
-  // Auth Loading State
   const [isAuthLoading, setIsAuthLoading] = useState(true)
 
-  // Sidebar collapsed state (global)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -111,18 +94,15 @@ function App() {
     setMobileMenuOpen(false)
   }
 
-  // First visit detection
   const [hasVisited, setHasVisited] = useState(() => {
     return localStorage.getItem('guru-connect-visited') === 'true'
   })
 
-  // Apply theme
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('guru-connect-theme', theme)
   }, [theme])
 
-  // Show auth modal on first visit
   useEffect(() => {
     if (!hasVisited && !user && !isAuthLoading) {
       const timer = setTimeout(() => {
@@ -135,7 +115,6 @@ function App() {
     }
   }, [hasVisited, user, isAuthLoading])
 
-  // LISTEN INITIAL AUTH STATE
   useEffect(() => {
     let presenceUnsubscribe = null;
 
@@ -144,28 +123,22 @@ function App() {
         if (firebaseUser) {
           console.log('[App] User authenticated:', firebaseUser.uid);
 
-          // User is signed in, sync with Firestore to get role/name
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
           if (userDoc.exists()) {
             const userData = { id: firebaseUser.uid, ...userDoc.data() }
             setUser(userData)
             localStorage.setItem('guru-connect-user', JSON.stringify(userData))
 
-            // Setup presence tracking for online status
             console.log('[App] Setting up presence...');
             const { setupPresence } = await import('./services/firebaseService');
             presenceUnsubscribe = setupPresence(firebaseUser.uid);
           } else {
-            // If user authenticated but no firestore doc, try localStorage or clear
-            // This prevents "stuck" loading if FS fails but Auth succeeds
             const saved = localStorage.getItem('guru-connect-user')
             if (saved) {
-              // Verify ID matches
               const parsed = JSON.parse(saved)
               if (parsed.id === firebaseUser.uid) {
                 setUser(parsed)
 
-                // Setup presence tracking  
                 console.log('[App] Setting up presence (from localStorage)...');
                 const { setupPresence } = await import('./services/firebaseService');
                 presenceUnsubscribe = setupPresence(firebaseUser.uid);
@@ -176,12 +149,10 @@ function App() {
             }
           }
         } else {
-          // User is signed out
           console.log('[App] User signed out');
           setUser(null)
           localStorage.removeItem('guru-connect-user')
 
-          // Cleanup presence subscription
           if (presenceUnsubscribe) {
             presenceUnsubscribe();
             presenceUnsubscribe = null;
@@ -189,7 +160,6 @@ function App() {
         }
       } catch (error) {
         console.error("Auth state sync error:", error)
-        // Ensure we don't get stuck in loading state on error
         setUser(null)
       } finally {
         setIsAuthLoading(false)
@@ -209,7 +179,6 @@ function App() {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
 
-  // Toast functions
   const showToast = (message, type = 'info', duration = 4000) => {
     const id = Date.now()
     setToasts(prev => [...prev, { id, message, type }])
@@ -222,7 +191,6 @@ function App() {
     setToasts(prev => prev.filter(t => t.id !== id))
   }
 
-  // Auth functions
   const openAuthModal = (mode = 'login') => {
     setAuthMode(mode)
     setShowAuthModal(true)
@@ -258,7 +226,6 @@ function App() {
     try {
       const updated = await authService.updateUser(user.id, updates)
       setUser(updated)
-      // localStorage update is handled by authService
     } catch (error) {
       console.error('Failed to update user:', error)
       showToast('Failed to save changes', 'error')
@@ -270,7 +237,6 @@ function App() {
     location.pathname.startsWith('/tutor')
   )
 
-  // Show loading spinner while checking auth state
   if (isAuthLoading) {
     return <LoadingSpinner />
   }
@@ -285,10 +251,8 @@ function App() {
             <div className={`app ${isDashboardRoute ? 'app-dashboard' : ''} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
               <Header />
 
-              {/* Global Call Listener - shows incoming calls anywhere */}
               <GlobalCallListener />
 
-              {/* Sidebar for dashboard routes */}
               {user && (
                 <Routes>
                   <Route path="/student/*" element={<Sidebar role="student" />} />
@@ -300,7 +264,6 @@ function App() {
               <main className={`main-content ${isDashboardRoute ? 'with-sidebar' : ''} ${sidebarCollapsed ? 'collapsed' : ''} ${isMessagesRoute ? 'messages-mode' : ''}`}>
                 <Suspense fallback={<LoadingSpinner />}>
                   <Routes>
-                    {/* Landing Page */}
                     <Route path="/" element={
                       user ? (
                         <Navigate to={user.role === 'tutor' ? '/tutor/dashboard' : '/student/dashboard'} replace />
@@ -316,7 +279,6 @@ function App() {
                       )
                     } />
 
-                    {/* Student Routes */}
                     <Route path="/student/dashboard" element={
                       user?.role === 'student' ? <StudentDashboard /> : <Navigate to="/" replace />
                     } />
@@ -339,7 +301,6 @@ function App() {
                       user?.role === 'student' ? <StudentMessages /> : <Navigate to="/" replace />
                     } />
 
-                    {/* Tutor Routes */}
                     <Route path="/tutor/dashboard" element={
                       user?.role === 'tutor' ? <TutorDashboard /> : <Navigate to="/" replace />
                     } />
@@ -359,12 +320,10 @@ function App() {
                       user?.role === 'tutor' ? <TutorMessages /> : <Navigate to="/" replace />
                     } />
 
-                    {/* Student Settings */}
                     <Route path="/student/settings" element={
                       user?.role === 'student' ? <Settings /> : <Navigate to="/" replace />
                     } />
 
-                    {/* Help Pages */}
                     <Route path="/student/help" element={
                       user?.role === 'student' ? <Help /> : <Navigate to="/" replace />
                     } />
@@ -372,7 +331,6 @@ function App() {
                       user?.role === 'tutor' ? <Help /> : <Navigate to="/" replace />
                     } />
 
-                    {/* 404 Page */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
@@ -380,7 +338,6 @@ function App() {
 
               {!isDashboardRoute && <Footer />}
 
-              {/* Auth Modal */}
               <Suspense fallback={null}>
                 <AuthModal
                   isOpen={showAuthModal}
@@ -390,7 +347,6 @@ function App() {
                 />
               </Suspense>
 
-              {/* Toasts */}
               <div className="toast-container">
                 {toasts.map(toast => (
                   <Toast

@@ -1,4 +1,3 @@
-// Firebase Service - Helper functions for database operations
 import {
     collection,
     doc,
@@ -12,7 +11,6 @@ import {
     orderBy,
     addDoc,
     serverTimestamp,
-    limit,
     writeBatch
 } from 'firebase/firestore';
 import {
@@ -24,13 +22,6 @@ import {
 } from 'firebase/database';
 import { db, rtdb } from '../config/firebase';
 
-// ============================================
-// USER OPERATIONS
-// ============================================
-
-/**
- * Create or update user profile in Firestore
- */
 export const createUserProfile = async (userId, userData) => {
     const userRef = doc(db, 'users', userId);
     await setDoc(userRef, {
@@ -40,18 +31,12 @@ export const createUserProfile = async (userId, userData) => {
     }, { merge: true });
 };
 
-/**
- * Get user profile by ID
- */
 export const getUserProfile = async (userId) => {
     const userRef = doc(db, 'users', userId);
     const snapshot = await getDoc(userRef);
     return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
 };
 
-/**
- * Get all tutors
- */
 export const getAllTutors = async () => {
     const tutorsQuery = query(
         collection(db, 'users'),
@@ -61,9 +46,6 @@ export const getAllTutors = async () => {
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-/**
- * Subscribe to tutors with real-time updates
- */
 export const subscribeTutors = (callback) => {
     const tutorsQuery = query(
         collection(db, 'users'),
@@ -75,20 +57,12 @@ export const subscribeTutors = (callback) => {
     });
 };
 
-// ============================================
-// PRESENCE SYSTEM
-// ============================================
-
-/**
- * Set up presence tracking for a user
- */
 export const setupPresence = (userId) => {
     console.log('[Presence] Setting up presence for user:', userId);
 
     const userStatusRef = ref(rtdb, `/status/${userId}`);
     const userDocRef = doc(db, 'users', userId);
 
-    // When connected, update presence
     const connectedRef = ref(rtdb, '.info/connected');
 
     const unsubscribe = onValue(connectedRef, async (snapshot) => {
@@ -98,21 +72,18 @@ export const setupPresence = (userId) => {
             console.log('[Presence] Connected! Setting online status...');
 
             try {
-                // Set online status in Realtime Database
                 await set(userStatusRef, {
                     online: true,
                     lastSeen: rtdbTimestamp()
                 });
                 console.log('[Presence] RTDB status set to online');
 
-                // When disconnected, set offline
                 await onDisconnect(userStatusRef).set({
                     online: false,
                     lastSeen: rtdbTimestamp()
                 });
                 console.log('[Presence] onDisconnect handler set');
 
-                // Update Firestore too (use setDoc with merge to avoid errors if doc doesn't exist)
                 await setDoc(userDocRef, {
                     presence: {
                         online: true,
@@ -128,13 +99,9 @@ export const setupPresence = (userId) => {
         }
     });
 
-    // Return unsubscribe function for cleanup
     return unsubscribe;
 };
 
-/**
- * Subscribe to a user's online status
- */
 export const subscribeToUserPresence = (userId, callback) => {
     console.log('[Presence] Subscribing to presence for user:', userId);
     const userStatusRef = ref(rtdb, `/status/${userId}`);
@@ -145,15 +112,7 @@ export const subscribeToUserPresence = (userId, callback) => {
     });
 };
 
-// ============================================
-// CHAT OPERATIONS
-// ============================================
-
-/**
- * Create or get existing chat between two users
- */
 export const getOrCreateChat = async (userId1, userId2) => {
-    // Check if chat exists
     const chatsQuery = query(
         collection(db, 'chats'),
         where('participants', 'array-contains', userId1)
@@ -169,7 +128,6 @@ export const getOrCreateChat = async (userId1, userId2) => {
         return { id: existingChat.id, ...existingChat.data() };
     }
 
-    // Create new chat
     const chatRef = await addDoc(collection(db, 'chats'), {
         participants: [userId1, userId2],
         createdAt: serverTimestamp(),
@@ -183,11 +141,7 @@ export const getOrCreateChat = async (userId1, userId2) => {
     return { id: chatRef.id, participants: [userId1, userId2] };
 };
 
-/**
- * Send a message
- */
 export const sendMessage = async (chatId, senderId, text) => {
-    // Add message to messages subcollection
     const messagesRef = collection(db, 'chats', chatId, 'messages');
     await addDoc(messagesRef, {
         text,
@@ -196,7 +150,6 @@ export const sendMessage = async (chatId, senderId, text) => {
         read: false
     });
 
-    // Update chat's last message
     const chatRef = doc(db, 'chats', chatId);
     await updateDoc(chatRef, {
         lastMessage: {
@@ -207,9 +160,6 @@ export const sendMessage = async (chatId, senderId, text) => {
     });
 };
 
-/**
- * Subscribe to chat messages
- */
 export const subscribeToMessages = (chatId, callback) => {
     const messagesQuery = query(
         collection(db, 'chats', chatId, 'messages'),
@@ -225,9 +175,6 @@ export const subscribeToMessages = (chatId, callback) => {
     });
 };
 
-/**
- * Get user's chats
- */
 export const subscribeToUserChats = (userId, callback) => {
     const chatsQuery = query(
         collection(db, 'chats'),
@@ -243,9 +190,6 @@ export const subscribeToUserChats = (userId, callback) => {
     });
 };
 
-/**
- * Mark messages as read
- */
 export const markMessagesAsRead = async (chatId, userId) => {
     const chatRef = doc(db, 'chats', chatId);
     await updateDoc(chatRef, {
@@ -253,16 +197,10 @@ export const markMessagesAsRead = async (chatId, userId) => {
     });
 };
 
-/**
- * Clear chat messages
- */
 export const clearChat = async (chatId) => {
-    // 1. Get all messages
     const messagesRef = collection(db, 'chats', chatId, 'messages');
     const snapshot = await getDocs(messagesRef);
 
-    // 2. Delete in batches
-    // Note: This is client-side deletion. For prod, use Cloud Functions.
     const batch = writeBatch(db);
     snapshot.docs.forEach((doc) => {
         batch.delete(doc.ref);
@@ -270,7 +208,6 @@ export const clearChat = async (chatId) => {
 
     await batch.commit();
 
-    // 3. Update chat last message
     const chatRef = doc(db, 'chats', chatId);
     await updateDoc(chatRef, {
         lastMessage: {

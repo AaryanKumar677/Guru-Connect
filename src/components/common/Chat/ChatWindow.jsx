@@ -1,4 +1,3 @@
-// Chat Window Component - Real-time messaging interface
 import React, { useState, useEffect, useRef } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import { useAuth } from '../../../App';
@@ -31,24 +30,21 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
     const [recipientPresence, setRecipientPresence] = useState({ online: false });
     const [sending, setSending] = useState(false);
 
-    // Interactive Feature States
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showVideoCall, setShowVideoCall] = useState(false);
     const [videoRoomUrl, setVideoRoomUrl] = useState(null);
     const [showIncomingCall, setShowIncomingCall] = useState(false);
     const [incomingCallData, setIncomingCallData] = useState(null);
     const [currentCallId, setCurrentCallId] = useState(null);
-    const [isCalling, setIsCalling] = useState(false); // True when calling someone
+    const [isCalling, setIsCalling] = useState(false);
     const [isAiMode, setIsAiMode] = useState(true);
     const [showOptions, setShowOptions] = useState(false);
 
-    // Refs
     const messagesEndRef = useRef(null);
     const emojiPickerRef = useRef(null);
     const fileInputRef = useRef(null);
     const optionsRef = useRef(null);
 
-    // Load recipient info
     useEffect(() => {
         const loadRecipient = async () => {
             const profile = await getUserProfile(recipientId);
@@ -57,25 +53,21 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         loadRecipient();
     }, [recipientId]);
 
-    // Subscribe to presence
     useEffect(() => {
         const unsubscribe = subscribeToUserPresence(recipientId, setRecipientPresence);
         return () => unsubscribe();
     }, [recipientId]);
 
-    // Subscribe to messages
     useEffect(() => {
         if (!chatId) return;
         const unsubscribe = subscribeToMessages(chatId, setMessages);
         return () => unsubscribe();
     }, [chatId]);
 
-    // Scroll to bottom on new messages
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    // Close popups on outside click
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
@@ -92,14 +84,12 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         };
     }, []);
 
-    // Subscribe to incoming calls
     useEffect(() => {
         if (!user) return;
         const userId = user.uid || user.id;
 
         const unsubscribe = subscribeToIncomingCalls(userId, (calls) => {
             if (calls.length > 0) {
-                // Show the most recent incoming call
                 const latestCall = calls[0];
                 setIncomingCallData(latestCall);
                 setShowIncomingCall(true);
@@ -131,14 +121,12 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
             setVideoRoomUrl(roomUrl);
             setShowVideoCall(true);
 
-            // Listen for call status changes
             const unsubscribe = subscribeToCallStatus(callId, (callData) => {
                 if (callData.status === 'declined') {
                     alert('Call was declined');
                     closeVideoCall();
                     unsubscribe();
                 } else if (callData.status === 'accepted') {
-                    // Call accepted, video call is already showing
                     unsubscribe();
                 }
             });
@@ -201,8 +189,6 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // In a real app, upload file to storage and send URL
-            // For now, just send a message saying file attached
             setNewMessage(prev => `${prev} [Attached: ${file.name}]`);
         }
     };
@@ -238,7 +224,6 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
-    // Helper to render avatar
     const renderAvatar = (userData) => {
         const avatar = userData?.avatar || userData?.photoURL;
         if (avatar && typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
@@ -249,7 +234,6 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
 
     return (
         <div className="chat-window">
-            {/* Header */}
             <div className="chat-header">
                 <div className="chat-recipient">
                     <div className="chat-avatar">
@@ -297,7 +281,6 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
                 </div>
             </div>
 
-            {/* Video Call Overlay */}
             {showVideoCall && (
                 <div className="video-call-overlay">
                     <VideoCall
@@ -310,7 +293,6 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
                 </div>
             )}
 
-            {/* Incoming Call Overlay */}
             {showIncomingCall && incomingCallData && !showVideoCall && (
                 <IncomingCall
                     callerName={incomingCallData.callerName || 'Someone'}
@@ -320,7 +302,6 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
                 />
             )}
 
-            {/* Offline Notice */}
             {!recipientPresence.online && (
                 <div className="offline-notice">
                     <span className="material-icons-outlined">mark_email_read</span>
@@ -328,7 +309,6 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
                 </div>
             )}
 
-            {/* Messages */}
             <div className="chat-messages">
                 {messages.length === 0 ? (
                     <div className="chat-empty">
@@ -356,7 +336,6 @@ const ChatWindow = ({ chatId, recipientId, onClose }) => {
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
             <form className="chat-input-form" onSubmit={handleSend}>
                 <div className="chat-input-container">
                     <input

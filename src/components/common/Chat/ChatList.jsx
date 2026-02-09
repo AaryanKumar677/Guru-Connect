@@ -1,4 +1,3 @@
-// Chat List Component - Shows all conversations
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../App';
 import { subscribeToUserChats, getUserProfile, subscribeToUserPresence } from '../../../services/firebaseService';
@@ -43,7 +42,6 @@ const ChatListItem = ({ chat, currentUserId, onClick, isActive }) => {
 
     const unreadCount = chat.unreadCount?.[currentUserId] || 0;
 
-    // Helper to render avatar
     const renderAvatar = () => {
         const avatar = otherUser?.avatar || otherUser?.photoURL;
         if (avatar && typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
@@ -52,7 +50,6 @@ const ChatListItem = ({ chat, currentUserId, onClick, isActive }) => {
         return avatar || <span className="material-icons-outlined">person</span>;
     };
 
-    // Determine role
     const role = otherUser?.role || 'user';
 
     return (
@@ -105,7 +102,6 @@ const ChatList = ({ onSelectChat, selectedChatId }) => {
         if (!userId) return;
 
         const unsubscribe = subscribeToUserChats(userId, (chatList) => {
-            // Sort by last message time
             const validChats = chatList.filter(chat => chat.lastMessage);
             const sorted = validChats.sort((a, b) => {
                 const aTime = a.lastMessage?.timestamp?.toMillis?.() || 0;
@@ -119,8 +115,7 @@ const ChatList = ({ onSelectChat, selectedChatId }) => {
         return () => unsubscribe();
     }, [userId]);
 
-    // Filter chats based on search
-    const filteredChats = chats; // Search filtering would need async user name lookup
+    const filteredChats = chats;
 
     if (loading) {
         return (
@@ -133,7 +128,6 @@ const ChatList = ({ onSelectChat, selectedChatId }) => {
 
     return (
         <>
-            {/* Search Input */}
             <div className="chat-search-container">
                 <div className="chat-search-wrapper">
                     <span className="material-icons-outlined search-icon">search</span>
@@ -147,7 +141,6 @@ const ChatList = ({ onSelectChat, selectedChatId }) => {
                 </div>
             </div>
 
-            {/* Chat List */}
             <div className="chat-list">
                 {filteredChats.length === 0 ? (
                     <div className="chat-list-empty">

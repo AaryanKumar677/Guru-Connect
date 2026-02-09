@@ -1,13 +1,8 @@
-/* ========================================
-   MESSAGES PAGE STYLES - STITCH DESIGN
-   ======================================== */
-
 .messages-page {
     height: 100%;
     display: flex;
     flex-direction: column;
     padding: 0 0 0 6px;
-    /* 6px left padding for gap */
     gap: 0;
     background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 20px 20px;
@@ -16,47 +11,35 @@
 
 .messages-header {
     display: none;
-    /* Header is handled by app shell */
 }
 
 .messages-container {
     flex: 1;
     display: flex;
     gap: 6px;
-    /* Minimal gap as requested */
     min-height: 0;
     overflow: hidden;
 }
 
-/* Glass Panel Base - removed usage for main layout components to allow full bleed */
 .glass-panel {
     background: rgba(24, 27, 33, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    /* border-radius: var(--radius-2xl); Remove radius for full bleed */
     box-shadow: none;
-    /* Remove shadow for full bleed */
 }
 
-/* Sidebar (Chat List) */
 .messages-sidebar {
     width: 300px;
-    /* Reduced from 320px */
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     background: rgba(24, 27, 33, 0.95);
-    /* Darker/Higher opacity for better contrast */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-right: 1px solid rgba(255, 255, 255, 0.08);
-    /* Only right border */
-    /* border-radius: var(--radius-2xl); */
-    /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); */
     overflow: hidden;
     height: 100%;
-    /* Ensure full height */
 }
 
 [data-theme="light"] .messages-sidebar {
@@ -64,8 +47,6 @@
     border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-
-/* Chat Content Area */
 .messages-content {
     flex: 1;
     display: flex;
@@ -81,18 +62,12 @@
     background: rgba(24, 27, 33, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    /* border: 1px solid rgba(255, 255, 255, 0.08); */
-    /* border-radius: var(--radius-2xl); */
-    /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); */
 }
 
 [data-theme="light"] .messages-content .chat-window {
     background: rgba(255, 255, 255, 0.8);
-    /* border: 1px solid rgba(0, 0, 0, 0.08); */
-    /* box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15); */
 }
 
-/* Empty State - No Chat Selected */
 .no-chat-selected {
     flex: 1;
     display: flex;
@@ -102,9 +77,6 @@
     background: rgba(24, 27, 33, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    /* border: 1px solid rgba(255, 255, 255, 0.08); */
-    /* border-radius: var(--radius-2xl); */
-    /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); */
     position: relative;
     overflow: hidden;
     text-align: center;
@@ -113,11 +85,8 @@
 
 [data-theme="light"] .no-chat-selected {
     background: rgba(255, 255, 255, 0.8);
-    /* border: 1px solid rgba(0, 0, 0, 0.08); */
-    /* box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15); */
 }
 
-/* Background blobs */
 .no-chat-selected::before,
 .no-chat-selected::after {
     content: '';
@@ -256,7 +225,6 @@
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
     .messages-page {
         padding: var(--space-2);
@@ -290,6 +258,5 @@
 @media (min-width: 1200px) {
     .messages-sidebar {
         width: 350px;
-        /* Reduced from 380px */
     }
 }

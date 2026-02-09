@@ -1,4 +1,3 @@
-// Messages Page - Chat interface for students 
 import React, { useState } from 'react';
 import { useAuth } from '../../../App';
 import ChatList from '../../common/Chat/ChatList';
@@ -23,7 +22,6 @@ const Messages = () => {
     return (
         <div className="messages-page">
             <div className="messages-container">
-                {/* Chat List */}
                 <div className={`messages-sidebar ${selectedChat ? 'hidden-mobile' : ''}`}>
                     <ChatList
                         onSelectChat={handleSelectChat}
@@ -31,7 +29,6 @@ const Messages = () => {
                     />
                 </div>
 
-                {/* Chat Window */}
                 <div className={`messages-content ${!selectedChat ? 'hidden-mobile' : ''}`}>
                     {selectedChat ? (
                         <ChatWindow
