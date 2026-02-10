@@ -19,7 +19,7 @@ const MyDoubts = () => {
                 { id: 3, sender: 'user', content: 'That makes sense! Can you give an example?', time: '2:10 PM' },
                 { id: 4, sender: 'tutor', content: 'Sure! Consider dy/dx = 2x. To solve this, we integrate both sides...', time: '2:15 PM' },
             ],
-            tutor: { name: 'Dr. Priya Sharma', avatar: '👩‍🏫' }
+            tutor: { name: 'Dr. Arnav Singh', avatar: '👨‍🏫' }
         },
         {
             id: 2,

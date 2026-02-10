@@ -15,7 +15,7 @@ const TutorProfile = () => {
         teachingStyle: user?.teachingStyle || '',
         languages: user?.languages || [],
         experience: user?.experience || '',
-        education: user?.education || '',
+        education: user?.education || user?.collegeName || '',
         hourlyRate: user?.hourlyRate || 0,
         availability: user?.availability || {
             monday: { enabled: true, slots: [] },

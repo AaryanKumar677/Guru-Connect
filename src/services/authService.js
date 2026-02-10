@@ -81,7 +81,9 @@ export const authService = {
                     teachingStyle: userData.teachingStyle,
                     experience: userData.experience,
                     hourlyRate: userData.hourlyRate || 500,
-                    bio: userData.bio || ''
+                    bio: userData.bio || '',
+                    collegeName: userData.collegeName || userData.collegeManualName || '',
+                    education: userData.collegeName || userData.collegeManualName || ''
                 }),
                 languages: userData.languages || [],
                 timezone: userData.timezone || 'Asia/Kolkata',
