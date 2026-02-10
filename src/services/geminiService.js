@@ -1,10 +1,3 @@
-/**
- * OpenRouter AI Integration Service
- * 
- * This service provides methods to interact with OpenRouter API (using Google Gemma model).
- * Uses API Key from environment or fallback.
- */
-
 import { OpenRouter } from "@openrouter/sdk";
 
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'
@@ -15,21 +8,12 @@ const openrouter = new OpenRouter({
     apiKey: OPENROUTER_API_KEY
 });
 
-/**
- * Send a message to OpenRouter AI and get a response
- * @param {string} prompt - The user's question or prompt
- * @param {Array} history - Previous conversation history (optional)
- * @returns {Promise<string>} - The AI's response
- */
 export const sendToGemini = async (prompt, history = []) => {
-    // Format messages for OpenAI-compatible API
     const messages = [
-        // Conversation history
         ...history.map(msg => ({
             role: msg.type === 'bot' ? 'assistant' : 'user',
             content: msg.content
         })),
-        // Current prompt with system instruction integrated
         {
             role: 'user',
             content: `(System: You are an educational AI assistant helping students learn. Be helpful, clear, and explain concepts step by step.)\n\n${prompt}`
@@ -39,7 +23,6 @@ export const sendToGemini = async (prompt, history = []) => {
     try {
         console.log("Sending request to OpenRouter (gpt-oss-120b)....");
 
-        // Stream the response
         const stream = await openrouter.chat.send({
             model: "google/gemma-3-12b-it:free",
             messages: messages,
@@ -52,13 +35,11 @@ export const sendToGemini = async (prompt, history = []) => {
 
         let fullResponse = "";
 
-        // Consume the stream
         for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content;
             if (content) {
                 fullResponse += content;
             }
-            // Usage information comes in the final chunk if available
             if (chunk.usage) {
                 console.log("Reasoning tokens:", chunk.usage.reasoningTokens);
             }
@@ -73,7 +54,6 @@ export const sendToGemini = async (prompt, history = []) => {
     } catch (err) {
         console.error("OpenRouter SDK Error:", err);
 
-        // Fallback or re-throw friendlier error
         if (err.message && err.message.includes("404")) {
             throw new Error("Model not found or unavailable. Please check API key/permissions.");
         } else if (err.message && err.message.includes("429")) {
@@ -84,18 +64,10 @@ export const sendToGemini = async (prompt, history = []) => {
     }
 };
 
-/**
- * Check if the API key is configured
- * @returns {boolean}
- */
 export const isApiConfigured = () => {
     return !!OPENROUTER_API_KEY && OPENROUTER_API_KEY !== 'YOUR_API_KEY_HERE'
 }
 
-/**
- * Get usage stats (mock implementation)
- * In production, this would track actual API usage
- */
 export const getUsageStats = () => {
     const stored = localStorage.getItem('gemini_usage')
     if (stored) {
@@ -103,18 +75,14 @@ export const getUsageStats = () => {
     }
     return {
         queriesUsed: 0,
-        dailyLimit: 20, // Increased limit for demo
+        dailyLimit: 20,
         resetTime: new Date().setHours(24, 0, 0, 0)
     }
 }
 
-/**
- * Increment usage counter
- */
 export const incrementUsage = () => {
     const stats = getUsageStats()
 
-    // Reset if new day
     if (Date.now() > stats.resetTime) {
         stats.queriesUsed = 0
         stats.resetTime = new Date().setHours(24, 0, 0, 0)
@@ -125,14 +93,9 @@ export const incrementUsage = () => {
     return stats
 }
 
-/**
- * Check if user can make more queries
- * @returns {boolean}
- */
 export const canMakeQuery = () => {
     const stats = getUsageStats()
 
-    // Reset if new day
     if (Date.now() > stats.resetTime) {
         return true
     }
@@ -140,14 +103,9 @@ export const canMakeQuery = () => {
     return stats.queriesUsed < stats.dailyLimit
 }
 
-/**
- * Get remaining queries for today
- * @returns {number}
- */
 export const getRemainingQueries = () => {
     const stats = getUsageStats()
 
-    // Reset if new day
     if (Date.now() > stats.resetTime) {
         return stats.dailyLimit
     }

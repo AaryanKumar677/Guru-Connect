@@ -1,43 +1,35 @@
-// Firebase Storage Service for Image Uploads
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 
 export const storageService = {
-    // Upload profile image
     uploadProfileImage: async (userId, file) => {
         console.log('storageService.uploadProfileImage called', { userId, file });
         if (!file) throw new Error('No file provided');
 
-        // Validate file type
         const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!validTypes.includes(file.type)) {
             throw new Error('Please upload a valid image (JPEG, PNG, GIF, or WebP)');
         }
 
-        // Validate file size (max 5MB)
         const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
             throw new Error('Image size must be less than 5MB');
         }
 
         try {
-            // Create a unique filename
             const fileExtension = file.name.split('.').pop();
             const fileName = `${userId}_${Date.now()}.${fileExtension}`;
             const storageRef = ref(storage, `avatars/${fileName}`);
             console.log('Storage Ref created:', storageRef);
 
-            // Upload the file
             console.log('Starting uploadBytes...');
             const snapshot = await uploadBytes(storageRef, file);
             console.log('uploadBytes complete:', snapshot);
 
-            // Get the download URL
             const downloadURL = await getDownloadURL(snapshot.ref);
             console.log('Download URL retrieved:', downloadURL);
 
-            // Update user profile in Firestore
             const userRef = doc(db, 'users', userId);
             await updateDoc(userRef, {
                 avatar: downloadURL,
@@ -52,10 +44,8 @@ export const storageService = {
         }
     },
 
-    // Delete profile image
     deleteProfileImage: async (userId, imageUrl) => {
         try {
-            // Extract the file path from the URL
             if (imageUrl && imageUrl.includes('firebase')) {
                 const urlParts = imageUrl.split('/o/')[1];
                 if (urlParts) {
@@ -65,7 +55,6 @@ export const storageService = {
                 }
             }
 
-            // Update user profile to remove avatar
             const userRef = doc(db, 'users', userId);
             await updateDoc(userRef, {
                 avatar: null,
@@ -79,7 +68,6 @@ export const storageService = {
         }
     },
 
-    // Resize image before upload (client-side compression)
     compressImage: (file, maxWidth = 400, quality = 0.8) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -92,7 +80,6 @@ export const storageService = {
                     let width = img.width;
                     let height = img.height;
 
-                    // Calculate new dimensions
                     if (width > maxWidth) {
                         height = (height * maxWidth) / width;
                         width = maxWidth;

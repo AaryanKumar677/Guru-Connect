@@ -1,4 +1,3 @@
-// Firebase Configuration
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { initializeFirestore } from 'firebase/firestore';
@@ -15,12 +14,9 @@ const firebaseConfig = {
     databaseURL: "https://guruconnect-427df-default-rtdb.firebaseio.com"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize services
 export const auth = getAuth(app);
-// Use long-polling instead of WebSocket/QUIC to fix connection issues
 export const db = initializeFirestore(app, {
     experimentalForceLongPolling: true,
     useFetchStreams: false,

@@ -2,10 +2,6 @@ import { useState, useEffect, useRef, useCallback, useId } from 'react';
 import { searchColleges, debounce, emitTelemetry } from '../../../services/collegeService';
 import './CollegeAutocomplete.css';
 
-/**
- * CollegeAutocomplete - Accessible combobox for college search
- * Implements ARIA combobox pattern with keyboard navigation
- */
 const CollegeAutocomplete = ({
     value,
     selectedCollege,
@@ -27,7 +23,6 @@ const CollegeAutocomplete = ({
     const uniqueId = useId();
     const listboxId = `college-listbox-${uniqueId}`;
 
-    // Debounced search function
     const debouncedSearch = useCallback(
         debounce(async (query) => {
             if (query.length < 2) {
@@ -47,14 +42,12 @@ const CollegeAutocomplete = ({
                 setIsOpen(true);
                 setActiveIndex(-1);
 
-                // Screen reader announcement
                 if (colleges.length === 0) {
                     setAnnouncement('No colleges found. Try a different spelling or enter manually.');
                 } else {
                     setAnnouncement(`${colleges.length} college${colleges.length !== 1 ? 's' : ''} found. Use arrow keys to navigate.`);
                 }
 
-                // Telemetry
                 emitTelemetry('signup_college_search', {
                     query,
                     resultCount: colleges.length,
@@ -71,13 +64,11 @@ const CollegeAutocomplete = ({
         []
     );
 
-    // Handle input change
     const handleInputChange = (e) => {
         const newValue = e.target.value;
         setInputValue(newValue);
         setIsLoading(newValue.length >= 2);
 
-        // Clear selection if user types after selecting
         if (selectedCollege) {
             onSelect(null, '');
         }
@@ -85,7 +76,6 @@ const CollegeAutocomplete = ({
         debouncedSearch(newValue);
     };
 
-    // Handle college selection
     const handleSelect = (college) => {
         setInputValue(college.name);
         setIsOpen(false);
@@ -99,7 +89,6 @@ const CollegeAutocomplete = ({
         });
     };
 
-    // Handle manual entry
     const handleManualEntry = () => {
         setIsOpen(false);
         onManualEntry(inputValue);
@@ -109,7 +98,6 @@ const CollegeAutocomplete = ({
         });
     };
 
-    // Keyboard navigation
     const handleKeyDown = (e) => {
         if (!isOpen) {
             if (e.key === 'ArrowDown' && results.length > 0) {
@@ -120,7 +108,7 @@ const CollegeAutocomplete = ({
             return;
         }
 
-        const totalItems = results.length + 1; // +1 for manual entry option
+        const totalItems = results.length + 1;
 
         switch (e.key) {
             case 'ArrowDown':
@@ -153,7 +141,6 @@ const CollegeAutocomplete = ({
         }
     };
 
-    // Scroll active item into view
     useEffect(() => {
         if (activeIndex >= 0 && listRef.current) {
             const activeElement = listRef.current.children[activeIndex];
@@ -161,7 +148,6 @@ const CollegeAutocomplete = ({
         }
     }, [activeIndex]);
 
-    // Close on outside click
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (inputRef.current && !inputRef.current.contains(e.target) &&
@@ -173,7 +159,6 @@ const CollegeAutocomplete = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Update input value when external value changes
     useEffect(() => {
         if (value !== undefined && value !== inputValue) {
             setInputValue(value);
@@ -190,7 +175,6 @@ const CollegeAutocomplete = ({
 
     return (
         <div className="college-autocomplete">
-            {/* Screen reader announcements */}
             <div
                 role="status"
                 aria-live="polite"
@@ -200,7 +184,6 @@ const CollegeAutocomplete = ({
                 {announcement}
             </div>
 
-            {/* Combobox input */}
             <div className="autocomplete-input-wrapper">
                 <input
                     ref={inputRef}
@@ -222,14 +205,12 @@ const CollegeAutocomplete = ({
                     autoComplete="off"
                 />
 
-                {/* Loading spinner */}
                 {isLoading && (
                     <div className="autocomplete-spinner" aria-hidden="true">
                         <span className="spinner-small"></span>
                     </div>
                 )}
 
-                {/* Selected indicator */}
                 {selectedCollege && !isLoading && (
                     <div className="autocomplete-check" aria-hidden="true">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -239,7 +220,6 @@ const CollegeAutocomplete = ({
                 )}
             </div>
 
-            {/* Dropdown listbox */}
             {isOpen && (
                 <ul
                     ref={listRef}
@@ -271,7 +251,6 @@ const CollegeAutocomplete = ({
                         </li>
                     ) : null}
 
-                    {/* Manual entry fallback */}
                     {inputValue.length >= 2 && (
                         <li
                             id="manual-entry-option"
@@ -294,9 +273,6 @@ const CollegeAutocomplete = ({
     );
 };
 
-/**
- * Highlight matching text in result
- */
 function highlightMatch(text, query) {
     if (!query) return text;
 
