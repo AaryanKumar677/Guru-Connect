@@ -21,45 +21,47 @@ export const sendToGemini = async (prompt, history = []) => {
     ];
 
     try {
-        console.log("Sending request to OpenRouter (gpt-oss-120b)....");
+        console.log("Sending request to OpenRouter (gemma-3-12b-it:free)....");
 
-        const stream = await openrouter.chat.send({
-            model: "google/gemma-3-12b-it:free",
-            messages: messages,
-            stream: true,
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
             headers: {
+                'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
                 'HTTP-Referer': SITE_URL,
                 'X-Title': SITE_NAME,
-            }
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "model": "google/gemma-3-12b-it:free",
+                "messages": messages,
+                "temperature": 0.7,
+                "top_p": 1,
+                "repetition_penalty": 1
+            })
         });
 
-        let fullResponse = "";
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`OpenRouter Error Result (${response.status}):`, errorText);
 
-        for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content;
-            if (content) {
-                fullResponse += content;
+            if (response.status === 404) {
+                throw new Error("Model not found or unavailable. Please check API key/permissions.");
+            } else if (response.status === 429) {
+                throw new Error("Rate limit exceeded. Please try again in a moment.");
             }
-            if (chunk.usage) {
-                console.log("Reasoning tokens:", chunk.usage.reasoningTokens);
-            }
+            throw new Error(`API Error: ${response.status} ${response.statusText}`);
         }
 
-        if (!fullResponse) {
-            throw new Error("Empty response from AI service");
+        const data = await response.json();
+
+        if (!data.choices || data.choices.length === 0 || !data.choices[0].message?.content) {
+            throw new Error("Empty or invalid response from AI service");
         }
 
-        return fullResponse;
+        return data.choices[0].message.content;
 
     } catch (err) {
-        console.error("OpenRouter SDK Error:", err);
-
-        if (err.message && err.message.includes("404")) {
-            throw new Error("Model not found or unavailable. Please check API key/permissions.");
-        } else if (err.message && err.message.includes("429")) {
-            throw new Error("Rate limit exceeded. Please try again in a moment.");
-        }
-
+        console.error("Gemini Service Error:", err);
         throw err;
     }
 };
