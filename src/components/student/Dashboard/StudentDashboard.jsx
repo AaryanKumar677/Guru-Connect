@@ -1,3 +1,8 @@
+/* ==============================
+   Student Dashboard Component
+   Main student dashboard with stats overview, session list,
+   tutor recommendations, action center, achievements, and insights panel
+   ============================== */
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../../App'
 import './StudentDashboard.css'

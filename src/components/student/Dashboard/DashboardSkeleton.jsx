@@ -1,3 +1,8 @@
+/* ==============================
+   Dashboard Skeleton Loader Component
+   Loading placeholder for student dashboard with skeleton cards,
+   shimmer animations for stats, sessions, and recommendation areas
+   ============================== */
 import React from 'react'
 import Skeleton from '../../common/Skeleton/Skeleton'
 import './DashboardSkeleton.css'

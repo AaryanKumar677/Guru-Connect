@@ -1,4 +1,8 @@
-// Global Call Listener - Shows incoming call notification anywhere in the app
+/* ==============================
+   Global Call Listener Component
+   Listens for incoming video/voice calls across the entire app,
+   shows incoming call UI overlay regardless of which page user is on
+   ============================== */
 import React, { useState, useEffect } from 'react';
 import { subscribeToIncomingCalls, acceptCall, declineCall } from '../../services/callService';
 import { useAuth } from '../../App';

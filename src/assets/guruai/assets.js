@@ -1,3 +1,8 @@
+/* ==============================
+   GuruAI Assets - Image Imports
+   Imports and exports icon images (history, menu, settings, etc.)
+   used across the GuruAI chat interface components
+   ============================== */
 import history_icon from './history_icon.png'
 import menu_icon from './menu_icon.png'
 import plus_icon from './plus_icon.png'

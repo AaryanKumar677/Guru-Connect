@@ -1,3 +1,8 @@
+/* ==============================
+   Tutor Recommendations Component
+   Displays recommended tutors based on student preferences,
+   with tutor cards showing rating, subjects, price, and book button
+   ============================== */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

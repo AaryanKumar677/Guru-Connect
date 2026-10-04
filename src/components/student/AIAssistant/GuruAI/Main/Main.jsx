@@ -1,3 +1,8 @@
+/* ==============================
+   GuruAI Main Chat Component
+   Main AI chat interface with message display, prompt input,
+   suggestion cards, typing indicator, markdown rendering, and chat history
+   ============================== */
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import './Main.css'
 import { assets } from '../../../../../assets/guruai/assets'

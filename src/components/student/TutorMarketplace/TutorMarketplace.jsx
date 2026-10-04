@@ -1,3 +1,8 @@
+/* ==============================
+   Tutor Marketplace Component - Find Tutors
+   Browse and search tutors with filters (subject, price, rating),
+   tutor cards with profile info, book session, and start chat functionality
+   ============================== */
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../../App'
 import { subscribeTutors, getOrCreateChat, subscribeToUserPresence } from '../../../services/firebaseService'

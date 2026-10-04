@@ -1,3 +1,8 @@
+/* ==============================
+   Chat Panel Component - Floating Chat UI
+   Floating overlay chat panel that can be triggered from anywhere,
+   switches between chat list view and active chat window view
+   ============================== */
 // Chat Panel Component - Floating chat UI that can be triggered from anywhere
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../App';

@@ -1,3 +1,8 @@
+/* ==============================
+   Incoming Call Styles
+   Styles for incoming call overlay, glassmorphic card, avatar pulse ring,
+   accept/decline buttons with colors, and blob background animations
+   ============================== */
 .incoming-call-overlay {
     position: fixed;
     top: 0;

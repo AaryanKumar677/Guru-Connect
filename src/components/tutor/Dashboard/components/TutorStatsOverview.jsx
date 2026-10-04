@@ -1,3 +1,8 @@
+/* ==============================
+   Tutor Stats Overview Component
+   Displays tutor statistics (total students, sessions, earnings, rating)
+   with formatted numbers and trend indicators
+   ============================== */
 import React from 'react';
 
 const TutorStatsOverview = ({ stats }) => {

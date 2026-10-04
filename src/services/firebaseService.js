@@ -1,3 +1,8 @@
+/* ==============================
+   Firebase Service - Core Database Operations
+   Handles user profiles, real-time presence (online/offline status),
+   chat CRUD operations, messaging, and chat subscriptions via Firestore & RTDB
+   ============================== */
 import {
     collection,
     doc,

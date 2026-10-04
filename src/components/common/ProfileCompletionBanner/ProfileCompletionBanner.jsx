@@ -1,3 +1,8 @@
+/* ==============================
+   Profile Completion Banner Component
+   Dismissible banner for incomplete profiles, shows completion percentage,
+   missing fields, progress ring, and Complete Now CTA with 3-day dismiss cooldown
+   ============================== */
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../../../App'

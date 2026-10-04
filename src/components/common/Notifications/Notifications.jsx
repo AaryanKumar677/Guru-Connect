@@ -1,3 +1,8 @@
+/* ==============================
+   Notifications Component - Bell Dropdown
+   Header notification bell with unread count badge, dropdown list
+   of notifications (sessions, doubts, points, tutors), mark as read, and clear all
+   ============================== */
 import { useState, useRef, useEffect } from 'react'
 import './Notifications.css'
 

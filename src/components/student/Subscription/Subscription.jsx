@@ -1,3 +1,8 @@
+/* ==============================
+   Subscription Component - Pricing Plans
+   Displays subscription tiers (Free, Pro, Premium) with feature lists,
+   pricing, plan comparison, current plan indicator, and upgrade buttons
+   ============================== */
 import { useState } from 'react'
 import { useToast } from '../../../App'
 import './Subscription.css'

@@ -1,3 +1,8 @@
+/* ==============================
+   Insights Panel Component
+   Shows learning insights and analytics for students,
+   including study patterns, subject progress, and weekly summary
+   ============================== */
 import React from 'react';
 
 const InsightsPanel = ({ insights }) => {

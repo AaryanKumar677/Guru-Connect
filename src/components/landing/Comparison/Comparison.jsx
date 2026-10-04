@@ -1,3 +1,8 @@
+/* ==============================
+   Comparison Component - Why Choose Us Section
+   Side-by-side comparison of GuruConnect vs traditional learning,
+   highlighting advantages with checkmark/cross indicators
+   ============================== */
 import { useAuth } from '../../../App'
 import './Comparison.css'
 

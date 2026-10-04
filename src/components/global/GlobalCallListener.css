@@ -1,3 +1,8 @@
+/* ==============================
+   Global Call Listener Styles
+   Styles for the global incoming call overlay, notification popup,
+   call action buttons, and pulse animations
+   ============================== */
 /* Global Incoming Call Overlay */
 .global-incoming-call-overlay {
     position: fixed;

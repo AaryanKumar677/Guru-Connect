@@ -1,3 +1,8 @@
+/* ==============================
+   Help and FAQ Component
+   Help center with categorized FAQs (General, Account, Tutors, AI, Payments),
+   search functionality, expandable FAQ items, and contact support options
+   ============================== */
 import { useState } from 'react'
 import './Help.css'
 

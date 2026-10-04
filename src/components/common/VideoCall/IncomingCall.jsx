@@ -1,3 +1,8 @@
+/* ==============================
+   Incoming Call Component - Call Notification UI
+   Glassmorphic incoming call card with pulse animation,
+   caller avatar, accept/decline/message buttons, and call type indicator
+   ============================== */
 import React from 'react';
 import './IncomingCall.css';
 

@@ -1,3 +1,8 @@
+/* ==============================
+   Search Modal Component - Quick Navigation (Ctrl+K)
+   Keyboard-navigable search modal for quick page navigation,
+   role-based page listing, quick actions, arrow key navigation, and ESC to close
+   ============================== */
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'

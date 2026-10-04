@@ -1,3 +1,8 @@
+/* ==============================
+   Sidebar Component - Dashboard Navigation
+   Collapsible sidebar with role-based navigation links
+   (student/tutor), user avatar, settings link, and mobile responsive overlay
+   ============================== */
 import { useLocation, NavLink } from 'react-router-dom'
 import { useAuth, useTheme, useSidebar } from '../../../App'
 import './Sidebar.css'

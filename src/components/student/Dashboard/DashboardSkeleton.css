@@ -1,3 +1,8 @@
+/* ==============================
+   Dashboard Skeleton Styles
+   Styles for dashboard loading skeleton cards,
+   shimmer pulse animations, and placeholder layout
+   ============================== */
 .dashboard-skeleton {
     width: 100%;
     animation: fadeIn 0.3s ease;

@@ -1,3 +1,8 @@
+/* ==============================
+   AI Service (OpenRouter/Gemma) - GuruAI Backend
+   Sends prompts to OpenRouter API (Gemma 3 model), manages daily usage limits,
+   tracks query statistics, and provides AI-powered educational assistance
+   ============================== */
 import { OpenRouter } from "@openrouter/sdk";
 
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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'

@@ -1,3 +1,8 @@
+/* ==============================
+   Storage Service - File Upload Management
+   Handles profile image upload/delete to Firebase Storage,
+   image compression, and Firestore avatar URL updates
+   ============================== */
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';

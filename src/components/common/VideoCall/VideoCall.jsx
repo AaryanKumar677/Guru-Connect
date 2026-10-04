@@ -1,3 +1,8 @@
+/* ==============================
+   Video Call Component - Jitsi/Daily.co Integration
+   Full-screen video call with Jitsi (8x8.vc) and Daily.co provider support,
+   room creation, JWT authentication, join/leave/error states, and call controls
+   ============================== */
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import DailyIframe from '@daily-co/daily-js';

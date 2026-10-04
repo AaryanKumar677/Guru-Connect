@@ -1,3 +1,8 @@
+/* ==============================
+   Chat List Component - Conversation List
+   Displays all user conversations with avatar, name, last message preview,
+   online status indicator, unread badges, and timestamp formatting
+   ============================== */
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../App';
 import { subscribeToUserChats, getUserProfile, subscribeToUserPresence } from '../../../services/firebaseService';

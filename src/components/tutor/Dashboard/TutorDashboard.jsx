@@ -1,3 +1,8 @@
+/* ==============================
+   Tutor Dashboard Component
+   Main tutor dashboard with stats overview, pending requests,
+   upcoming sessions, recent students, and quick action buttons
+   ============================== */
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../../App'
 import './TutorDashboard.css'

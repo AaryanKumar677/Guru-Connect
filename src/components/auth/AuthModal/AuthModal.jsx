@@ -1,3 +1,8 @@
+/* ==============================
+   Auth Modal Component - Login/Signup Dialog
+   Full authentication UI with email/password login, multi-step signup
+   (student/tutor), Google and GitHub OAuth, role selection, and form validation
+   ============================== */
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { authService } from '../../../services/authService'
 import { getCollegeMeta, getYearOptions, getSemesterOptions, emitTelemetry } from '../../../services/collegeService'
@@ -72,7 +77,10 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
     // Save draft to localStorage
     useEffect(() => {
         if (mode === 'signup' && step > 1) {
-            localStorage.setItem('guru-connect-signup-draft', JSON.stringify(formData))
+            const timeoutId = setTimeout(() => {
+                localStorage.setItem('guru-connect-signup-draft', JSON.stringify(formData))
+            }, 500)
+            return () => clearTimeout(timeoutId)
         }
     }, [formData, step, mode])
 
@@ -364,10 +372,10 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
 
     // Google Sign-In Handler
     const handleGoogleSignIn = async () => {
-        setIsLoading(true)
         try {
             // First authenticate with Google (pass null to skip role assignment for new users)
             const user = await authService.googleSignIn(null)
+            setIsLoading(true)
 
             if (user.isNewUser) {
                 // New user - show role selection modal
@@ -388,10 +396,10 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
 
     // GitHub Sign-In Handler
     const handleGithubSignIn = async () => {
-        setIsLoading(true)
         try {
             // Authenticate with GitHub
             const user = await authService.githubSignIn(null)
+            setIsLoading(true)
 
             if (user.isNewUser) {
                 // New user - show role selection modal
@@ -477,8 +485,14 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
 
             signup(newUser)
         } catch (error) {
+            // Change step to 1 to show the email error if we are on step 2 or 3
+            if (step > 1) {
+                setStep(1)
+            }
+            
             // Check if it's a duplicate email error
             if (error.message && error.message.toLowerCase().includes('already exists')) {
+                showToast('Email already exists. Please try logging in.', 'error')
                 setErrors({
                     email: 'An account with this email already exists. Please try logging in instead.',
                     isDuplicate: true
@@ -489,6 +503,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
                     emailInput?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 }, 100)
             } else {
+                showToast(error.message || 'Signup failed', 'error')
                 setErrors({ email: error.message || 'Signup failed' })
             }
         } finally {

@@ -1,3 +1,8 @@
+/* ==============================
+   Student Profile Component - Edit Profile Page
+   Student profile management with personal info, education details,
+   avatar upload, language preferences, and save/cancel functionality
+   ============================== */
 import { useState, useEffect } from 'react'
 import { useAuth, useToast } from '../../../App'
 import ProfileImageUpload from '../../common/ProfileImageUpload/ProfileImageUpload'

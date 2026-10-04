@@ -1,3 +1,8 @@
+/* ==============================
+   AI Features Component - Landing Page AI Showcase
+   Highlights AI-powered capabilities (instant doubt solving, smart recommendations),
+   with animated feature cards and visual demonstrations
+   ============================== */
 import './AIFeatures.css'
 
 const AIFeatures = () => {

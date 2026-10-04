@@ -1,3 +1,8 @@
+/* ==============================
+   Settings Component - User Preferences
+   Settings page with Appearance (dark mode), Notifications (email/push/SMS),
+   Privacy (profile visibility, online status, DMs), and Danger Zone (delete account)
+   ============================== */
 import { useState } from 'react'
 import { useTheme, useAuth, useToast } from '../../../App'
 import { authService } from '../../../services/authService'

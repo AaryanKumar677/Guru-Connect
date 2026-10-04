@@ -1,3 +1,8 @@
+/* ==============================
+   Tutor Dashboard Header Component
+   Tutor dashboard welcome header with greeting, tutor name,
+   today date, and quick overview summary
+   ============================== */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

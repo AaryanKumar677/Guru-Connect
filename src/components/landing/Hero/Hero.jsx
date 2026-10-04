@@ -1,3 +1,8 @@
+/* ==============================
+   Hero Component - Landing Page Hero Section
+   Main landing hero with animated title, subtitle, CTA buttons
+   (Start Learning Free, Explore Features), stats counters, and background effects
+   ============================== */
 import { useAuth } from '../../../App'
 import './Hero.css'
 

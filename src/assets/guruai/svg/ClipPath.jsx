@@ -1,3 +1,8 @@
+/* ==============================
+   Clip Path SVG Component
+   Provides SVG clip-path definitions for custom shapes
+   used for image masking and decorative elements
+   ============================== */
 const ClipPath = () => {
   return (
     <svg className="block" width={0} height={0}>

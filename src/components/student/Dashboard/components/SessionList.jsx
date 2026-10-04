@@ -1,3 +1,8 @@
+/* ==============================
+   Session List Component
+   Shows recent/upcoming tutoring sessions with tutor info,
+   subject, date/time, status badges, and join session actions
+   ============================== */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

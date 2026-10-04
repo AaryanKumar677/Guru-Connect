@@ -1,3 +1,8 @@
+/* ==============================
+   Arrow SVG Component
+   Renders an arrow icon SVG graphic
+   used in navigation and UI elements
+   ============================== */
 const Arrow = () => {
   return (
     <svg className="ml-5 fill-n-1" width="24" height="24">

@@ -1,3 +1,8 @@
+/* ==============================
+   Button SVG Component
+   Renders button border/outline SVG graphic
+   used for stylized button appearances
+   ============================== */
 const ButtonSvg = (white) => (
   <>
     <svg

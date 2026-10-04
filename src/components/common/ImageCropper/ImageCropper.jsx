@@ -1,3 +1,8 @@
+/* ==============================
+   Image Cropper Component
+   Modal-based circular image cropper for profile photos,
+   with zoom slider, drag-to-crop, and save/cancel actions
+   ============================== */
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import './ImageCropper.css'

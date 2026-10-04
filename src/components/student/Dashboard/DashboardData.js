@@ -1,3 +1,8 @@
+/* ==============================
+   Student Dashboard Data - Static/Mock Data
+   Contains mock data for dashboard widgets: stats, recent sessions,
+   tutor recommendations, achievements, and quick action items
+   ============================== */
 // Dashboard data generator - creates personalized data based on user context
 
 /**

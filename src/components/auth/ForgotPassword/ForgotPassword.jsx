@@ -1,3 +1,8 @@
+/* ==============================
+   Forgot Password Component
+   Password reset flow with email input, OTP verification,
+   and new password creation for account recovery
+   ============================== */
 import { useState } from 'react'
 import { useToast } from '../../../App'
 import './ForgotPassword.css'

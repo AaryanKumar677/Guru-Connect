@@ -1,3 +1,8 @@
+/* ==============================
+   Sessions Component - Tutor Session Management
+   Manage tutoring sessions with tabs (upcoming, completed, cancelled),
+   session cards with student info, time, duration, and action buttons
+   ============================== */
 import { useState } from 'react'
 import { useToast } from '../../../App'
 import './Sessions.css'

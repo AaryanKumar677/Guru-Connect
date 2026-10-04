@@ -1,3 +1,8 @@
+/* ==============================
+   Chat Window Component - Real-time Messaging
+   Full chat interface with real-time messages, emoji picker, file attachments,
+   video/voice call buttons, online status, clear chat, and GuruAI assist toggle
+   ============================== */
 import React, { useState, useEffect, useRef } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import { useAuth } from '../../../App';

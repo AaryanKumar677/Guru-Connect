@@ -1,3 +1,8 @@
+/* ==============================
+   Messages Component - Student/Tutor Messaging Page
+   Full-page messaging interface with chat list sidebar
+   and chat window, used for both student and tutor message views
+   ============================== */
 import React, { useState } from 'react';
 import { useAuth } from '../../../App';
 import ChatList from '../../common/Chat/ChatList';

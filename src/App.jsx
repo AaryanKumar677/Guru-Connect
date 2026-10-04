@@ -1,3 +1,8 @@
+/* ==============================
+   App Component - Root Application Component
+   Manages global state (auth, theme, sidebar, toasts), defines all routes,
+   provides context providers (Theme, Toast, Auth, Sidebar) to entire app
+   ============================== */
 import { useState, useEffect, createContext, useContext, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { authService } from './services/authService'

@@ -1,3 +1,8 @@
+/* ==============================
+   Target Users Component - For Students and Tutors Section
+   Displays benefits for different user types (students, tutors),
+   with feature lists, CTA buttons, and role-specific illustrations
+   ============================== */
 import { useState } from 'react'
 import { useAuth } from '../../../App'
 import './TargetUsers.css'

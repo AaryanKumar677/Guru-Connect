@@ -1,3 +1,8 @@
+/* ==============================
+   Facilities Component - Platform Facilities Section
+   Displays available facilities (Video Calls, Chat, AI Assistance, etc.)
+   with icon cards, descriptions, and animated hover effects
+   ============================== */
 import './Facilities.css'
 
 const Facilities = () => {

@@ -1,3 +1,8 @@
+/* ==============================
+   GuruAI Context Provider
+   React context for GuruAI state management: chat history, messages,
+   conversation sessions, API calls to AI service, and usage tracking
+   ============================== */
 import { createContext, useState } from "react";
 import { sendToGemini, incrementUsage } from "../../../../services/geminiService";
 

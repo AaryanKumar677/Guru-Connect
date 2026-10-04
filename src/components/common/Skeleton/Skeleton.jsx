@@ -1,3 +1,8 @@
+/* ==============================
+   Skeleton Loader Component
+   Reusable shimmer/pulse loading placeholder with configurable
+   width, height, border radius, and variant (text/circular/rectangular)
+   ============================== */
 import React from 'react'
 import './Skeleton.css'
 

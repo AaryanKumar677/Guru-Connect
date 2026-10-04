@@ -1,3 +1,8 @@
+/* ==============================
+   Section SVG Component
+   Renders section divider with decorative plus icons
+   used as visual separators between content sections
+   ============================== */
 import PlusSvg from "./PlusSvg";
 
 const SectionSvg = ({ crossesOffset }) => {

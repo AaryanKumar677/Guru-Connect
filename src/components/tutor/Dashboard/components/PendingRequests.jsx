@@ -1,3 +1,8 @@
+/* ==============================
+   Pending Requests Component
+   Shows pending student session requests for tutors,
+   with student info, subject, time, and accept/decline actions
+   ============================== */
 import React from 'react';
 
 const PendingRequests = ({ requests }) => {

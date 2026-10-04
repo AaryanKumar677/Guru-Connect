@@ -1,3 +1,8 @@
+/* ==============================
+   Tutor Profile Component - Edit Profile Page
+   Tutor profile management with personal info, teaching subjects,
+   experience, hourly rate, bio, education, avatar upload, and availability
+   ============================== */
 import { useState } from 'react'
 import { useAuth, useToast } from '../../../App'
 import ProfileImageUpload from '../../common/ProfileImageUpload/ProfileImageUpload'

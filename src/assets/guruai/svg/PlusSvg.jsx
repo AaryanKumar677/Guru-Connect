@@ -1,3 +1,8 @@
+/* ==============================
+   Plus SVG Component
+   Renders a plus/cross icon SVG graphic
+   used for section dividers and decorative elements
+   ============================== */
 const PlusSvg = ({ className = "" }) => {
   return (
     <svg className={`${className} || ""`} width="11" height="11" fill="none">

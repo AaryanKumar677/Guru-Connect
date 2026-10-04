@@ -1,3 +1,8 @@
+/* ==============================
+   Online Indicator Component
+   Displays user online/offline status with a colored dot,
+   optional label showing Online or last seen time (e.g. 5m ago)
+   ============================== */
 // Online Indicator Component - Shows user online/offline status
 import React from 'react';
 import './OnlineIndicator.css';

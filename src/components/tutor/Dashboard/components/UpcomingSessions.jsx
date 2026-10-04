@@ -1,3 +1,8 @@
+/* ==============================
+   Upcoming Sessions Component
+   Lists tutor upcoming scheduled sessions with student name,
+   subject, date/time, and join session button
+   ============================== */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

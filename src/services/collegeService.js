@@ -1,7 +1,8 @@
-/**
- * College Service - Mock API for college search and metadata
- * Replace with real API calls when backend is available
- */
+/* ==============================
+   College Service - College Search & Metadata
+   Provides fuzzy search for Indian colleges (mock data),
+   college metadata (degrees, branches), year/semester options, and caching
+   ============================== */
 
 // ============================================
 // MOCK DATA

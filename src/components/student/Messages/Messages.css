@@ -1,3 +1,8 @@
+/* ==============================
+   Messages Page Styles
+   Styles for two-column messaging layout, chat list panel,
+   chat window area, empty state, and responsive mobile view
+   ============================== */
 .messages-page {
     height: 100%;
     display: flex;

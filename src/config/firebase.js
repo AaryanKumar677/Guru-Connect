@@ -1,3 +1,8 @@
+/* ==============================
+   Firebase Configuration
+   Initializes Firebase app with project credentials,
+   exports Auth, Firestore, Realtime Database, and Storage instances
+   ============================== */
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { initializeFirestore } from 'firebase/firestore';

@@ -1,3 +1,8 @@
+/* ==============================
+   Skeleton Loader Styles
+   Styles for shimmer animation, skeleton pulse effect,
+   and variant shapes (text line, circle, rectangle)
+   ============================== */
 .skeleton {
     background-color: var(--bg-tertiary);
     position: relative;

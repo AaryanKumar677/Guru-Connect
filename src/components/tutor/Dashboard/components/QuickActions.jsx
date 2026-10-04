@@ -1,3 +1,8 @@
+/* ==============================
+   Tutor Quick Actions Component
+   Quick action buttons for common tutor tasks
+   (View Sessions, Check Earnings, Update Profile, Messages)
+   ============================== */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

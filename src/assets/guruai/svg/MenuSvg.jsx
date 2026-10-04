@@ -1,3 +1,8 @@
+/* ==============================
+   Menu SVG Component
+   Renders hamburger menu icon with open/close state
+   animated SVG lines for mobile menu toggle
+   ============================== */
 const MenuSvg = ({ openNavigation }) => {
   return (
     <svg

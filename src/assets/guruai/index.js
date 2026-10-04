@@ -1,3 +1,8 @@
+/* ==============================
+   GuruAI Assets Index - Image Collection
+   Central export file for all GuruAI-related images and illustrations
+   including logos, feature images, and background graphics
+   ============================== */
 import MannMitra from "./GuruAI1.png";
 import check from "./check.svg";
 import MannMitraname from "./GuruAIname.png";

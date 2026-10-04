@@ -1,3 +1,8 @@
+/* ==============================
+   Action Center Component
+   Quick action buttons for common student tasks
+   (Ask AI, Find Tutor, Post Doubt, View Sessions)
+   ============================== */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

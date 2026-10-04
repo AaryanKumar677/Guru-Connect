@@ -1,3 +1,8 @@
+/* ==============================
+   404 Not Found Page Component
+   Displays a user-friendly 404 error page with icon,
+   error message, and a back-to-home navigation button
+   ============================== */
 import { Link } from 'react-router-dom'
 import './NotFound.css'
 

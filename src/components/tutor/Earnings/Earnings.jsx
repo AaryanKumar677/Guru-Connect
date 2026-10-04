@@ -1,3 +1,8 @@
+/* ==============================
+   Earnings Component - Tutor Earnings Dashboard
+   Earnings overview with total/monthly/weekly stats, transaction history,
+   earnings chart, withdrawal options, and payment method management
+   ============================== */
 import { useState } from 'react'
 import { useToast } from '../../../App'
 import './Earnings.css'

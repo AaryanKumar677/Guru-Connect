@@ -1,4 +1,8 @@
-// Firebase Context Provider
+/* ==============================
+   Firebase Context Provider
+   Provides Firebase auth state, user profile, and presence tracking
+   to child components via React Context API
+   ============================== */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebase';

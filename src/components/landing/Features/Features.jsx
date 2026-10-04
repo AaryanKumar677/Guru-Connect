@@ -1,3 +1,8 @@
+/* ==============================
+   Features Component - Landing Page Features Section
+   Showcases platform features (AI Tutor, Live Sessions, etc.) with
+   animated cards, icons, descriptions, and section heading
+   ============================== */
 import './Features.css'
 
 const Features = () => {

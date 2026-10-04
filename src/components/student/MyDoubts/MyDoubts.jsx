@@ -1,3 +1,8 @@
+/* ==============================
+   My Doubts Component - Student Questions Manager
+   Post, view, and manage academic doubts/questions,
+   with subject tags, status tracking, AI answers, and doubt history
+   ============================== */
 import { useState } from 'react'
 import './MyDoubts.css'
 

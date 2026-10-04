@@ -1,3 +1,8 @@
+/* ==============================
+   Header Component - Top Navigation Bar
+   App header with logo, navigation links, theme toggle, search trigger,
+   notifications, user dropdown menu, and mobile hamburger menu
+   ============================== */
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'

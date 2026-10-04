@@ -1,3 +1,8 @@
+/* ==============================
+   Profile Image Upload Component
+   Profile photo upload with file selection, image cropping modal,
+   Firebase Storage upload, preview, remove photo, and loading states
+   ============================== */
 import { useState, useRef } from 'react'
 import { storageService } from '../../../services/storageService'
 import { useToast } from '../../../App'

@@ -1,3 +1,8 @@
+/* ==============================
+   Toast Component - Notification Popups
+   Dismissible toast notifications with success/error/warning/info types,
+   animated entry/exit, icons, and auto-dismiss functionality
+   ============================== */
 import { useEffect, useState } from 'react'
 import './Toast.css'
 

@@ -1,3 +1,8 @@
+/* ==============================
+   Brackets SVG Component
+   Renders bracket/button border SVG graphic
+   used for decorative button outlines
+   ============================== */
 const ButtonSvg = (white) => (
   <>
     <svg

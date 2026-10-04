@@ -1,3 +1,8 @@
+/* ==============================
+   Achievements Widget Component
+   Displays student achievements and badges earned,
+   with progress indicators and milestone tracking
+   ============================== */
 import React from 'react';
 
 const AchievementsWidget = ({ achievements }) => {

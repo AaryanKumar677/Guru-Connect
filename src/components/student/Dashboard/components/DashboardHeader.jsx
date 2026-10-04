@@ -1,3 +1,8 @@
+/* ==============================
+   Dashboard Header Component
+   Student dashboard welcome header with greeting message,
+   user name, date display, and quick action buttons
+   ============================== */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 

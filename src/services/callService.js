@@ -1,3 +1,8 @@
+/* ==============================
+   Call Service - Video/Voice Call Management
+   Manages call lifecycle: initiate, accept, decline, cancel, end calls.
+   Handles call status subscriptions and missed call notifications via Firestore
+   ============================== */
 import {
     collection,
     doc,

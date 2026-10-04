@@ -1,3 +1,8 @@
+/* ==============================
+   Call UI Component - Voice/Video Call Interface
+   Full-screen call overlay with incoming/outgoing/active states,
+   call controls (mute, video, speaker), duration timer, and caller info
+   ============================== */
 import { useState, useEffect } from 'react'
 import './CallUI.css'
 

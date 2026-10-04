@@ -1,3 +1,8 @@
+/* ==============================
+   Stats Overview Component
+   Displays student statistics cards (sessions completed, hours learned,
+   doubts solved, streak days) with icons and formatted numbers
+   ============================== */
 import React from 'react';
 
 const StatsOverview = ({ stats }) => {

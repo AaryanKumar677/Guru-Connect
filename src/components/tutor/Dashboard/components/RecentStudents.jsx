@@ -1,3 +1,8 @@
+/* ==============================
+   Recent Students Component
+   Displays recently interacted students for the tutor,
+   with student avatar, name, last session date, and message button
+   ============================== */
 import React from 'react';
 
 const RecentStudents = ({ students }) => {

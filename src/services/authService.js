@@ -1,3 +1,8 @@
+/* ==============================
+   Authentication Service
+   Handles user login, signup, Google/GitHub OAuth, logout,
+   profile updates, account deletion with Firebase Auth & Firestore
+   ============================== */
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,

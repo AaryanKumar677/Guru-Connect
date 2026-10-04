@@ -1,3 +1,8 @@
+/* ==============================
+   College Autocomplete Component
+   Searchable dropdown for selecting colleges during signup,
+   with fuzzy search, debounced input, and manual entry fallback
+   ============================== */
 import { useState, useEffect, useRef, useCallback, useId } from 'react';
 import { searchColleges, debounce, emitTelemetry } from '../../../services/collegeService';
 import './CollegeAutocomplete.css';

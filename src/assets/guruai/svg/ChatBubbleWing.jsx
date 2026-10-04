@@ -1,3 +1,8 @@
+/* ==============================
+   Chat Bubble Wing SVG Component
+   Renders the chat bubble tail/wing decoration
+   used in AI chat message bubbles
+   ============================== */
 const ChatBubbleWing = ({ className, pathClassName }) => {
   return (
     <svg

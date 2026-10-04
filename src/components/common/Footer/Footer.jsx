@@ -1,3 +1,8 @@
+/* ==============================
+   Footer Component - Landing Page Footer
+   Site footer with brand info, social links, navigation columns
+   (Platform, Users, Support, Legal), newsletter signup, and copyright
+   ============================== */
 import { Link } from 'react-router-dom'
 import './Footer.css'
 

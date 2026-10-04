@@ -1,3 +1,8 @@
+/* ==============================
+   Button Gradient SVG Definitions
+   SVG gradient definitions for button styling,
+   provides linear gradients used across UI buttons
+   ============================== */
 const ButtonGradient = () => {
   return (
     <svg className="block" width={0} height={0}>

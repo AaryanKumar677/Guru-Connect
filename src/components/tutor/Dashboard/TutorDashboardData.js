@@ -1,3 +1,8 @@
+/* ==============================
+   Tutor Dashboard Data - Static/Mock Data
+   Contains mock data for tutor dashboard: earnings stats,
+   pending requests, upcoming sessions, and recent student interactions
+   ============================== */
 // TutorDashboardData.js - Data generation functions for Tutor Dashboard
 
 export const generateTutorStats = (user) => {

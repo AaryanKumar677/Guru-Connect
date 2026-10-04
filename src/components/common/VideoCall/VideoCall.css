@@ -1,3 +1,8 @@
+/* ==============================
+   Video Call Styles
+   Styles for full-screen video call container, iframe layout,
+   call control buttons, joining/error states, and overlay positioning
+   ============================== */
 .video-call-overlay,
 .video-call-container {
     position: fixed !important;
