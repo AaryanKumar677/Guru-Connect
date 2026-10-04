@@ -12,6 +12,7 @@
   "dependencies": {
     "@daily-co/daily-js": "^0.87.0",
     "@openrouter/sdk": "^0.5.1",
+    "@vercel/analytics": "^1.4.1",
     "emoji-picker-react": "^4.18.0",
     "firebase": "^12.8.0",
     "framer-motion": "^12.30.0",
