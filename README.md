@@ -2,6 +2,7 @@
   <img src="https://img.shields.io/badge/Guru-Connect-6366f1?style=for-the-badge&logo=react&logoColor=white" alt="Guru Connect Banner" height="60" />
   <h1>🎓 Guru Connect</h1>
   <p><strong>Empowering the Future of Education with AI-Driven Learning & Seamless Tutoring</strong></p>
+  <h3>🌐 <a href="https://guruconnect.vercel.app/" target="_blank">View Live Demo</a></h3>
 
   <p>
     <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" /></a>
