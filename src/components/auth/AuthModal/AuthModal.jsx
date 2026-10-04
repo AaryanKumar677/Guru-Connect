@@ -387,7 +387,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
             }
         } catch (error) {
             if (error.message !== 'Sign-in cancelled') {
-                setErrors({ email: error.message || 'Google sign-in failed' })
+                showToast(error.message || 'Google sign-in failed', 'error')
             }
         } finally {
             setIsLoading(false)
@@ -411,7 +411,7 @@ const AuthModal = ({ isOpen, onClose, mode, setMode }) => {
             }
         } catch (error) {
             if (error.message !== 'Sign-in cancelled') {
-                setErrors({ email: error.message || 'GitHub sign-in failed' })
+                showToast(error.message || 'GitHub sign-in failed', 'error')
             }
         } finally {
             setIsLoading(false)
